@@ -12,3 +12,42 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Product {
+  id String @id @default(uuid())
+  sku String
+  name String
+  shortDescription String
+  longDescription String?
+  brand String
+  price Decimal
+  tax Int? @default(21)
+  stock Int @default(0)
+  status String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  
+  images Image[]
+  categories Category[] @relation("ProductCategories")
+  mainCategory Category? @relation("MainCategory", fields: [mainCategoryId], references: [id])
+  mainCategoryId String? @unique
+
+}
+
+model Image {
+  id String @id @default(uuid())
+  url String
+  isMain Boolean @default(false)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+}
+
+model Category {
+  id String @id @default(uuid())
+  name String @unique
+
+  products Product[] @relation("ProductCategories")
+  mainProducts Product[] @relation("MainCategory")
+}
