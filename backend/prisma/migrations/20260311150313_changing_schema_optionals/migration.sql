@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Product" ALTER COLUMN "brand" DROP NOT NULL,
+ALTER COLUMN "status" DROP NOT NULL;
