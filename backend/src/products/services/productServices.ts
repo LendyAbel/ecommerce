@@ -8,14 +8,13 @@ const getAllProducts = async () => {
             categories: true,
         },
     });
-    console.log('All products: ', products);
     return products;
 };
 
 const getProductById = async (id: string) => {
     const product = await prisma.product.findUnique({
         where: {
-            id: id,
+            id,
         },
         include: {
             images: true,
@@ -39,7 +38,7 @@ const addNewProduct = async (newProduct: Prisma.ProductCreateInput) => {
 const deleteProductById = async (id: string) => {
     const product = await prisma.product.delete({
         where: {
-            id: id,
+            id,
         },
         include: {
             images: true,
@@ -49,4 +48,4 @@ const deleteProductById = async (id: string) => {
     return product;
 };
 
-export { getAllProducts, addNewProduct, deleteProductById, getProductById };
+export default { getAllProducts, addNewProduct, deleteProductById, getProductById };

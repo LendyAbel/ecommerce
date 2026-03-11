@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import productsRouter from './products/routers/productRouter';
+import categoriesRouter from './products/categories/routers/categoriesRouter';
+
 
 const app = express();
 
@@ -13,10 +15,13 @@ app.get('/', (_req, res) => {
 });
 
 app.use('/api/products', productsRouter);
+app.use('/api/categories', categoriesRouter)
 
 const PORT = process.env.PORT ?? 3000;
 
 app.listen(PORT, () => {
     console.log('Server running');
     console.log(`http://localhost:${PORT}`);
+    console.log(`API Products: http://localhost:${PORT}/api/products`);
+    console.log(`API Categories: http://localhost:${PORT}/api/categories`);
 });

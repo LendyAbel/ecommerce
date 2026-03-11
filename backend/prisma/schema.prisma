@@ -31,7 +31,7 @@ model Product {
   images Image[]
   categories Category[] @relation("ProductCategories")
   mainCategory Category? @relation("MainCategory", fields: [mainCategoryId], references: [id])
-  mainCategoryId String? @unique
+  mainCategoryId String?
 
 }
 

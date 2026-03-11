@@ -120,7 +120,7 @@ async function main() {
     for (const p of products) {
         // Busca o crea la categoría principal
         const mainCat = await prisma.category.upsert({
-            where: { id: p.mainCategory },
+            where: { name: p.mainCategory },
             update: {},
             create: { name: p.mainCategory },
         });
@@ -129,7 +129,7 @@ async function main() {
         const otherCats = await Promise.all(
             p.otherCategories.map(catName =>
                 prisma.category.upsert({
-                    where: { id: catName },
+                    where: { name: catName },
                     update: {},
                     create: { name: catName },
                 }),
