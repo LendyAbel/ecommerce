@@ -19,11 +19,11 @@ model Product {
   name String
   shortDescription String
   longDescription String?
-  brand String
+  brand String?
   price Decimal
   tax Int? @default(21)
   stock Int @default(0)
-  status String
+  status String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
