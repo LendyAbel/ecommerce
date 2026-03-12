@@ -2,8 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import productsRouter from './products/routers/productRouter';
-import categoriesRouter from './products/categories/routers/categoriesRouter';
+import productsRouter from './modules/products/routers/productRouter';
+import categoriesRouter from './modules/categories/routers/categoriesRouter';
 
 
 const app = express();
