@@ -1,51 +1,78 @@
-import { Prisma } from '../../../generated/prisma/client';
-import { prisma } from '../../lib/prisma';
+import { prisma } from '../../../lib/prisma';
+import { normalizeName } from '../../../lib/utils';
+import { ProductCrateInput } from '../productTypes';
+
+const productInclude = {
+    images: true,
+    mainCategory: true,
+    categories: true,
+} as const;
 
 const getAllProducts = async () => {
-    const products = await prisma.product.findMany({
-        include: {
-            images: true,
-            categories: true,
-        },
-    });
-    return products;
+    return prisma.product.findMany({ include: productInclude });
 };
 
 const getProductById = async (id: string) => {
-    const product = await prisma.product.findUnique({
-        where: {
-            id,
-        },
-        include: {
-            images: true,
-            categories: true,
-        },
+    return prisma.product.findUnique({
+        where: { id },
+        include: productInclude,
     });
-    return product;
 };
 
-const addNewProduct = async (newProduct: Prisma.ProductCreateInput) => {
-    const product = await prisma.product.create({
-        data: newProduct,
-        include: {
-            images: true,
-            categories: true,
+const addNewProduct = async (data: ProductCrateInput) => {
+    return prisma.product.create({
+        data: {
+            sku: data.sku,
+            name: data.name,
+            shortDescription: data.shortDescription,
+            longDescription: data.longDescription,
+            brand: data.brand,
+            price: data.price,
+            tax: data.tax,
+            stock: data.stock,
+            status: data.status,
+
+            // connect or create category
+            mainCategory: data.mainCategory
+                ? {
+                      connectOrCreate: {
+                          where: {
+                              name: normalizeName(data.mainCategory),
+                          },
+                          create: {
+                              name: normalizeName(data.mainCategory),
+                          },
+                      },
+                  }
+                : undefined,
+
+            categories: {
+                connectOrCreate: data.categories.map(name => ({
+                    where: { name: normalizeName(name) },
+                    create: { name: normalizeName(name) },
+                })),
+            },
+
+            images: {
+                create: data.images,
+            },
         },
+        include: productInclude,
     });
-    return product;
 };
 
 const deleteProductById = async (id: string) => {
-    const product = await prisma.product.delete({
+    return prisma.product.delete({
         where: {
             id,
         },
-        include: {
-            images: true,
-            categories: true,
-        },
+        include: productInclude,
     });
-    return product;
 };
 
-export default { getAllProducts, addNewProduct, deleteProductById, getProductById };
+export default {
+    getAllProducts,
+    addNewProduct,
+    deleteProductById,
+    getProductById,
+};

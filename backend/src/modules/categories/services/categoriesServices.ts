@@ -1,4 +1,5 @@
 import { prisma } from '../../../lib/prisma';
+import { normalizeName } from '../../../lib/utils';
 
 const getAllCategories = async () => {
     const categories = await prisma.category.findMany({
@@ -13,34 +14,24 @@ const getAllCategories = async () => {
 const deleteCategoryByName = async (name: string) => {
     const category = await prisma.category.findUnique({
         where: {
-            name,
-        },
-        include: {
-            products: true,
-            mainProducts: true,
+            name: normalizeName(name),
         },
     });
 
     if (!category) throw new Error('Category not found');
 
     await prisma.product.updateMany({
-        where: {
-            categories: {
-                some: { name },
-            },
-        },
-        data: {},
-    });
-    await prisma.product.updateMany({
         where: { mainCategoryId: category.id },
         data: { mainCategoryId: null },
     });
 
-    await prisma.category.delete({
+    const deletedCategory = await prisma.category.delete({
         where: {
-            name,
+            name: normalizeName(name),
         },
     });
+
+    return deletedCategory;
 };
 
 export default { getAllCategories, deleteCategoryByName };

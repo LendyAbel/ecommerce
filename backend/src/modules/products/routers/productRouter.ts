@@ -1,13 +1,15 @@
 import express from 'express';
 import productServices from '../services/productServices';
+import { ProductCrateSchema } from '../schemas/productsZodSchema';
 
 const router = express.Router();
 
 router.get('/', async (_req, res) => {
     try {
         const products = await productServices.getAllProducts();
-        res.send(products);
+        res.status(200).json(products);
     } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
         console.log('Error: ', error);
     }
 });
@@ -15,18 +17,29 @@ router.get('/', async (_req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const product = await productServices.getProductById(req.params.id);
-        res.send(product);
+        res.status(200).json(product);
     } catch (error) {
         console.log('Error: ', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 router.post('/', async (req, res) => {
     try {
-        const newProduct = await productServices.addNewProduct(req.body);
-        res.send(newProduct);
+        const result = ProductCrateSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({
+                error: 'Invalid data',
+                issues: result.error.issues,
+            });
+            return;
+        }
+
+        const newProduct = await productServices.addNewProduct(result.data);
+        res.status(201).json(newProduct);
     } catch (error) {
         console.log('Error: ', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -35,9 +48,10 @@ router.delete('/:id', async (req, res) => {
         const deletedProduct = await productServices.deleteProductById(
             req.params.id,
         );
-        res.send(deletedProduct);
+        res.status(200).json(deletedProduct);
     } catch (error) {
         console.log('Error: ', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
