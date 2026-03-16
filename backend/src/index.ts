@@ -4,7 +4,7 @@ dotenv.config();
 
 import productsRouter from './modules/products/routers/productRouter';
 import categoriesRouter from './modules/categories/routers/categoriesRouter';
-
+import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
@@ -15,10 +15,11 @@ app.get('/', (_req, res) => {
 });
 
 app.use('/api/products', productsRouter);
-app.use('/api/categories', categoriesRouter)
+app.use('/api/categories', categoriesRouter);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT ?? 3000;
-
 app.listen(PORT, () => {
     console.log('Server running');
     console.log(`http://localhost:${PORT}`);
