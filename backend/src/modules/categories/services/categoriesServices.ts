@@ -1,5 +1,4 @@
 import { prisma } from '../../../lib/prisma';
-import { normalizeName } from '../../../lib/utils';
 
 const getAllCategories = async () => {
     const categories = await prisma.category.findMany({
@@ -14,7 +13,7 @@ const getAllCategories = async () => {
 const deleteCategoryByName = async (name: string) => {
     const category = await prisma.category.findUnique({
         where: {
-            name: normalizeName(name),
+            name,
         },
     });
 
@@ -27,7 +26,7 @@ const deleteCategoryByName = async (name: string) => {
 
     const deletedCategory = await prisma.category.delete({
         where: {
-            name: normalizeName(name),
+            name,
         },
     });
 

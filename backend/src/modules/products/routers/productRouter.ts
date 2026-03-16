@@ -1,6 +1,6 @@
 import express from 'express';
 import productServices from '../services/productServices';
-import { ProductCrateSchema } from '../schemas/productsZodSchema';
+import { ProductCreateSchema } from '../schemas/productsZodSchema';
 
 const router = express.Router();
 
@@ -9,8 +9,8 @@ router.get('/', async (_req, res) => {
         const products = await productServices.getAllProducts();
         res.status(200).json(products);
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
         console.log('Error: ', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -26,7 +26,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const result = ProductCrateSchema.safeParse(req.body);
+        const result = ProductCreateSchema.safeParse(req.body);
         if (!result.success) {
             res.status(400).json({
                 error: 'Invalid data',

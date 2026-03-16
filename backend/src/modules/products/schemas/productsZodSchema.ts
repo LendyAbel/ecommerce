@@ -5,9 +5,9 @@ export const ImageInputSchema = z.object({
     isMain: z.boolean({ error: 'isMain must be a boolean' }),
 });
 
-export const ProductStatusSchema = z.enum(['active', 'inactive', 'draft']);
+export const ProductStatusSchema = z.enum(['published', 'discontinued', 'draft']);
 
-export const ProductCrateSchema = z.object({
+export const ProductCreateSchema = z.object({
     sku: z.string().min(1, 'SKU is required').trim(),
     name: z.string().min(1, 'Name is required').trim(),
     shortDescription: z.string().min(1, 'Short description is required').trim(),
@@ -40,4 +40,4 @@ export const ProductCrateSchema = z.object({
     images: z.array(ImageInputSchema).default([]),
 });
 
-export const ProductUpdateSchema = ProductCrateSchema.partial();
+export const ProductUpdateSchema = ProductCreateSchema.partial();

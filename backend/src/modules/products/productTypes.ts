@@ -1,12 +1,12 @@
 import * as z from 'zod';
 import {
     ImageInputSchema,
-    ProductCrateSchema,
+    ProductCreateSchema,
     ProductStatusSchema,
     ProductUpdateSchema,
 } from './schemas/productsZodSchema';
 
-export type ProductCrateInput = z.infer<typeof ProductCrateSchema>;
+export type ProductCrateInput = z.infer<typeof ProductCreateSchema>;
 export type ProductUpdateInput = z.infer<typeof ProductUpdateSchema>;
 
 export type ImagenInput = z.infer<typeof ImageInputSchema>;
