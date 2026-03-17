@@ -17,12 +17,20 @@ const handlePrismaError = (error: unknown, res: Response): boolean => {
     //Known Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
-            case 'P2002': //Unique constraint
+            case 'P2002': {
+                //Unique constraint
+                const cause = (
+                    error.meta?.driverAdapterError as {
+                        cause?: { constraint?: { fields?: string[] } };
+                    }
+                )?.cause;
+                const fields = cause?.constraint?.fields?.join(', ');
                 res.status(409).json({
                     error: 'Already exists',
-                    field: error.meta?.target,
+                    fields: fields,
                 });
                 return true;
+            }
 
             case 'P2025': //Record not found
                 res.status(404).json({ error: 'Record not found' });
@@ -67,6 +75,5 @@ export const errorHandler = (
     }
 
     console.error('Unhandled error:', error);
-    console.error('Error type:', error?.constructor?.name); 
     res.status(500).json({ error: 'Internal server error' });
 };

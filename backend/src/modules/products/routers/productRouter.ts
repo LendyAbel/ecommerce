@@ -17,9 +17,9 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const data = ProductCreateSchema.parse(req.body);
-    const newProduct = await productServices.addNewProduct(data);
-    res.status(201).json(newProduct);
+   const data = ProductCreateSchema.parse(req.body);
+   const newProduct = await productServices.addNewProduct(data);
+   res.status(201).json(newProduct);
 });
 
 router.delete('/:id', async (req, res) => {

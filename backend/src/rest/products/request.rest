@@ -1,0 +1,51 @@
+### Variables
+@baseUrl = http://localhost:3001
+
+### GET todos los productos
+GET {{baseUrl}}/api/products
+
+###
+
+### GET producto por ID
+GET {{baseUrl}}/api/products/uuid-aqui
+
+###
+
+### POST crear producto
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+    "sku": "TEST-001",
+    "name": "Producto test",
+    "shortDescription": "Descripción corta",
+    "price": 19.99
+}
+
+###
+
+### POST crear producto duplicado (mismo sku)
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+    "sku": "TEST-001",
+    "name": "Otro producto",
+    "shortDescription": "Descripción corta",
+    "price": 29.99
+}
+
+###
+
+### DELETE producto por ID
+DELETE {{baseUrl}}/api/products/uuid-aqui
+
+###
+
+### GET todas las categorías
+GET {{baseUrl}}/api/categories
+
+###
+
+### DELETE categoría por nombre
+DELETE {{baseUrl}}/api/categories/gaming
