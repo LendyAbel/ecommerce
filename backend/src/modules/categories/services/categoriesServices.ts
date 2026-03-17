@@ -1,3 +1,4 @@
+import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
 
 const getAllCategories = async () => {
@@ -17,7 +18,7 @@ const deleteCategoryByName = async (name: string) => {
         },
     });
 
-    if (!category) throw new Error('Category not found');
+    if (!category) throw new AppError('Category not found', 404);
 
     await prisma.product.updateMany({
         where: { mainCategoryId: category.id },

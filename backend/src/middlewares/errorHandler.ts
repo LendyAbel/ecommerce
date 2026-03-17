@@ -3,17 +3,17 @@ import { ZodError } from 'zod';
 import { Prisma } from '../../generated/prisma/client';
 import { AppError } from '../lib/AppError';
 
-const zodError = (error: unknown, res: Response) => {
-    if (error instanceof ZodError) {
-        res.status(400).json({
-            error: 'Validation error',
-            issues: error.issues,
-        });
-    }
-    return;
+const handleZodError = (error: unknown, res: Response): boolean => {
+    if (!(error instanceof ZodError)) return false;
+
+    res.status(400).json({
+        error: 'Validation error',
+        issues: error.issues,
+    });
+    return true;
 };
 
-const prismaError = (error: unknown, res: Response) => {
+const handlePrismaError = (error: unknown, res: Response): boolean => {
     //Known Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
@@ -22,22 +22,22 @@ const prismaError = (error: unknown, res: Response) => {
                     error: 'Already exists',
                     field: error.meta?.target,
                 });
-                return;
+                return true;
 
             case 'P2025': //Record not found
                 res.status(404).json({ error: 'Record not found' });
-                return;
+                return true;
 
             case 'P2003': // Foreign key constraint
                 res.status(409).json({ error: 'Related record not found' });
-                return;
+                return true;
         }
     }
 
     //Validation Prisma errors
     if (error instanceof Prisma.PrismaClientValidationError) {
         res.status(400).json({ error: 'Invalid data' });
-        return;
+        return true;
     }
 
     //Uknown Prisma errors
@@ -46,8 +46,10 @@ const prismaError = (error: unknown, res: Response) => {
             error: 'Database error',
             message: error.message,
         });
-        return;
+        return true;
     }
+
+    return false;
 };
 
 export const errorHandler = (
@@ -55,10 +57,9 @@ export const errorHandler = (
     _req: Request,
     res: Response,
     _next: NextFunction,
-) => {
-    zodError(error, res);
-
-    prismaError(error, res);
+): void => {
+    if (handleZodError(error, res)) return;
+    if (handlePrismaError(error, res)) return;
 
     if (error instanceof AppError) {
         res.status(error.statusCode).json({ error: error.message });
@@ -66,5 +67,6 @@ export const errorHandler = (
     }
 
     console.error('Unhandled error:', error);
+    console.error('Error type:', error?.constructor?.name); 
     res.status(500).json({ error: 'Internal server error' });
 };
