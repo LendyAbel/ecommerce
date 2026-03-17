@@ -9,7 +9,7 @@
     "scripts": {
         "dev": "nodemon --exec ts-node src/index.ts",
         "dev:clean": "npx kill-port 3001 && nodemon --exec ts-node src/index.ts",
-        "seed": "ts-node prisma/seed.ts",
+        "seed": "npx prisma migrate reset && ts-node prisma/seed.ts",
         "reset-db": "npx prisma migrate reset",
         "build": "tsc",
         "start": "node dist/index.js"

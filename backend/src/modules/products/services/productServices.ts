@@ -9,7 +9,7 @@ const productInclude = {
 } as const;
 
 const getAllProducts = async () => {
-    return prisma.product.findMany({ include: productInclude });
+        return prisma.product.findMany({ include: productInclude });
 };
 
 const getProductById = async (id: string) => {

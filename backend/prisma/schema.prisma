@@ -14,7 +14,7 @@ model Product {
   shortDescription String
   longDescription String?
   brand String?
-  price Decimal
+  price Float
   tax Int? @default(21)
   stock Int @default(0)
   status String?
