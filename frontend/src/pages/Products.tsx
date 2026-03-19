@@ -1,20 +1,15 @@
 import { Alert, Box, Skeleton } from '@mui/material';
-import productsService from '../services/products.service';
-import { useQuery } from '@tanstack/react-query';
-import ProductCard from '../components/product/ProductCard'
+import ProductCard from '../components/product/ProductCard';
 import type { Product } from '../types/productTypes';
+import useProducts from '../hooks/product/useProducts';
 
 const Products = () => {
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ['products'],
-        queryFn: productsService.getProducts,
-    });
-    const products = data ?? [];
+    const { products, isProductsError, isProductsLoading } = useProducts();
     console.log(products);
 
-    if (isLoading) {
+    if (isProductsLoading) {
         return (
-            <div style={{ width: '80%', margin: 'auto' }}>
+            <div className='m-auto w-[80%]'>
                 <Skeleton animation='pulse' height={50} />
                 <Skeleton animation='pulse' height={50} />
                 <Skeleton animation='pulse' height={50} />
@@ -25,10 +20,10 @@ const Products = () => {
         );
     }
 
-    if (isError) {
+    if (isProductsError) {
         console.error('Error loading products');
         return (
-            <div>
+            <div className='m-auto w-[80%]'>
                 <Alert severity='error'>Error loading products</Alert>
             </div>
         );
@@ -39,9 +34,9 @@ const Products = () => {
             component={'section'}
             display={'grid'}
             gap={2}
-            style={{ width: '80%', margin: 'auto' }}
+            className='m-auto mt-2 w-[80%]'
         >
-            {products.map((product: Product) => (
+            {products?.map((product: Product) => (
                 <div key={product.id}>
                     <ProductCard product={product} />
                 </div>
