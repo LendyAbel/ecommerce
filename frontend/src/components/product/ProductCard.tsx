@@ -16,6 +16,8 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
     const navigate = useNavigate();
+    const mainImage =
+        product.images?.find(i => i.isMain)?.url ?? product.images?.[0]?.url;
 
     const handleClick = () => {
         navigate(`/products/${product.id}`);
@@ -26,15 +28,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
             component={'div'}
             onClick={handleClick}
             variant='outlined'
-            className='p-1 shadow-md hover:shadow-xl'
+            className='flex flex-col p-1 shadow-md hover:shadow-xl'
         >
-            <CardHeader title={product.name} />
+            <CardHeader title={product.name} className='self-center' />
             <CardContent>
-                {(product.images?? []).length > 0 && (
+                {(product.images ?? []).length > 0 && (
                     <CardMedia
                         component='img'
-                        sx={{ width: 150, objectFit: 'cover' }}
-                        image={product.images?.find(i => i.isMain === true)?.url}
+                        sx={{ width: 200, objectFit: 'cover' }}
+                        image={mainImage}
                     />
                 )}
                 <Typography>{product.shortDescription}</Typography>

@@ -26,3 +26,14 @@ export interface Image {
 }
 
 export type ProductStatus = 'published' | 'draft' | 'discontinued';
+
+export type NewProduct = Omit<Product, 'id'>;
+
+export type NewProductForm = Omit<
+    NewProduct,
+    'mainCategory' | 'categories' | 'images'
+> & {
+    mainCategory: string;
+    categories: string[];
+    images: string[];
+};
