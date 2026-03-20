@@ -35,5 +35,5 @@ export type NewProductForm = Omit<
 > & {
     mainCategory: string;
     categories: string[];
-    images: string[];
+    images: Omit<Image, 'id'>[];
 };
