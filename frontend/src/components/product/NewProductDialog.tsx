@@ -3,6 +3,7 @@ import {
     Button,
     Dialog,
     DialogTitle,
+    FormControl,
     InputLabel,
     MenuItem,
     Select,
@@ -12,6 +13,7 @@ import type { NewProductForm } from '../../types/productTypes';
 import { useForm } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import categoriesService from '../../services/categories.service';
+import { useState } from 'react';
 
 const formDefaultValues: NewProductForm = {
     name: '',
@@ -33,6 +35,8 @@ type NewProductDialogProps = {
 };
 
 const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
+    const [isNewCategory, setIsNewCategory] = useState(false);
+
     const { data } = useQuery({
         queryKey: ['categories'],
         queryFn: categoriesService.getCategories,
@@ -87,32 +91,75 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                         </>
                     )}
                 />
+
                 <form.Field
                     name={'mainCategory'}
                     children={field => (
-                        <>
-                            <Select
-                                label='Main Category'
+                        <div className='flex items-center gap-0.5'>
+                            {!isNewCategory ? (
+                                <FormControl fullWidth>
+                                    <InputLabel id='mainCategory-label'>
+                                        Main Category
+                                    </InputLabel>
+                                    <Select
+                                        labelId='mainCategory-label'
+                                        label='Main Category'
+                                        variant={'outlined'}
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value}
+                                        onChange={e =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                    >
+                                        <MenuItem value=''>
+                                            <em>None</em>
+                                        </MenuItem>
+                                        {categories.map(
+                                            (cat: {
+                                                id: string;
+                                                name: string;
+                                            }) => (
+                                                <MenuItem
+                                                    key={cat.id}
+                                                    value={cat.name}
+                                                >
+                                                    {cat.name}
+                                                </MenuItem>
+                                            ),
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            ) : (
+                                <>
+                                    <TextField fullWidth
+                                        label={'Main Category'}
+                                        variant={'outlined'}
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value}
+                                        onChange={e =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                    />
+                                </>
+                            )}
+
+                            <Button
+                                sx={{
+                                    height: '56px',
+                                    minWidth: 'max-content',
+                                    width: '150px',
+                                }}
                                 variant={'outlined'}
-                                id={field.name}
-                                name={field.name}
-                                value={field.state.value}
-                                onChange={e =>
-                                    field.handleChange(e.target.value)
-                                }
+                                onClick={() => setIsNewCategory(!isNewCategory)}
                             >
-                                <MenuItem value=''>
-                                    <em>None</em>
-                                </MenuItem>
-                                {categories.map(cat => (
-                                    <MenuItem key={cat.id} value={cat.id}>
-                                        {cat.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </>
+                                {isNewCategory ? 'Cancel' : 'New'}
+                            </Button>
+                        </div>
                     )}
                 />
+
                 {/* ------actions buttons--------- */}
                 <div className='flex justify-around'>
                     <Button type={'submit'} variant={'contained'}>
