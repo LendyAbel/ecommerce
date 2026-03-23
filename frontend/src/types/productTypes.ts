@@ -1,39 +1,20 @@
-export interface Product {
-    brand: string;
-    categories?: Array<Category>;
-    id: string;
-    images?: Array<Image>;
-    longDescription?: string;
-    mainCategory?: Category;
+import type z from 'zod';
+import type {
+    imageFormSchema,
+    imageSchema,
+    productFormSchema,
+    productSchema,
+} from '../schemas/productZodSchema';
+
+export type Image = z.infer<typeof imageSchema>;
+export type ImageForm = z.infer<typeof imageFormSchema>;
+
+export type Product = z.infer<typeof productSchema>;
+export type ProductForm = z.infer<typeof productFormSchema>;
+
+export interface FieldLike<T> {
     name: string;
-    price: number;
-    shortDescription: string;
-    sku: string;
-    status?: ProductStatus;
-    stock: number;
-    tax: number;
+    state: { value: T | undefined };
+    handleChange: (value: T) => void;
+    handleBlur: () => void;
 }
-
-export interface Category {
-    id: string;
-    name: string;
-}
-
-export interface Image {
-    id: string;
-    url: string;
-    isMain: boolean;
-}
-
-export type ProductStatus = 'published' | 'draft' | 'discontinued';
-
-export type NewProduct = Omit<Product, 'id'>;
-
-export type NewProductForm = Omit<
-    NewProduct,
-    'mainCategory' | 'categories' | 'images'
-> & {
-    mainCategory: string;
-    categories: string[];
-    images: Omit<Image, 'id'>[];
-};

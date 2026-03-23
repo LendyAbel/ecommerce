@@ -1,21 +1,14 @@
 import { Close } from '@mui/icons-material';
-import {
-    Button,
-    Dialog,
-    DialogTitle,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-} from '@mui/material';
-import type { NewProductForm } from '../../types/productTypes';
+import { Button, Dialog, DialogTitle } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import categoriesService from '../../services/categories.service';
-import { useState } from 'react';
+import TextFieldInput from '../common/TextFieldInput';
+import SingleSelectInput from '../common/SingleSelectInput';
+import type { ProductForm } from '../../types/productTypes';
+import MultipleSelectInput from '../common/MultipleSelecInput';
 
-const formDefaultValues: NewProductForm = {
+const formDefaultValues: ProductForm = {
     name: '',
     brand: '',
     sku: '',
@@ -35,8 +28,6 @@ type NewProductDialogProps = {
 };
 
 const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
-    const [isNewCategory, setIsNewCategory] = useState(false);
-
     const { data } = useQuery({
         queryKey: ['categories'],
         queryFn: categoriesService.getCategories,
@@ -51,15 +42,16 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
         },
     });
 
-    const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+    const handleSubmit = async (
+        event: React.SyntheticEvent<HTMLFormElement>,
+    ) => {
         event.preventDefault();
-        form.handleSubmit();
-        console.log('submited');
+        await form.handleSubmit();
+        form.reset();
     };
 
     const handleCancel = () => {
         form.reset();
-        console.log('cancel');
         onClose();
     };
 
@@ -77,86 +69,28 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                 <form.Field
                     name={'name'}
                     children={field => (
-                        <>
-                            <TextField
-                                label={'Name'}
-                                variant={'outlined'}
-                                id={field.name}
-                                name={field.name}
-                                value={field.state.value}
-                                onChange={e =>
-                                    field.handleChange(e.target.value)
-                                }
-                            />
-                        </>
+                        <TextFieldInput field={field} label='Name' />
                     )}
                 />
 
                 <form.Field
                     name={'mainCategory'}
                     children={field => (
-                        <div className='flex items-center gap-0.5'>
-                            {!isNewCategory ? (
-                                <FormControl fullWidth>
-                                    <InputLabel id='mainCategory-label'>
-                                        Main Category
-                                    </InputLabel>
-                                    <Select
-                                        labelId='mainCategory-label'
-                                        label='Main Category'
-                                        variant={'outlined'}
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value}
-                                        onChange={e =>
-                                            field.handleChange(e.target.value)
-                                        }
-                                    >
-                                        <MenuItem value=''>
-                                            <em>None</em>
-                                        </MenuItem>
-                                        {categories.map(
-                                            (cat: {
-                                                id: string;
-                                                name: string;
-                                            }) => (
-                                                <MenuItem
-                                                    key={cat.id}
-                                                    value={cat.name}
-                                                >
-                                                    {cat.name}
-                                                </MenuItem>
-                                            ),
-                                        )}
-                                    </Select>
-                                </FormControl>
-                            ) : (
-                                <>
-                                    <TextField fullWidth
-                                        label={'Main Category'}
-                                        variant={'outlined'}
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value}
-                                        onChange={e =>
-                                            field.handleChange(e.target.value)
-                                        }
-                                    />
-                                </>
-                            )}
-
-                            <Button
-                                sx={{
-                                    height: '56px',
-                                    minWidth: 'max-content',
-                                    width: '150px',
-                                }}
-                                variant={'outlined'}
-                                onClick={() => setIsNewCategory(!isNewCategory)}
-                            >
-                                {isNewCategory ? 'Cancel' : 'New'}
-                            </Button>
-                        </div>
+                        <SingleSelectInput
+                            field={field}
+                            label='Main Category'
+                            options={categories}
+                        />
+                    )}
+                />
+                <form.Field
+                    name={'categories'}
+                    children={field => (
+                        <MultipleSelectInput
+                            field={field}
+                            label='Other Categories'
+                            options={categories}
+                        />
                     )}
                 />
 
