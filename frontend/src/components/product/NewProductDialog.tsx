@@ -79,7 +79,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                         <SingleSelectInput
                             field={field}
                             label='Main Category'
-                            options={categories}
+                            options={categories.map(cat => cat.name)}
                         />
                     )}
                 />
@@ -89,7 +89,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                         <MultipleSelectInput
                             field={field}
                             label='Other Categories'
-                            options={categories}
+                            options={categories.map(cat => cat.name)}
                         />
                     )}
                 />

@@ -5,6 +5,7 @@ import {
     MenuItem,
     Select,
     TextField,
+    type SelectChangeEvent,
 } from '@mui/material';
 import type { FieldLike } from '../../types/productTypes';
 import { useState } from 'react';
@@ -12,7 +13,7 @@ import { useState } from 'react';
 type SingleSelectInputProps<T extends string | number> = {
     field: FieldLike<T>;
     label: string;
-    options: Array<{ id: string; name: string }>;
+    options: Array<string>;
 };
 
 const SingleSelectInput = <T extends string | number>({
@@ -21,6 +22,38 @@ const SingleSelectInput = <T extends string | number>({
     options = [],
 }: SingleSelectInputProps<T>) => {
     const [isNewCategory, setIsNewCategory] = useState(false);
+    const [newCategoryText, setNewCategoryText] = useState('');
+    const [localOptions, setLocalOptions] = useState<string[]>(options);
+
+    const handleSelectChange = (e: SelectChangeEvent<T>) => {
+        const value = e.target.value || ''; // "" si selecciona "None"
+        field.handleChange(value as T);
+    };
+
+    const handleAdd = () => {
+        const trimmed = newCategoryText.trim();
+        if (!trimmed || localOptions.includes(trimmed)) {
+            return;
+        }
+
+        const updatedOptions = [...localOptions, trimmed];
+        setLocalOptions(updatedOptions);
+        field.handleChange(trimmed as T);
+        setNewCategoryText('');
+        setIsNewCategory(false);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewCategoryText(e.target.value);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAdd();
+        }
+    };
+
     return (
         <div className='flex items-center gap-0.5'>
             {!isNewCategory ? (
@@ -32,44 +65,49 @@ const SingleSelectInput = <T extends string | number>({
                         variant={'outlined'}
                         id={field.name}
                         name={field.name}
-                        value={field.state.value}
-                        onChange={e => field.handleChange(e.target.value as T)}
+                        value={field.state.value ?? ''}
+                        onChange={handleSelectChange}
                     >
                         <MenuItem value=''>
                             <em>None</em>
                         </MenuItem>
-                        {options.map((cat: { id: string; name: string }) => (
-                            <MenuItem key={cat.id} value={cat.name}>
-                                {cat.name}
+                        {localOptions.map(cat => (
+                            <MenuItem key={cat} value={cat}>
+                                {cat}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
             ) : (
-                <>
-                    <TextField
-                        fullWidth
-                        label={label}
-                        variant={'outlined'}
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onChange={e => field.handleChange(e.target.value as T)}
-                    />
-                </>
+                <TextField
+                    fullWidth
+                    autoFocus
+                    label={`New ${label}`}
+                    variant='outlined'
+                    value={newCategoryText}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                />
             )}
 
-            <Button
-                sx={{
-                    height: '56px',
-                    minWidth: 'max-content',
-                    width: '150px',
-                }}
-                variant={'outlined'}
-                onClick={() => setIsNewCategory(!isNewCategory)}
-            >
-                {isNewCategory ? 'Cancel' : 'New'}
-            </Button>
+            <div className='flex w-53 flex-row'>
+                <Button
+                    className='h-14 w-full min-w-max'
+                    variant={'outlined'}
+                    onClick={() => setIsNewCategory(!isNewCategory)}
+                >
+                    {isNewCategory ? 'Cancel' : 'New'}
+                </Button>
+                {isNewCategory && (
+                    <Button
+                        variant={'outlined'}
+                        onClick={handleAdd}
+                        disabled={!newCategoryText.trim()}
+                    >
+                        Add
+                    </Button>
+                )}
+            </div>
         </div>
     );
 };

@@ -1,50 +1,111 @@
 import {
+    Button,
     FormControl,
     InputLabel,
     MenuItem,
     Select,
+    TextField,
     type SelectChangeEvent,
 } from '@mui/material';
 import type { FieldLike } from '../../types/productTypes';
+import { useState } from 'react';
 
-type MultipleSelectInputProps<T extends string[]> = {
-    field: FieldLike<T>;
+type MultipleSelectInputProps = {
+    field: FieldLike<string[]>;
     label: string;
-    options: Array<{ id: string; name: string }>;
+    options: string[];
 };
 
-const MultipleSelectInput = <T extends string[]>({
+const MultipleSelectInput = ({
     field,
     label,
     options = [],
-}: MultipleSelectInputProps<T>) => {
+}: MultipleSelectInputProps) => {
+    const [isNewCategory, setIsNewCategory] = useState(false);
+    const [newCategoryText, setNewCategoryText] = useState('');
+    const [localOptions, setLocalOptions] = useState<string[]>(options);
+
     const handleChange = (event: SelectChangeEvent<string[]>) => {
-        const {
-            target: { value },
-        } = event;
-        field.handleChange(value as T);
+        const value = event.target.value;
+        field.handleChange(value as string[]);
     };
+
+    const handleAdd = () => {
+        const trimmed = newCategoryText.trim();
+        console.log(trimmed);
+        if (!trimmed) return;
+
+        if (!localOptions.includes(trimmed)) {
+            setLocalOptions(prev => [...prev, trimmed]);
+        }
+
+        const currentValue = field.state.value ?? [];
+        if (!currentValue.includes(trimmed)) {
+            field.handleChange([...currentValue, trimmed]);
+        }
+
+        setNewCategoryText('');
+        setIsNewCategory(false);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAdd();
+        }
+    };
+
     return (
         <div className='flex items-center gap-0.5'>
-            <FormControl fullWidth>
-                <InputLabel id='select-label'>{label}</InputLabel>
-                <Select
-                    multiple
-                    labelId='select-label'
-                    label={label}
+            {!isNewCategory ? (
+                <FormControl fullWidth>
+                    <InputLabel id='select-label'>{label}</InputLabel>
+                    <Select
+                        multiple
+                        labelId='select-label'
+                        label={label}
+                        variant={'outlined'}
+                        id={field.name}
+                        name={field.name}
+                        value={(field.state.value ?? []) as string[]}
+                        onChange={handleChange}
+                    >
+                        {localOptions.map(cat => (
+                            <MenuItem key={cat} value={cat}>
+                                {cat}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            ) : (
+                <TextField
+                    fullWidth
+                    autoFocus
+                    label={`New ${label}`}
+                    variant='outlined'
+                    value={newCategoryText}
+                    onChange={e => setNewCategoryText(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+            )}
+            <div className='flex w-53 flex-row'>
+                <Button
+                    className='h-14 w-full min-w-max'
                     variant={'outlined'}
-                    id={field.name}
-                    name={field.name}
-                    value={(field.state.value ?? []) as string[]}
-                    onChange={handleChange}
+                    onClick={() => setIsNewCategory(!isNewCategory)}
                 >
-                    {options.map((cat: { id: string; name: string }) => (
-                        <MenuItem key={cat.id} value={cat.name}>
-                            {cat.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+                    {isNewCategory ? 'Cancel' : 'New'}
+                </Button>
+                {isNewCategory && (
+                    <Button
+                        variant={'outlined'}
+                        onClick={handleAdd}
+                        disabled={!newCategoryText.trim()}
+                    >
+                        Add
+                    </Button>
+                )}
+            </div>
         </div>
     );
 };
