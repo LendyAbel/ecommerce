@@ -7,6 +7,7 @@ import TextFieldInput from '../common/TextFieldInput';
 import SingleSelectInput from '../common/SingleSelectInput';
 import type { ProductForm } from '../../types/productTypes';
 import MultipleSelectInput from '../common/MultipleSelecInput';
+import ImagesInput from '../common/ImagesInput';
 
 const formDefaultValues: ProductForm = {
     name: '',
@@ -93,6 +94,12 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                         />
                     )}
                 />
+                <form.Field
+                    name={'images'}
+                    children={field => (
+                        <ImagesInput field={field}/>
+                    )}/>
+                    
 
                 {/* ------actions buttons--------- */}
                 <div className='flex justify-around'>

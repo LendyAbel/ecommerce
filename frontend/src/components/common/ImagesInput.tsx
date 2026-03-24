@@ -1,0 +1,122 @@
+import {
+    Button,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    IconButton,
+    Radio,
+    RadioGroup,
+    TextField,
+} from '@mui/material';
+import type { FieldLike, ImageForm } from '../../types/productTypes';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
+type ImagesInputProps = {
+    field: FieldLike<ImageForm[]>;
+};
+
+const ImagesInput = ({ field }: ImagesInputProps) => {
+    const images = field.state.value ?? [];
+    const mainIndex = images.findIndex(img => img.isMain);
+
+    const handleUrlChange = (index: number, url: string) => {
+        const updated = images.map((img, i) =>
+            i === index ? { ...img, url } : img,
+        );
+        field.handleChange(updated);
+    };
+
+    const handleRadioChange = (index: number) => {
+        const updated = images.map((img, i) => ({
+            ...img,
+            isMain: i === index,
+        }));
+        field.handleChange(updated);
+    };
+
+    const handleAdd = () => {
+        field.handleChange([...images, { url: '', isMain: false }]);
+    };
+
+    const handleRemove = (index: number) => {
+        const imagesWithoutDeleted = images.filter((_, i) => i !== index);
+        const imagesHasMain = imagesWithoutDeleted.some(img => img.isMain);
+        const imagesWithMainChanged =
+            !imagesHasMain && imagesWithoutDeleted.length > 0
+                ? imagesWithoutDeleted.map((img, i) => ({
+                      ...img,
+                      isMain: i === 0,
+                  }))
+                : imagesWithoutDeleted;
+
+        field.handleChange(imagesWithMainChanged);
+    };
+    const hasImages = images.length > 0;
+
+    return (
+        <div className={`flex items-center ${hasImages ? 'gap-0.5' : ''}`}>
+            {hasImages && (
+                <FormControl fullWidth>
+                    <FormLabel id='radio-label'>Images</FormLabel>
+                    {images.length === 0 && (
+                        <p className='py-2 text-sm text-gray-400'>
+                            No images. Add one
+                        </p>
+                    )}
+                    <RadioGroup
+                        value={mainIndex === -1 ? '' : String(mainIndex)}
+                        onChange={e =>
+                            handleRadioChange(Number(e.target.value))
+                        }
+                    >
+                        {images?.map((image, index) => {
+                            return (
+                                <div className='flex w-full flex-row items-center gap-0.5'>
+                                    <TextField
+                                        fullWidth
+                                        value={image.url}
+                                        onChange={e =>
+                                            handleUrlChange(
+                                                index,
+                                                e.target.value,
+                                            )
+                                        }
+                                    />
+
+                                    <FormControlLabel
+                                        control={<Radio size='small' />}
+                                        label='Principal'
+                                        value={String(index)}
+                                        sx={{ minWidth: 'max-content' }}
+                                    />
+
+                                    <span>
+                                        <IconButton
+                                            size='small'
+                                            color='error'
+                                            onClick={() => handleRemove(index)}
+                                        >
+                                            <DeleteOutlineIcon fontSize='small' />
+                                        </IconButton>
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </RadioGroup>
+                </FormControl>
+            )}
+
+            <div className={hasImages ? 'flex w-53 flex-row' : 'w-full'}>
+                <Button
+                    className='h-14 w-full min-w-max'
+                    variant={'outlined'}
+                    onClick={handleAdd}
+                >
+                    Add Image
+                </Button>
+            </div>
+        </div>
+    );
+};
+
+export default ImagesInput;
