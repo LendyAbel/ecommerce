@@ -7,27 +7,31 @@ import {
     TextField,
     type SelectChangeEvent,
 } from '@mui/material';
-import type { FieldLike } from '../../types/productTypes';
+import type { AnyFieldApi } from '@tanstack/react-form';
 import { useState } from 'react';
 
-type SingleSelectInputProps<T extends string | number> = {
-    field: FieldLike<T>;
+type SingleSelectInputProps = {
+    field: AnyFieldApi;
     label: string;
     options: Array<string>;
+    addOption?: boolean;
 };
 
-const SingleSelectInput = <T extends string | number>({
+const SingleSelectInput = ({
     field,
     label,
     options = [],
-}: SingleSelectInputProps<T>) => {
+    addOption = true,
+}: SingleSelectInputProps) => {
     const [isNewCategory, setIsNewCategory] = useState(false);
     const [newCategoryText, setNewCategoryText] = useState('');
     const [localOptions, setLocalOptions] = useState<string[]>(options);
 
-    const handleSelectChange = (e: SelectChangeEvent<T>) => {
-        const value = e.target.value || ''; // "" si selecciona "None"
-        field.handleChange(value as T);
+    const { errors, isValid, isTouched } = field.state.meta;
+
+    const handleSelectChange = (e: SelectChangeEvent) => {
+        const value = e.target.value || '';
+        field.handleChange(value);
     };
 
     const handleAdd = () => {
@@ -38,7 +42,7 @@ const SingleSelectInput = <T extends string | number>({
 
         const updatedOptions = [...localOptions, trimmed];
         setLocalOptions(updatedOptions);
-        field.handleChange(trimmed as T);
+        field.handleChange(trimmed);
         setNewCategoryText('');
         setIsNewCategory(false);
     };
@@ -57,7 +61,7 @@ const SingleSelectInput = <T extends string | number>({
     return (
         <div className='flex items-center gap-0.5'>
             {!isNewCategory ? (
-                <FormControl fullWidth>
+                <FormControl fullWidth className='relative'>
                     <InputLabel id='select-label'>{label}</InputLabel>
                     <Select
                         labelId='select-label'
@@ -67,6 +71,7 @@ const SingleSelectInput = <T extends string | number>({
                         name={field.name}
                         value={field.state.value ?? ''}
                         onChange={handleSelectChange}
+                        onBlur={field.handleBlur}
                     >
                         <MenuItem value=''>
                             <em>None</em>
@@ -77,6 +82,11 @@ const SingleSelectInput = <T extends string | number>({
                             </MenuItem>
                         ))}
                     </Select>
+                    {!isValid && isTouched && (
+                        <small className='absolute top-4 right-10 text-red-600'>
+                            {errors[0]?.message}
+                        </small>
+                    )}
                 </FormControl>
             ) : (
                 <TextField
@@ -89,25 +99,26 @@ const SingleSelectInput = <T extends string | number>({
                     onKeyDown={handleKeyDown}
                 />
             )}
-
-            <div className='flex w-53 flex-row'>
-                <Button
-                    className='h-14 w-full min-w-max'
-                    variant={'outlined'}
-                    onClick={() => setIsNewCategory(!isNewCategory)}
-                >
-                    {isNewCategory ? 'Cancel' : 'New'}
-                </Button>
-                {isNewCategory && (
+            {addOption && (
+                <div className='flex w-53 flex-row'>
                     <Button
+                        className='h-14 w-full min-w-max'
                         variant={'outlined'}
-                        onClick={handleAdd}
-                        disabled={!newCategoryText.trim()}
+                        onClick={() => setIsNewCategory(!isNewCategory)}
                     >
-                        Add
+                        {isNewCategory ? 'Cancel' : 'New'}
                     </Button>
-                )}
-            </div>
+                    {isNewCategory && (
+                        <Button
+                            variant={'outlined'}
+                            onClick={handleAdd}
+                            disabled={!newCategoryText.trim()}
+                        >
+                            Add
+                        </Button>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

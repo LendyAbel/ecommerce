@@ -1,35 +1,45 @@
 import { TextField } from '@mui/material';
-import type { FieldLike } from '../../types/productTypes';
+import type { AnyFieldApi } from '@tanstack/react-form';
 
-type TextFieldInputProps<T extends string | number> = {
-    field: FieldLike<T>;
+type TextFieldInputProps = {
+    field: AnyFieldApi;
     label: string;
     type?: 'text' | 'number' | 'email' | 'password';
 };
 
-const TextFieldInput = <TValue extends string | number>({
+const TextFieldInput = ({
     field,
     label,
     type = 'text',
-}: TextFieldInputProps<TValue>) => {
+}: TextFieldInputProps) => {
+    const { errors, isValid, isTouched } = field.state.meta;
     return (
-        <TextField
-            fullWidth
-            type={type}
-            label={label}
-            variant='outlined'
-            id={field.name}
-            name={field.name}
-            value={field.state.value}
-            onChange={e =>
-                field.handleChange(
-                    (type === 'number'
-                        ? Number(e.target.value)
-                        : e.target.value) as TValue,
-                )
-            }
-            onBlur={field.handleBlur}
-        />
+        <div className='relative'>
+            <TextField
+                multiline
+                maxRows={3}
+                fullWidth
+                type={type}
+                label={label}
+                variant='outlined'
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                onChange={e =>
+                    field.handleChange(
+                        type === 'number'
+                            ? Number(e.target.value)
+                            : e.target.value,
+                    )
+                }
+                onBlur={field.handleBlur}
+            />
+            {!isValid && isTouched && (
+                <small className='absolute top-4 right-4 text-red-600'>
+                    {errors[0]?.message}
+                </small>
+            )}
+        </div>
     );
 };
 

@@ -8,15 +8,16 @@ import {
     RadioGroup,
     TextField,
 } from '@mui/material';
-import type { FieldLike, ImageForm } from '../../types/productTypes';
+import type { ImageForm } from '../../types/productTypes';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import type { AnyFieldApi } from '@tanstack/react-form';
 
 type ImagesInputProps = {
-    field: FieldLike<ImageForm[]>;
+    field: AnyFieldApi;
 };
 
 const ImagesInput = ({ field }: ImagesInputProps) => {
-    const images = field.state.value ?? [];
+    const images: ImageForm[] = field.state.value ?? [];
     const mainIndex = images.findIndex(img => img.isMain);
 
     const handleUrlChange = (index: number, url: string) => {
@@ -71,7 +72,7 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                     >
                         {images?.map((image, index) => {
                             return (
-                                <div className='flex w-full flex-row items-center gap-0.5'>
+                                <div key={index} className='flex w-full flex-row items-center gap-0.5'>
                                     <TextField
                                         fullWidth
                                         value={image.url}
