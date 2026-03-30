@@ -14,17 +14,17 @@ export const statusSchema = z.enum(productStatus, 'required');
 
 export const productSchema = z.object({
     id: z.uuid(),
-    name: z.string().min(3, 'Too short'),
     sku: z.string().min(1, 'Requiered'),
+    name: z.string().min(3, 'Too short'),
     brand: z.string().min(1, 'Requiered'),
-    shortDescription: z.string().min(1, 'Requiered'),
     price: z.number().min(0),
     tax: z.number().min(0),
     status: statusSchema,
+    shortDescription: z.string().min(1, 'Requiered'),
     longDescription: z.string().optional(),
-    stock: z.number().optional(),
     mainCategory: categorySchema.optional(),
     categories: z.array(categorySchema).optional(),
+    stock: z.number().optional(),
     images: z.array(imageFormSchema).optional(),
 });
 

@@ -12,6 +12,7 @@ import {
     productFormSchema,
     productStatus,
 } from '../../schemas/productZodSchema';
+import z from 'zod';
 
 const formDefaultValues: ProductForm = {
     name: '',
@@ -43,7 +44,6 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
         validators: {
-            onBlur: productFormSchema,
             onSubmit: productFormSchema,
         },
         onSubmit: () => {
@@ -73,12 +73,15 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
 
             {/* -------------FORM--------------- */}
             <form onSubmit={onSubmit} className='m-2 flex flex-col gap-2'>
-                <div className='flex max-h-110 flex-col gap-2 overflow-auto'>
+                <div className='flex max-h-110 flex-col gap-2 overflow-auto p-2'>
                     {/*------OBLIGATORY FIELDS------ */}
                     <Field name={'sku'}>
                         {field => <TextFieldInput field={field} label='Sku' />}
                     </Field>
-                    <Field name={'name'}>
+                    <Field
+                        name={'name'}
+                        validators={{ onBlur: z.string().min(3, 'Too short') }}
+                    >
                         {field => <TextFieldInput field={field} label='Name' />}
                     </Field>
                     <Field name={'brand'}>

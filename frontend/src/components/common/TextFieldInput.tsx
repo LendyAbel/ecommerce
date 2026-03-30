@@ -13,6 +13,7 @@ const TextFieldInput = ({
     type = 'text',
 }: TextFieldInputProps) => {
     const { errors, isValid, isTouched } = field.state.meta;
+    
     return (
         <div className='relative'>
             <TextField
@@ -34,7 +35,7 @@ const TextFieldInput = ({
                 }
                 onBlur={field.handleBlur}
             />
-            {!isValid && isTouched && (
+            { !isValid && isTouched && (
                 <small className='absolute top-4 right-4 text-red-600'>
                     {errors[0]?.message}
                 </small>
