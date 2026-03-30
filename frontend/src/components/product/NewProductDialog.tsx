@@ -13,6 +13,7 @@ import {
     productStatus,
 } from '../../schemas/productZodSchema';
 import z from 'zod';
+import useAddNewProduct from '../../hooks/product/useAddNewProduct';
 
 const formDefaultValues: ProductForm = {
     name: '',
@@ -41,12 +42,18 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
     });
     const categories = data ?? [];
 
+    const { addNewProduct } =
+        useAddNewProduct();
+
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
         validators: {
             onSubmit: productFormSchema,
         },
-        onSubmit: () => {
+        onSubmit: async ({ value }) => {
+            console.log(value);
+            const newProduct = await addNewProduct(value);
+            console.log('new product: ', newProduct);
             onClose();
             reset();
         },
