@@ -1,17 +1,25 @@
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import useProductById from '../../hooks/product/useProductById';
 
-import { Alert, Skeleton, Chip, Divider } from '@mui/material';
+import { Alert, Skeleton, Chip, Divider, Button } from '@mui/material';
 
 import ProductImageGallery from './ProductImageGallery';
 import ProductPrice from './ProductPrice';
 import ProductStockBadge from './ProductStockBadge';
 import ProductActions from './ProductActions';
+import useDeleteProductById from '../../hooks/product/useDeleteProductById';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const { product, isProductError, isProductLoading } = useProductById(id!);
     const images = product?.images ?? [];
+    const { deleteProductById, isPending: isDeleting } = useDeleteProductById();
+    const navigate = useNavigate();
+
+    const handleDelete = async () => {
+        await deleteProductById(id!);
+        navigate('/products');
+    };
 
     // --- loading ------------------------------
     if (isProductLoading) {
@@ -38,6 +46,15 @@ const ProductDetails = () => {
         return (
             <div className='mx-auto w-[90%] max-w-5xl py-10'>
                 <Alert severity='error'>Error al cargar el producto</Alert>
+            </div>
+        );
+    }
+
+    // --- deleting ----------------------------
+    if (isDeleting) {
+        return (
+            <div className='mx-auto w-[90%] max-w-5xl py-10'>
+                <Alert severity='info'>Deleting...</Alert>
             </div>
         );
     }
@@ -112,6 +129,9 @@ const ProductDetails = () => {
 
                     {/* Acciones */}
                     <ProductActions stock={product.stock} />
+                    <Button variant={'contained'} color={'error'} onClick={handleDelete}>
+                        Delete
+                    </Button>
                 </div>
             </div>
         </div>

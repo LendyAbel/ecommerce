@@ -19,6 +19,9 @@ const getProductById = async (id: string): Promise<Product> => {
         return res.data;
     } catch (error) {
         console.log('Error fetching products: ', error);
+        if (axios.isAxiosError(error)) {
+            console.log(error.response?.data);
+        }
         throw error;
     }
 };
@@ -35,5 +38,22 @@ const addNewProduct = async (product: ProductForm): Promise<Product> => {
         throw error;
     }
 };
+const deleteProductById = async (id: string): Promise<Product> => {
+    try {
+        const res = await axios.delete(`${API_URL}/${id}`);
+        return res.data;
+    } catch (error) {
+        console.log('Error deleting product: ', error);
+        if (axios.isAxiosError(error)) {
+            console.log(error.response?.data);
+        }
+        throw error;
+    }
+};
 
-export default { getProducts, getProductById, addNewProduct };
+export default {
+    getProducts,
+    getProductById,
+    addNewProduct,
+    deleteProductById,
+};
