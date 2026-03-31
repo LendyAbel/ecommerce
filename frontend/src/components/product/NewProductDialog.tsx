@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Button, Dialog, DialogTitle } from '@mui/material';
+import { Alert, Button, Dialog, DialogTitle } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import categoriesService from '../../services/categories.service';
@@ -42,8 +42,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
     });
     const categories = data ?? [];
 
-    const { addNewProduct } =
-        useAddNewProduct();
+    const { addNewProduct, isPending, isError } = useAddNewProduct();
 
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
@@ -51,9 +50,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
             onSubmit: productFormSchema,
         },
         onSubmit: async ({ value }) => {
-            console.log(value);
-            const newProduct = await addNewProduct(value);
-            console.log('new product: ', newProduct);
+            await addNewProduct(value);
             onClose();
             reset();
         },
@@ -176,10 +173,19 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                     </Field>
                 </div>
 
+                {/* ------DISPLAY ERROR------*/}
+                {isError && (
+                    <Alert severity='error'>Error submitting form</Alert>
+                )}
+
                 {/* ------ACTIONS BUTTOMS--------- */}
                 <div className='flex justify-around'>
-                    <Button type={'submit'} variant={'contained'}>
-                        Submit
+                    <Button
+                        type={'submit'}
+                        variant={'contained'}
+                        disabled={isPending}
+                    >
+                        {isPending ? 'Submitting...' : 'Submit'}
                     </Button>
                     <Button
                         type={'reset'}

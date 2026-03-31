@@ -14,6 +14,9 @@ const useAddNewProduct = () => {
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['products'] });
         },
+        onError: error => {
+            console.log(error);
+        },
     });
     return { addNewProduct, isPending, isError };
 };

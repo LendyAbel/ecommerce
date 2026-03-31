@@ -4,10 +4,10 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 
 type ProductActionsProps = {
-    stock: number;
+    stock: number | undefined;
 };
 
-const ProductActions = ({ stock }: ProductActionsProps) => {
+const ProductActions = ({ stock = 0 }: ProductActionsProps) => {
     return (
         <div className='flex items-center gap-3 pt-2'>
             <button

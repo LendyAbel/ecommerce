@@ -25,7 +25,7 @@ export const productSchema = z.object({
     mainCategory: categorySchema.optional(),
     categories: z.array(categorySchema).optional(),
     stock: z.number().optional(),
-    images: z.array(imageFormSchema).optional(),
+    images: z.array(imageSchema).optional(),
 });
 
 export const productFormSchema = productSchema

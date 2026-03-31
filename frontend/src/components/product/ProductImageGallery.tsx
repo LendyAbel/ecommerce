@@ -29,9 +29,14 @@ const ProductImageGallery = ({
 }: ProductImageGalleryProps) => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-    const mainImage =
-        images.find(i => i.isMain === true)?.url ?? images[0].url ?? null;
-    const activeImage = selectedImage ?? mainImage;
+    let mainImageUrl = ''
+    if (images.length > 0) {
+        mainImageUrl =
+            images.find(i => i.isMain === true)?.url ?? images[0].url ?? '';
+    }
+
+    const activeImage = selectedImage ?? mainImageUrl;
+    
     const status = statusConfig[productStatus ?? ''] ?? {
         label: productStatus ?? 'Uknown',
         color: 'default',
