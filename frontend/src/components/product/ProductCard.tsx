@@ -7,8 +7,8 @@ import {
     CardMedia,
     Typography,
 } from '@mui/material';
-import ProductStockBadge from './ProductStockBadge';
-import ProductPrice from './ProductPrice';
+import ProductStockBadge from './ProductDetails/ProductStockBadge';
+import ProductPrice from './ProductDetails/ProductPrice';
 
 interface ProductCardProps {
     product: Product;

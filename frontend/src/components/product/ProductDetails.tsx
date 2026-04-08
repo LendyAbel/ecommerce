@@ -3,10 +3,10 @@ import useProductById from '../../hooks/product/useProductById';
 
 import { Alert, Chip, Divider, Button } from '@mui/material';
 
-import ProductImageGallery from './ProductImageGallery';
-import ProductPrice from './ProductPrice';
-import ProductStockBadge from './ProductStockBadge';
-import ProductActions from './ProductActions';
+import ProductImageGallery from './ProductDetails/ProductImageGallery';
+import ProductPrice from './ProductDetails/ProductPrice';
+import ProductStockBadge from './ProductDetails/ProductStockBadge';
+import ProductActions from './ProductDetails/ProductActions';
 import useDeleteProductById from '../../hooks/product/useDeleteProductById';
 import ProductListSkeleton from './Skeletons/ProductListSkeleton';
 
