@@ -1,13 +1,14 @@
 import { useNavigate, useParams } from 'react-router';
 import useProductById from '../../hooks/product/useProductById';
 
-import { Alert, Skeleton, Chip, Divider, Button } from '@mui/material';
+import { Alert, Chip, Divider, Button } from '@mui/material';
 
 import ProductImageGallery from './ProductImageGallery';
 import ProductPrice from './ProductPrice';
 import ProductStockBadge from './ProductStockBadge';
 import ProductActions from './ProductActions';
 import useDeleteProductById from '../../hooks/product/useDeleteProductById';
+import ProductListSkeleton from './Skeletons/ProductListSkeleton';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -23,22 +24,7 @@ const ProductDetails = () => {
 
     // --- loading ------------------------------
     if (isProductLoading) {
-        return (
-            <div className='mx-auto w-[90%] max-w-5xl py-10'>
-                <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
-                    <Skeleton
-                        variant='rectangular'
-                        height={420}
-                        sx={{ borderRadius: 2 }}
-                    />
-                    <div className='flex flex-col gap-3'>
-                        {Array.from({ length: 7 }).map((_, i) => (
-                            <Skeleton key={i} animation='pulse' height={40} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
+        return <ProductListSkeleton />;
     }
 
     // --- error --------------------------------
@@ -129,7 +115,11 @@ const ProductDetails = () => {
 
                     {/* Acciones */}
                     <ProductActions stock={product.stock} />
-                    <Button variant={'contained'} color={'error'} onClick={handleDelete}>
+                    <Button
+                        variant={'contained'}
+                        color={'error'}
+                        onClick={handleDelete}
+                    >
                         Delete
                     </Button>
                 </div>
