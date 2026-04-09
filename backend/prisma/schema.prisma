@@ -45,3 +45,13 @@ model Category {
   products Product[] @relation("ProductCategories")
   mainProducts Product[] @relation("MainCategory")
 }
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  password String
+  name String
+  role String @default("customer")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
