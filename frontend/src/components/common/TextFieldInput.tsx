@@ -5,19 +5,22 @@ type TextFieldInputProps = {
     field: AnyFieldApi;
     label: string;
     type?: 'text' | 'number' | 'email' | 'password';
+    autofocus?: boolean;
 };
 
 const TextFieldInput = ({
     field,
     label,
     type = 'text',
+    autofocus = false,
 }: TextFieldInputProps) => {
     const { errors, isValid, isTouched } = field.state.meta;
-    
+
     return (
         <div className='relative'>
             <TextField
-                multiline
+                autoFocus={autofocus}
+                multiline={type === 'text'}
                 maxRows={3}
                 fullWidth
                 type={type}
@@ -34,8 +37,9 @@ const TextFieldInput = ({
                     )
                 }
                 onBlur={field.handleBlur}
+                onFocus={e => e.target.select()}
             />
-            { !isValid && isTouched && (
+            {!isValid && isTouched && (
                 <small className='absolute top-4 right-4 text-red-600'>
                     {errors[0]?.message}
                 </small>

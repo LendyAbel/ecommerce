@@ -8,21 +8,29 @@ type Props = {
 };
 
 const Navbar = ({ children }: Props) => {
+    const user = { name: 'Pedro' };
     return (
         <>
             <Box
                 component={'div'}
                 className='flex h-12 w-full items-center justify-between bg-[#79a7ec] p-5 text-white'
             >
-                BIENVENIDO
+                {' '}
+                {user ? `HOLA, ${user.name?.toUpperCase()}` : `BIENVENIDO`}
                 <div className='flex gap-6'>
                     <NavLink to='/'>HOME</NavLink>
                     <NavLink to='/products'>PRODUCTS</NavLink>
                     <NavLink to='/about'>ABOUT</NavLink>
                 </div>
-                <div style={{ display: 'flex' }}>
+                <div className='flex items-center'>
                     {/* <PanelMenu /> */}
-                    <CartBage />
+                    {user ? (
+                        <NavLink to='/cart'>
+                            <CartBage />
+                        </NavLink>
+                    ) : (
+                        <NavLink to='/auth'>LOGIN</NavLink>
+                    )}
                 </div>
             </Box>
             {children}

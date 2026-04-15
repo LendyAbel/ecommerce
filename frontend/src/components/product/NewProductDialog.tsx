@@ -80,7 +80,13 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                 <div className='flex max-h-110 flex-col gap-2 overflow-auto p-2'>
                     {/*------OBLIGATORY FIELDS------ */}
                     <Field name={'sku'}>
-                        {field => <TextFieldInput field={field} label='Sku' />}
+                        {field => (
+                            <TextFieldInput
+                                autofocus={true}
+                                field={field}
+                                label='Sku'
+                            />
+                        )}
                     </Field>
                     <Field
                         name={'name'}

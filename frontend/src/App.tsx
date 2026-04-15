@@ -7,6 +7,7 @@ import Products from './pages/Products';
 import Cart from './pages/Cart';
 import About from './pages/About';
 import ProductDetails from './components/product/ProductDetails';
+import Authenticate from './pages/Authenticate';
 
 function App() {
     return (
@@ -18,6 +19,8 @@ function App() {
                     <Route path='/cart' element={<Cart />} />
                     <Route path='/about' element={<About />} />
                     <Route path='/products/:id' element={<ProductDetails />} />
+                    <Route path='/auth' element={<Authenticate />} />
+
                 </Routes>
             </Navbar>
         </>

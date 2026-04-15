@@ -7,11 +7,11 @@ import {
     TextField,
     type SelectChangeEvent,
 } from '@mui/material';
-import type { FieldLike } from '../../types/productTypes';
 import { useState } from 'react';
+import type { AnyFieldApi } from '@tanstack/react-form';
 
 type MultipleSelectInputProps = {
-    field: FieldLike<string[]>;
+    field: AnyFieldApi;
     label: string;
     options: string[];
 };
