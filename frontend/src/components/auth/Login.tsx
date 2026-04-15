@@ -54,17 +54,19 @@ const Login = ({ isLogin }: LoginProps) => {
                         label='Email'
                         variant='outlined'
                         size='small'
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position='start'>
-                                    <EmailOutlinedIcon
-                                        sx={{
-                                            color: 'rgba(255,255,255,0.4)',
-                                            fontSize: 18,
-                                        }}
-                                    />
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position='start'>
+                                        <EmailOutlinedIcon
+                                            sx={{
+                                                color: 'rgba(255,255,255,0.4)',
+                                                fontSize: 18,
+                                            }}
+                                        />
+                                    </InputAdornment>
+                                ),
+                            },
                         }}
                         sx={inputSx}
                     />
