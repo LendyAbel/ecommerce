@@ -2,6 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../lib/AppError';
 
+declare module 'express-serve-static-core' {
+    interface Request {
+        user?: { userId: string; role: string };
+    }
+}
+
 export const authenticate = (
     req: Request,
     _res: Response,
