@@ -115,8 +115,38 @@ const products = [
         ],
     },
 ];
+const users = [
+    {
+        email: 'admin@test.com',
+        password: 'admin',
+        name: 'Admin',
+        role: 'admin',
+    },
+    {
+        email: 'user@test.com',
+        password: 'user',
+        name: 'User',
+        role: 'user',
+    },
+];
 
 async function main() {
+    // Crea los usuarios
+    for (const u of users) {
+        const user = await prisma.user.upsert({
+            where: { email: u.email },
+            update: {},
+            create: {
+                email: u.email,
+                password: u.password,
+                name: u.name,
+                role: u.role,
+            },
+        });
+        console.log(`✅ Usuario creado: ${user.email}`);
+    }
+
+    // Crea los productos
     for (const p of products) {
         // Busca o crea la categoría principal
         const mainCat = await prisma.category.upsert({

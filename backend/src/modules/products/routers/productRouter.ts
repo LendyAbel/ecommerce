@@ -6,6 +6,7 @@ import {
     authenticate,
     requireAdmin,
 } from '../../../middlewares/authMiddleware';
+import { getParam } from '../../../lib/utils';
 
 const router = express.Router();
 
@@ -27,7 +28,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
 });
 
 router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
-    const { id } = req.params;
+    const id = getParam(req.params['id']);
     if (!id) throw new AppError('Product ID is required', 400);
 
     const deletedProduct = await productServices.deleteProductById(id);

@@ -1,0 +1,37 @@
+### Variables
+@baseUrl = http://localhost:3001
+
+### GET comprobar que funciona el servidor
+GET {{baseUrl}}/api/auth/me
+
+###
+
+
+
+### POST register usuario
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Pedro",
+    "email": "pedro@test.com",
+    "password": "pedro"
+}
+
+###
+
+### POST login usuario
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "pedro@test.com",
+    "password": "pedro"
+}
+
+###
+
+### POST logout usuario
+POST {{baseUrl}}/api/auth/logout
+
+###

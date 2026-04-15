@@ -1,6 +1,6 @@
 import express from 'express';
 import categoriesServices from '../services/categoriesServices';
-import { normalizeName } from '../../../lib/utils';
+import { getParam, normalizeName } from '../../../lib/utils';
 
 const router = express.Router();
 
@@ -10,7 +10,8 @@ router.get('/', async (_req, res) => {
 });
 
 router.delete('/:name', async (req, res) => {
-    const name = normalizeName(decodeURIComponent(req.params.name));
+    const nameParam = getParam(req.params['name']);
+    const name = normalizeName(decodeURIComponent(nameParam));
     if (!name || name.trim() === '') {
         res.status(400).json({ error: 'category name is required' });
         return;
