@@ -46,4 +46,21 @@ const login = async (data: LoginInput) => {
     return { token, user: userWithoutPassword };
 };
 
-export default { register, login };
+const getLoggedUser = async (token: string) => {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+        userId: string;
+    };
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: payload.userId,
+        },
+    });
+
+    if (!user) throw new AppError('User not found', 404);
+    const { password: _, ...userWithoutPassword } = user;
+    
+    return { user: userWithoutPassword };
+};
+
+export default { register, login, getLoggedUser };

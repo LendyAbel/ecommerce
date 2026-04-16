@@ -1,6 +1,7 @@
 import express from 'express';
 import { LoginSchema, RegisterSchema } from '../schemas/authZodSchema';
 import authServices from '../services/authServices';
+import { AppError } from '../../../lib/AppError';
 
 const router = express.Router();
 
@@ -30,8 +31,12 @@ router.post('/logout', (_req, res) => {
     res.status(200).json({ message: 'Logged out' });
 });
 
-router.get('/me', async (_req, res) => {
-    res.status(200).json({ message: 'ok' });
+router.get('/me', async (req, res) => {
+    const token = req.cookies?.token;
+    if (!token) throw new AppError('No authenticated', 401);
+
+    const user = await authServices.getLoggedUser(token);
+    res.json({ user });
 });
 
-export default router
+export default router;

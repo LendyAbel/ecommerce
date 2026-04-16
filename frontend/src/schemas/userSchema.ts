@@ -4,6 +4,7 @@ export const UserSchema = z.object({
     id: z.uuid(),
     name: z.string(),
     email: z.email(),
+    role: z.string(),
 });
 
 export const LoginFormSchema = z.object({
@@ -16,4 +17,3 @@ export const RegisterFormSchema = z.object({
     email: z.email(),
     password: z.string(),
 });
-

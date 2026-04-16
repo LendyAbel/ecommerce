@@ -1,12 +1,10 @@
 ### Variables
 @baseUrl = http://localhost:3001
 
-### GET comprobar que funciona el servidor
+### Comprobar usuario logueado
 GET {{baseUrl}}/api/auth/me
 
 ###
-
-
 
 ### POST register usuario
 POST {{baseUrl}}/api/auth/register
