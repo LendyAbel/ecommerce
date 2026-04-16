@@ -11,6 +11,7 @@ import {
 import type { ImageForm } from '../../types/productTypes';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import type { AnyFieldApi } from '@tanstack/react-form';
+import { sxButtonStyle, sxInputStyle } from '../../utils/utils';
 
 type ImagesInputProps = {
     field: AnyFieldApi;
@@ -57,7 +58,7 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
     return (
         <div className={`flex items-center ${hasImages ? 'gap-0.5' : ''}`}>
             {hasImages && (
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={sxInputStyle}>
                     <FormLabel id='radio-label'>Images</FormLabel>
                     {images.length === 0 && (
                         <p className='py-2 text-sm text-gray-400'>
@@ -75,6 +76,7 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                                 <div key={index} className='flex w-full flex-row items-center gap-0.5'>
                                     <TextField
                                         fullWidth
+                                        sx={sxInputStyle}
                                         value={image.url}
                                         onChange={e =>
                                             handleUrlChange(
@@ -112,6 +114,7 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                     className='h-14 w-full min-w-max'
                     variant={'outlined'}
                     onClick={handleAdd}
+                    sx={sxButtonStyle}
                 >
                     Add Image
                 </Button>

@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import type { AnyFieldApi } from '@tanstack/react-form';
 import { useState } from 'react';
+import { sxButtonStyle, sxInputStyle } from '../../utils/utils';
 
 type SingleSelectInputProps = {
     field: AnyFieldApi;
@@ -61,7 +62,7 @@ const SingleSelectInput = ({
     return (
         <div className='flex items-center gap-0.5'>
             {!isNewCategory ? (
-                <FormControl fullWidth className='relative'>
+                <FormControl sx={sxInputStyle} fullWidth className='relative'>
                     <InputLabel id='select-label'>{label}</InputLabel>
                     <Select
                         labelId='select-label'
@@ -97,6 +98,7 @@ const SingleSelectInput = ({
                     value={newCategoryText}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
+                    sx={sxInputStyle}
                 />
             )}
             {addOption && (
@@ -105,6 +107,7 @@ const SingleSelectInput = ({
                         className='h-14 w-full min-w-max'
                         variant={'outlined'}
                         onClick={() => setIsNewCategory(!isNewCategory)}
+                        sx={sxButtonStyle}
                     >
                         {isNewCategory ? 'Cancel' : 'New'}
                     </Button>
@@ -113,6 +116,7 @@ const SingleSelectInput = ({
                             variant={'outlined'}
                             onClick={handleAdd}
                             disabled={!newCategoryText.trim()}
+                            sx={sxButtonStyle}
                         >
                             Add
                         </Button>

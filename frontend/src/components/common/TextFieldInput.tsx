@@ -3,6 +3,7 @@ import type { AnyFieldApi } from '@tanstack/react-form';
 import { useState, type JSX } from 'react';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { sxInputStyle } from '../../utils/utils';
 type TextFieldInputProps = {
     field: AnyFieldApi;
     label: string;
@@ -61,26 +62,6 @@ const TextFieldInput = ({
 
     const hasAdornments = startIcon;
 
-    const inputSx = {
-        '& .MuiOutlinedInput-root': {
-            color: 'white',
-            borderRadius: '10px',
-            '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.35)' },
-            '&.Mui-focused fieldset': { borderColor: '#667eea' },
-            background: 'rgba(255,255,255,0.05)',
-        },
-        '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)' },
-        '& .MuiInputLabel-root.Mui-focused': { color: '#a78bfa' },
-        '& input[type=number]': {
-            MozAppearance: 'textfield', // Firefox
-        },
-        '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-            {
-                WebkitAppearance: 'none', // Chrome, Safari, Edge
-                margin: 0,
-            },
-    };
 
     return (
         <div className='relative flex flex-col'>
@@ -114,7 +95,7 @@ const TextFieldInput = ({
                 slotProps={
                     hasAdornments ? { input: inputSlotProps } : undefined
                 }
-                sx={inputSx}
+                sx={sxInputStyle}
             />
             {!isValid && isTouched && (
                 <small className='absolute top-2.5 right-4 font-bold text-red-500'>

@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import type { AnyFieldApi } from '@tanstack/react-form';
+import { sxButtonStyle, sxInputStyle } from '../../utils/utils';
 
 type MultipleSelectInputProps = {
     field: AnyFieldApi;
@@ -58,7 +59,7 @@ const MultipleSelectInput = ({
     return (
         <div className='flex items-center gap-0.5'>
             {!isNewCategory ? (
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={sxInputStyle}>
                     <InputLabel id='select-label'>{label}</InputLabel>
                     <Select
                         multiple
@@ -86,6 +87,7 @@ const MultipleSelectInput = ({
                     value={newCategoryText}
                     onChange={e => setNewCategoryText(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    sx={sxInputStyle}
                 />
             )}
             <div className='flex w-53 flex-row'>
@@ -93,6 +95,7 @@ const MultipleSelectInput = ({
                     className='h-14 w-full min-w-max'
                     variant={'outlined'}
                     onClick={() => setIsNewCategory(!isNewCategory)}
+                    sx={sxButtonStyle}
                 >
                     {isNewCategory ? 'Cancel' : 'New'}
                 </Button>
@@ -101,6 +104,7 @@ const MultipleSelectInput = ({
                         variant={'outlined'}
                         onClick={handleAdd}
                         disabled={!newCategoryText.trim()}
+                        sx={sxButtonStyle}
                     >
                         Add
                     </Button>

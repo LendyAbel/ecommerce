@@ -82,7 +82,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                 },
             }}
         >
-            <DialogTitle className='self-center text-white font-bold'>NewProductDialog</DialogTitle>
+            <DialogTitle className='self-center text-white font-bold'>ADD NEW PRODUCT</DialogTitle>
 
             {/* -------------FORM--------------- */}
             <form onSubmit={onSubmit} className='mt-7 mb-7 flex flex-col gap-2'>
