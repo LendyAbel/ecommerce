@@ -8,23 +8,24 @@ import Cart from './pages/Cart';
 import About from './pages/About';
 import ProductDetails from './components/product/ProductDetails';
 import Authenticate from './pages/Authenticate';
-import authService from './services/auth.service';
 import { useAuthStore } from './store/authStore';
 import { useEffect } from 'react';
+import useAuth from './hooks/auth/useAuth';
 
 function App() {
+    const { me } = useAuth();
+    
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const user = await authService.me();
-                useAuthStore.getState().setUser(user);
+                await me();
             } catch {
                 useAuthStore.getState().setUser(null);
             }
         };
 
         checkAuth();
-    }, []);
+    }, [me]);
 
     return (
         <>

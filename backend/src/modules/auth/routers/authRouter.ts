@@ -35,8 +35,8 @@ router.get('/me', async (req, res) => {
     const token = req.cookies?.token;
     if (!token) throw new AppError('No authenticated', 401);
 
-    const user = await authServices.getLoggedUser(token);
-    res.json({ user });
+    const data = await authServices.getLoggedUser(token);
+    res.json(data);
 });
 
 export default router;

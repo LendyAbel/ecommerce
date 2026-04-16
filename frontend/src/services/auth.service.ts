@@ -8,13 +8,13 @@ const api = axios.create({
 
 const login = async (data: LoginForm): Promise<User | null> => {
     const res = await api.post('/login', data);
-    console.log(res.data);
+    console.log('login', res.data.user);
     return res.data.user;
 };
 
 const register = async (data: RegisterForm): Promise<User | null> => {
     const res = await api.post('/register', data);
-    console.log(res.data.user);
+    console.log('register',res.data.user);
 
     return res.data;
 };
@@ -25,7 +25,6 @@ const logout = async () => {
 
 const me = async (): Promise<User | null> => {
     const res = await api.get('/me');
-    console.log(res.data);
     return res.data.user;
 };
 

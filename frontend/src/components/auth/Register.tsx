@@ -6,19 +6,9 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { useState } from 'react';
+import { sxInputStyle } from '../../utils/utils';
 
-const inputSx = {
-    '& .MuiOutlinedInput-root': {
-        color: 'white',
-        borderRadius: '10px',
-        '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-        '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.35)' },
-        '&.Mui-focused fieldset': { borderColor: '#667eea' },
-        background: 'rgba(255,255,255,0.05)',
-    },
-    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)' },
-    '& .MuiInputLabel-root.Mui-focused': { color: '#a78bfa' },
-};
+
 
 type RegisterProps = {
     showLogin: boolean;
@@ -67,7 +57,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 ),
                             },
                         }}
-                        sx={inputSx}
+                        sx={sxInputStyle}
                     />
                     <TextField
                         fullWidth
@@ -88,7 +78,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 ),
                             },
                         }}
-                        sx={inputSx}
+                        sx={sxInputStyle}
                     />
                     <TextField
                         fullWidth
@@ -137,7 +127,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 ),
                             },
                         }}
-                        sx={inputSx}
+                        sx={sxInputStyle}
                     />
                 </div>
 

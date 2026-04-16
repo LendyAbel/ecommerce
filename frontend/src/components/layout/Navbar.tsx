@@ -3,12 +3,14 @@ import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import CartBage from '../cart/CartBage';
 import { useAuthStore } from '../../store/authStore';
+import useAuth from '../../hooks/auth/useAuth';
 
 type Props = {
     children: ReactNode;
 };
 
 const Navbar = ({ children }: Props) => {
+    const { logout } = useAuth();
     const user = useAuthStore.getState().user;
     return (
         <>
@@ -26,9 +28,14 @@ const Navbar = ({ children }: Props) => {
                 <div className='flex items-center'>
                     {/* <PanelMenu /> */}
                     {user ? (
-                        <NavLink to='/cart'>
-                            <CartBage />
-                        </NavLink>
+                        <div className='flex items-center justify-center gap-2'>
+                            <NavLink to='/cart'>
+                                <CartBage />
+                            </NavLink>
+                            <button className='cursor-pointer' onClick={logout}>
+                                LOGOUT
+                            </button>
+                        </div>
                     ) : (
                         <NavLink to='/auth'>LOGIN</NavLink>
                     )}
