@@ -2,13 +2,14 @@ import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import CartBage from '../cart/CartBage';
+import { useAuthStore } from '../../store/authStore';
 
 type Props = {
     children: ReactNode;
 };
 
 const Navbar = ({ children }: Props) => {
-    const user = { name: 'Pedro' };
+    const user = useAuthStore.getState().user;
     return (
         <>
             <Box

@@ -21,19 +21,19 @@ const inputSx = {
 };
 
 type RegisterProps = {
-    isLogin: boolean;
+    showLogin: boolean;
 };
-const Register = ({ isLogin }: RegisterProps) => {
+const Register = ({ showLogin }: RegisterProps) => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
         <div
             className='absolute top-0 right-0 flex h-full w-1/2 flex-col items-center justify-center px-10'
             style={{
-                opacity: isLogin ? 0 : 1,
-                transform: isLogin ? 'translateX(40px)' : 'translateX(0)',
+                opacity: showLogin ? 0 : 1,
+                transform: showLogin ? 'translateX(40px)' : 'translateX(0)',
                 transition: 'opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s',
-                pointerEvents: isLogin ? 'none' : 'auto',
+                pointerEvents: showLogin ? 'none' : 'auto',
             }}
         >
             <div className='w-full max-w-xs'>

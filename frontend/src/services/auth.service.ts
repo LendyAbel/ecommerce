@@ -6,22 +6,32 @@ const api = axios.create({
     withCredentials: true,
 });
 
-const login = async (data: LoginForm): Promise<User> => {
+const login = async (data: LoginForm): Promise<User | null> => {
     const res = await api.post('/login', data);
+    console.log(res.data);
     return res.data.user;
 };
 
-const register = async (data: RegisterForm): Promise<User> => {
+const register = async (data: RegisterForm): Promise<User | null> => {
     const res = await api.post('/register', data);
-    return res.data.user;
+    console.log(res.data.user);
+
+    return res.data;
 };
 
 const logout = async () => {
     await api.post('/logout');
 };
 
+const me = async (): Promise<User | null> => {
+    const res = await api.get('/me');
+    console.log(res.data);
+    return res.data.user;
+};
+
 export default {
     login,
     register,
     logout,
+    me,
 };

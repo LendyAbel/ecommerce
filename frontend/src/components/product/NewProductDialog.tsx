@@ -72,12 +72,21 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
             open={isOpen}
             onClose={onClose}
             className='relative flex flex-col'
+            slotProps={{
+                paper: {
+                    sx: {
+                        background:
+                            'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
+                            borderRadius: '24px'
+                    },
+                },
+            }}
         >
-            <DialogTitle className='self-center'>NewProductDialog</DialogTitle>
+            <DialogTitle className='self-center text-white font-bold'>NewProductDialog</DialogTitle>
 
             {/* -------------FORM--------------- */}
-            <form onSubmit={onSubmit} className='m-2 flex flex-col gap-2'>
-                <div className='flex max-h-110 flex-col gap-2 overflow-auto p-2'>
+            <form onSubmit={onSubmit} className='mt-7 mb-7 flex flex-col gap-2'>
+                <div className='flex max-h-110 flex-col gap-4 overflow-auto p-2 m-2'>
                     {/*------OBLIGATORY FIELDS------ */}
                     <Field name={'sku'}>
                         {field => (
@@ -204,7 +213,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
             </form>
 
             <Button
-                sx={{ position: 'absolute', top: 10, right: 10 }}
+                sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}
                 variant='text'
                 onClick={onClose}
             >
