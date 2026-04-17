@@ -6,9 +6,12 @@ import AddProductButton from '../components/product/AddProductButtom';
 import useNewProductDialog from '../hooks/product/useNewProductDialog';
 import NewProductDialog from '../components/product/NewProductDialog';
 import ProductCardSkeleton from '../components/product/Skeletons/ProductCardSkeleton';
+import { useAuthStore } from '../store/authStore';
 
 const Products = () => {
     const { products, isProductsError, isProductsLoading } = useProducts();
+    const userRole = useAuthStore(state => state.user?.role);
+
     const { isOpen, open, close } = useNewProductDialog();
     // --- loading ------------------------------
     if (isProductsLoading) {
@@ -44,7 +47,7 @@ const Products = () => {
                     </div>
                 ))}
             </Box>
-            <AddProductButton onClick={open} />
+            {userRole === 'admin' && <AddProductButton onClick={open} />}
             <NewProductDialog isOpen={isOpen} onClose={close} />
         </div>
     );

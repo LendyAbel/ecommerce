@@ -3,16 +3,16 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import TextFieldInput from '../common/TextFieldInput';
 import { useForm } from '@tanstack/react-form';
 import { LoginFormSchema } from '../../schemas/userSchema';
-import useAuth from '../../hooks/auth/useAuth';
 import { useNavigate } from 'react-router';
+import { useAuthStore } from '../../store/authStore';
 
 type LoginProps = {
     showLogin: boolean;
 };
 
 const Login = ({ showLogin }: LoginProps) => {
+    const login = useAuthStore(state => state.login);
     const navigate = useNavigate();
-    const { login } = useAuth();
     const { Field, handleSubmit } = useForm({
         defaultValues: {
             email: '',
@@ -28,9 +28,10 @@ const Login = ({ showLogin }: LoginProps) => {
         },
     });
 
+
     const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('submit');
+        console.log('login');
         handleSubmit();
     };
 

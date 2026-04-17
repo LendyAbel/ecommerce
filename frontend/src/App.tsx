@@ -13,19 +13,20 @@ import { useEffect } from 'react';
 import useAuth from './hooks/auth/useAuth';
 
 function App() {
-    const { me } = useAuth();
-    
+    const me = useAuthStore(state => state.me);
+    const setUser = useAuthStore(state => state.setUser);
+
     useEffect(() => {
         const checkAuth = async () => {
             try {
                 await me();
             } catch {
-                useAuthStore.getState().setUser(null);
+                setUser(null);
             }
         };
-
+        
         checkAuth();
-    }, [me]);
+    }, [me, setUser]);
 
     return (
         <>

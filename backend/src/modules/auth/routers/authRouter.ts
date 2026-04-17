@@ -15,6 +15,7 @@ const COOKIE_OPTIONS = {
 router.post('/register', async (req, res) => {
     const data = RegisterSchema.parse(req.body);
     const user = await authServices.register(data);
+    console.log(user);
     res.status(201).json({ user });
 });
 

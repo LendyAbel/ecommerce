@@ -118,7 +118,8 @@ const products = [
 const users = [
     {
         email: 'admin@test.com',
-        password: 'admin',
+        password:
+            '$2b$10$H.LrockOpNuXy3EaXiPD3OoJbGatmrZu2rPJl66WmuRVE/BpikOoe',
         name: 'Admin',
         role: 'admin',
     },

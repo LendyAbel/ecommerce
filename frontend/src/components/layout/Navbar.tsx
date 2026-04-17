@@ -10,8 +10,9 @@ type Props = {
 };
 
 const Navbar = ({ children }: Props) => {
-    const { logout } = useAuth();
-    const user = useAuthStore.getState().user;
+    const user = useAuthStore(state => state.user)
+    const logout = useAuthStore(state => state.logout)
+
     return (
         <>
             <Box

@@ -1,20 +1,39 @@
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { useState } from 'react';
-import { sxInputStyle } from '../../utils/utils';
-
-
+import { useAuthStore } from '../../store/authStore';
+import { useForm } from '@tanstack/react-form';
+import { RegisterFormSchema } from '../../schemas/userSchema';
+import { useNavigate } from 'react-router';
+import TextFieldInput from '../common/TextFieldInput';
 
 type RegisterProps = {
     showLogin: boolean;
 };
 const Register = ({ showLogin }: RegisterProps) => {
-    const [showPassword, setShowPassword] = useState(false);
+    const register = useAuthStore(state => state.register);
+    const navigate = useNavigate();
+    const { Field, handleSubmit } = useForm({
+        defaultValues: {
+            name: '',
+            email: '',
+            password: '',
+        },
+        validators: {
+            onSubmit: RegisterFormSchema,
+        },
+        onSubmit: async ({ value }) => {
+            console.log(value);
+            await register(value);
+            navigate('/products');
+        },
+    });
+
+    const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        console.log('register');
+        handleSubmit();
+    };
 
     return (
         <div
@@ -26,7 +45,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                 pointerEvents: showLogin ? 'none' : 'auto',
             }}
         >
-            <div className='w-full max-w-xs'>
+            <form onSubmit={onSubmit} className='w-full max-w-xs'>
                 <p className='text-xs font-semibold tracking-[0.25em] text-purple-400 uppercase'>
                     Crear cuenta
                 </p>
@@ -38,100 +57,60 @@ const Register = ({ showLogin }: RegisterProps) => {
                 </h2>
 
                 <div className='mt-7 flex flex-col gap-4'>
-                    <TextField
-                        fullWidth
-                        label='Nombre'
-                        variant='outlined'
-                        size='small'
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position='start'>
-                                        <PersonOutlineIcon
-                                            sx={{
-                                                color: 'rgba(255,255,255,0.4)',
-                                                fontSize: 18,
-                                            }}
-                                        />
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                        sx={sxInputStyle}
-                    />
-                    <TextField
-                        fullWidth
-                        label='Email'
-                        variant='outlined'
-                        size='small'
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position='start'>
-                                        <EmailOutlinedIcon
-                                            sx={{
-                                                color: 'rgba(255,255,255,0.4)',
-                                                fontSize: 18,
-                                            }}
-                                        />
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                        sx={sxInputStyle}
-                    />
-                    <TextField
-                        fullWidth
-                        label='Contraseña'
-                        variant='outlined'
-                        size='small'
-                        type={showPassword ? 'text' : 'password'}
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position='start'>
-                                        <LockOutlinedIcon
-                                            sx={{
-                                                color: 'rgba(255,255,255,0.4)',
-                                                fontSize: 18,
-                                            }}
-                                        />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position='end'>
-                                        <IconButton
-                                            onClick={() =>
-                                                setShowPassword(p => !p)
-                                            }
-                                            edge='end'
-                                            size='small'
-                                        >
-                                            {showPassword ? (
-                                                <VisibilityOffOutlinedIcon
-                                                    sx={{
-                                                        color: 'rgba(255,255,255,0.4)',
-                                                        fontSize: 18,
-                                                    }}
-                                                />
-                                            ) : (
-                                                <VisibilityOutlinedIcon
-                                                    sx={{
-                                                        color: 'rgba(255,255,255,0.4)',
-                                                        fontSize: 18,
-                                                    }}
-                                                />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                        sx={sxInputStyle}
-                    />
+                    <Field name={'name'}>
+                        {field => (
+                            <TextFieldInput
+                                field={field}
+                                label='Name'
+                                startIcon={
+                                    <PersonOutlineIcon
+                                        sx={{
+                                            color: 'rgba(255,255,255,0.4)',
+                                            fontSize: 18,
+                                        }}
+                                    />
+                                }
+                            />
+                        )}
+                    </Field>
+                    <Field name='email'>
+                        {field => (
+                            <TextFieldInput
+                                field={field}
+                                label='Email'
+                                type='email'
+                                startIcon={
+                                    <EmailOutlinedIcon
+                                        sx={{
+                                            color: 'rgba(255,255,255,0.4)',
+                                            fontSize: 18,
+                                        }}
+                                    />
+                                }
+                            />
+                        )}
+                    </Field>
+                    <Field name='password'>
+                        {field => (
+                            <TextFieldInput
+                                field={field}
+                                label='Password'
+                                type='password'
+                                startIcon={
+                                    <LockOutlinedIcon
+                                        sx={{
+                                            color: 'rgba(255,255,255,0.4)',
+                                            fontSize: 18,
+                                        }}
+                                    />
+                                }
+                            />
+                        )}
+                    </Field>
                 </div>
 
                 <button
+                    type={'submit'}
                     className='mt-6 w-full rounded-xl py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95'
                     style={{
                         background: 'linear-gradient(90deg, #667eea, #764ba2)',
@@ -139,7 +118,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                 >
                     CREAR CUENTA
                 </button>
-            </div>
+            </form>
         </div>
     );
 };
