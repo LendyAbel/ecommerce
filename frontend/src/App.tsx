@@ -10,7 +10,6 @@ import ProductDetails from './components/product/ProductDetails';
 import Authenticate from './pages/Authenticate';
 import { useAuthStore } from './store/authStore';
 import { useEffect } from 'react';
-import useAuth from './hooks/auth/useAuth';
 
 function App() {
     const me = useAuthStore(state => state.me);

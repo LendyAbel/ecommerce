@@ -20,7 +20,11 @@ export const useAuthStore = create<AuthStore>(set => ({
         console.log(user);
     },
     register: async data => {
-        const user = await authService.register(data);
+        await authService.register(data);
+        const user = await authService.login({
+            email: data.email,
+            password: data.password,
+        });
         set({ user });
         console.log(user);
     },

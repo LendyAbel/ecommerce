@@ -3,15 +3,14 @@ import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import CartBage from '../cart/CartBage';
 import { useAuthStore } from '../../store/authStore';
-import useAuth from '../../hooks/auth/useAuth';
 
 type Props = {
     children: ReactNode;
 };
 
 const Navbar = ({ children }: Props) => {
-    const user = useAuthStore(state => state.user)
-    const logout = useAuthStore(state => state.logout)
+    const user = useAuthStore(state => state.user);
+    const logout = useAuthStore(state => state.logout);
 
     return (
         <>
