@@ -9,10 +9,19 @@ const formatPrice = (price: string | number) =>
 type ProductPriceProps = {
     price: number;
     tax?: number;
+    compact?: boolean;
 };
 
-const ProductPrice = ({ price, tax }: ProductPriceProps) => {
+const ProductPrice = ({ price, tax, compact = false }: ProductPriceProps) => {
     const priceWithTax = tax ? price * (1 + tax / 100) : null;
+
+    if (compact) {
+        return (
+            <span className='text-lg font-extrabold text-gray-900'>
+                {formatPrice(price)} €
+            </span>
+        );
+    }
 
     return (
         <div className='flex items-end gap-3'>

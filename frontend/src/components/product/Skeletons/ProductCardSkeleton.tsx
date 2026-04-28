@@ -1,20 +1,18 @@
-import { Card, CardContent, CardHeader, Skeleton } from '@mui/material';
-
 const ProductCardSkeleton = () => {
-  return (
-      <Card variant={'outlined'} className='flex flex-col p-1'>
-          <CardHeader title={<Skeleton animation={'wave'} width={'60%'} />} />
-          <CardContent>
-              <Skeleton variant='rectangular' height={200} />
-              <Skeleton sx={{ mt: 1 }} />
-              <Skeleton width='80%' />
-              <div className='mt-2 flex justify-between'>
-                  <Skeleton width={80} height={32} />
-                  <Skeleton width={100} height={32} />
-              </div>
-          </CardContent>
-      </Card>
-  );
-}
+    return (
+        <div className='flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm'>
+            <div className='h-48 w-full animate-pulse bg-gray-200' />
+            <div className='flex flex-col gap-2 p-4'>
+                <div className='h-4 w-3/4 animate-pulse rounded bg-gray-200' />
+                <div className='h-3 w-full animate-pulse rounded bg-gray-100' />
+                <div className='h-3 w-4/5 animate-pulse rounded bg-gray-100' />
+                <div className='mt-1 flex items-center justify-between'>
+                    <div className='h-5 w-16 animate-pulse rounded bg-gray-200' />
+                    <div className='h-5 w-20 animate-pulse rounded-full bg-gray-100' />
+                </div>
+            </div>
+        </div>
+    );
+};
 
-export default ProductCardSkeleton
+export default ProductCardSkeleton;

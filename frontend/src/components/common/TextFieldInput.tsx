@@ -60,8 +60,8 @@ const TextFieldInput = ({
         },
     };
 
-    const hasAdornments = startIcon;
-
+    const hasError = !isValid && isTouched;
+    const errorId = `${field.name}-error`;
 
     return (
         <div className='relative flex flex-col'>
@@ -92,13 +92,17 @@ const TextFieldInput = ({
                 }
                 onBlur={field.handleBlur}
                 onFocus={e => e.target.select()}
-                slotProps={
-                    hasAdornments ? { input: inputSlotProps } : undefined
-                }
+                slotProps={{
+                    ...(startIcon && { input: inputSlotProps }),
+                    htmlInput: {
+                        'aria-invalid': hasError || undefined,
+                        'aria-describedby': hasError ? errorId : undefined,
+                    },
+                }}
                 sx={sxInputStyle}
             />
-            {!isValid && isTouched && (
-                <small className='absolute top-2.5 right-4 font-bold text-red-500'>
+            {hasError && (
+                <small id={errorId} className='absolute top-2.5 right-4 font-bold text-red-500'>
                     {errors[0]?.message}
                 </small>
             )}

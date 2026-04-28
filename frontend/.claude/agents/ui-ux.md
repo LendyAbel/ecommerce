@@ -51,10 +51,54 @@ Soy experto en interfaces de usuario y experiencia de usuario para este proyecto
 
 ### Efectos y Animaciones
 
+Usar **Motion** (`motion/react`) para todas las animaciones de entrada/salida y transiciones de estado. No usar inline styles ni clases Tailwind de transición para efectos animados.
+
 - **Glassmorphism** (cards y modals): `backdrop-blur-md bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-3xl shadow-2xl`
-- **Transición de paneles**: `opacity + translateX`, duración `0.4s ease`, con delay `0.2s` para el panel que entra
-- **Botón primario**: `transition-all duration-200 hover:opacity-90 active:scale-95`
 - **Bordes redondeados**: `rounded-3xl` para cards grandes, `rounded-xl` para botones e inputs
+- **Botón primario** (hover/active no animado): `transition-all duration-200 hover:opacity-90 active:scale-95` — Tailwind es suficiente para estos micro-estados
+
+#### Patrón de panel que alterna visibilidad
+
+```tsx
+import { motion } from 'motion/react';
+
+// Panel que entra desde la izquierda
+<motion.div
+    animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -40, pointerEvents: isVisible ? 'auto' : 'none' }}
+    transition={{ duration: 0.4, ease: 'easeOut' }}
+>
+
+// Panel que entra desde la derecha (con delay al aparecer)
+<motion.div
+    animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 40, pointerEvents: isVisible ? 'auto' : 'none' }}
+    transition={{ duration: 0.4, ease: 'easeOut', delay: isVisible ? 0 : 0.2 }}
+>
+```
+
+#### Patrón de entrada inicial (mount)
+
+```tsx
+<motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, ease: 'easeOut' }}
+>
+```
+
+#### Patrón de lista con stagger
+
+```tsx
+<motion.ul>
+    {items.map((item, i) => (
+        <motion.li
+            key={item.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.05 }}
+        />
+    ))}
+</motion.ul>
+```
 
 ---
 
@@ -102,13 +146,13 @@ Input con icono izquierdo. Siempre usar con `startIcon` desde `@mui/icons-materi
 
 ---
 
-## Mejoras Pendientes / Recomendadas
+## Notas de Implementación
 
-1. **Consistencia de animaciones**: Login usa clases Tailwind con `translateX` incorrecto (sin `translate-x-`), Register usa inline styles. Unificar con inline styles o con Motion para todas las transiciones de paneles.
-2. **Estado loading en botones**: Añadir spinner y `disabled` mientras se ejecuta el submit para evitar doble envío.
-3. **ARIA en formularios**: Añadir `aria-invalid` y `aria-describedby` en los inputs para asociar mensajes de error con los campos.
-4. **Label del campo "Name"**: Cambiar a español ("Nombre") para coherencia con los demás labels.
-5. **Font family**: El título de Register usa inline style; el de Login usa clase Tailwind. Unificar con la clase `font-[Georgia,serif]`.
+- Animaciones de Login/Register: ambos usan **Motion** (`motion/react`) con `motion.div`. No usar inline styles ni clases Tailwind para transiciones animadas.
+- Botones con loading: usar `state.isSubmitting` de `useForm` con SVG spinner y `disabled` para prevenir doble envío.
+- ARIA en `TextFieldInput`: `aria-invalid` y `aria-describedby` ya implementados; el `<small>` de error tiene `id={field.name}-error`.
+- Gradiente del botón: usar clase Tailwind `bg-linear-to-r from-[#667eea] to-[#764ba2]`, no inline styles.
+- Font family en títulos: usar clase `font-[Georgia,serif]`, no inline styles.
 
 ---
 

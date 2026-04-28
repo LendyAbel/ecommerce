@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import TextFieldInput from '../common/TextFieldInput';
 import { useState } from 'react';
 import axios from 'axios';
+import { motion } from 'motion/react';
 
 type RegisterProps = {
     showLogin: boolean;
@@ -18,7 +19,7 @@ const Register = ({ showLogin }: RegisterProps) => {
     const navigate = useNavigate();
     const [serverError, setServerError] = useState<string | null>(null);
 
-    const { Field, handleSubmit } = useForm({
+    const { Field, handleSubmit, state } = useForm({
         defaultValues: {
             name: '',
             email: '',
@@ -48,23 +49,20 @@ const Register = ({ showLogin }: RegisterProps) => {
     };
 
     return (
-        <div
+        <motion.div
             className='absolute top-0 right-0 flex h-full w-1/2 flex-col items-center justify-center px-10'
-            style={{
+            animate={{
                 opacity: showLogin ? 0 : 1,
-                transform: showLogin ? 'translateX(40px)' : 'translateX(0)',
-                transition: 'opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s',
+                x: showLogin ? 40 : 0,
                 pointerEvents: showLogin ? 'none' : 'auto',
             }}
+            transition={{ duration: 0.4, ease: 'easeOut', delay: showLogin ? 0 : 0.2 }}
         >
             <form onSubmit={onSubmit} className='w-full max-w-xs'>
                 <p className='text-xs font-semibold tracking-[0.25em] text-purple-400 uppercase'>
                     Crear cuenta
                 </p>
-                <h2
-                    className='mt-1 text-2xl font-bold text-white'
-                    style={{ fontFamily: 'Georgia, serif' }}
-                >
+                <h2 className='mt-1 font-[Georgia,serif] text-2xl font-bold text-white'>
                     Registrarse
                 </h2>
 
@@ -73,7 +71,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                         {field => (
                             <TextFieldInput
                                 field={field}
-                                label='Name'
+                                label='Nombre'
                                 startIcon={
                                     <PersonOutlineIcon
                                         sx={{
@@ -106,7 +104,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                         {field => (
                             <TextFieldInput
                                 field={field}
-                                label='Password'
+                                label='Contraseña'
                                 type='password'
                                 startIcon={
                                     <LockOutlinedIcon
@@ -126,16 +124,20 @@ const Register = ({ showLogin }: RegisterProps) => {
                 )}
 
                 <button
-                    type={'submit'}
-                    className='mt-6 w-full rounded-xl py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95'
-                    style={{
-                        background: 'linear-gradient(90deg, #667eea, #764ba2)',
-                    }}
+                    type='submit'
+                    disabled={state.isSubmitting}
+                    className='mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-[#667eea] to-[#764ba2] py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60'
                 >
+                    {state.isSubmitting && (
+                        <svg className='h-4 w-4 animate-spin' viewBox='0 0 24 24' fill='none'>
+                            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
+                        </svg>
+                    )}
                     CREAR CUENTA
                 </button>
             </form>
-        </div>
+        </motion.div>
     );
 };
 

@@ -14,10 +14,7 @@ const Home = () => {
         <div>
             {/* Hero */}
             <section
-                className='relative flex min-h-105 flex-col items-center justify-center px-6 py-20 text-center text-white'
-                style={{
-                    background: 'linear-gradient(120deg, #0f0c29, #302b63, #24243e)',
-                }}
+                className='relative flex min-h-105 flex-col items-center justify-center bg-linear-120 from-[#0f0c29] via-[#302b63] to-[#24243e] px-6 py-20 text-center text-white'
             >
                 <p className='mb-2 text-xs font-semibold tracking-[0.3em] text-purple-300 uppercase'>
                     Bienvenido a nuestra tienda

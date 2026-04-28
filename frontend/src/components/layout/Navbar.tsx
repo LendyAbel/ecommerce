@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import CartBage from '../cart/CartBage';
@@ -8,39 +7,56 @@ type Props = {
     children: ReactNode;
 };
 
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
+        isActive ? 'text-white' : 'text-white/50 hover:text-white'
+    }`;
+
 const Navbar = ({ children }: Props) => {
     const user = useAuthStore(state => state.user);
     const logout = useAuthStore(state => state.logout);
 
     return (
         <>
-            <Box
-                component={'div'}
-                className='flex h-12 w-full items-center justify-between bg-[#79a7ec] p-5 text-white'
+            <nav
+                aria-label='Navegación principal'
+                className='flex h-12 w-full items-center justify-between border-b border-white/10 bg-[#0f0c29]/90 px-6 backdrop-blur-md'
             >
-                {' '}
-                {user ? `HOLA, ${user.name?.toUpperCase()}` : `BIENVENIDO`}
+                <span className='text-xs font-semibold tracking-widest text-purple-400 uppercase'>
+                    {user ? `Hola, ${user.name}` : 'Bienvenido'}
+                </span>
+
                 <div className='flex gap-6'>
-                    <NavLink to='/'>HOME</NavLink>
-                    <NavLink to='/products'>PRODUCTS</NavLink>
-                    <NavLink to='/about'>ABOUT</NavLink>
+                    <NavLink to='/' className={navLinkClass}>
+                        Inicio
+                    </NavLink>
+                    <NavLink to='/products' className={navLinkClass}>
+                        Productos
+                    </NavLink>
+                    <NavLink to='/about' className={navLinkClass}>
+                        Sobre nosotros
+                    </NavLink>
                 </div>
-                <div className='flex items-center'>
-                    {/* <PanelMenu /> */}
+
+                <div className='flex items-center gap-3'>
                     {user ? (
-                        <div className='flex items-center justify-center gap-2'>
-                            <NavLink to='/cart'>
-                                <CartBage />
-                            </NavLink>
-                            <button className='cursor-pointer' onClick={logout}>
-                                LOGOUT
+                        <>
+                            <CartBage />
+                            <button
+                                type='button'
+                                onClick={logout}
+                                className='text-xs font-semibold tracking-widest text-white/50 uppercase transition-colors duration-200 hover:cursor-pointer hover:text-white'
+                            >
+                                Salir
                             </button>
-                        </div>
+                        </>
                     ) : (
-                        <NavLink to='/auth'>LOGIN</NavLink>
+                        <NavLink to='/auth' className={navLinkClass}>
+                            Iniciar sesión
+                        </NavLink>
                     )}
                 </div>
-            </Box>
+            </nav>
             {children}
         </>
     );

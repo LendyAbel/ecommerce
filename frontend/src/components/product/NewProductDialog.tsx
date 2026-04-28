@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Button, Dialog, DialogTitle } from '@mui/material';
+import { Alert, Dialog } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import categoriesService from '../../services/categories.service';
@@ -8,10 +8,7 @@ import SingleSelectInput from '../common/SingleSelectInput';
 import type { ProductForm } from '../../types/productTypes';
 import MultipleSelectInput from '../common/MultipleSelecInput';
 import ImagesInput from '../common/ImagesInput';
-import {
-    productFormSchema,
-    productStatus,
-} from '../../schemas/productZodSchema';
+import { productFormSchema, productStatus } from '../../schemas/productZodSchema';
 import z from 'zod';
 import useAddNewProduct from '../../hooks/product/useAddNewProduct';
 
@@ -46,9 +43,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
 
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
-        validators: {
-            onSubmit: productFormSchema,
-        },
+        validators: { onSubmit: productFormSchema },
         onSubmit: async ({ value }) => {
             await addNewProduct(value);
             onClose();
@@ -71,154 +66,121 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
             fullWidth
             open={isOpen}
             onClose={onClose}
-            className='relative flex flex-col'
             slotProps={{
                 paper: {
                     sx: {
-                        background:
-                            'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
-                            borderRadius: '24px'
+                        background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
+                        borderRadius: '24px',
                     },
                 },
             }}
         >
-            <DialogTitle className='self-center text-white font-bold'>ADD NEW PRODUCT</DialogTitle>
+            {/* Header */}
+            <div className='relative px-6 pt-6 pb-0'>
+                <p className='text-xs font-semibold tracking-[0.25em] text-purple-400 uppercase'>
+                    Administración
+                </p>
+                <h2 className='mt-1 font-[Georgia,serif] text-2xl font-bold text-white'>
+                    Nuevo producto
+                </h2>
+                <button
+                    type='button'
+                    onClick={onClose}
+                    className='absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition-colors duration-200 hover:bg-white/10 hover:text-white'
+                >
+                    <Close fontSize='small' />
+                </button>
+            </div>
 
-            {/* -------------FORM--------------- */}
-            <form onSubmit={onSubmit} className='mt-7 mb-7 flex flex-col gap-2'>
-                <div className='flex max-h-110 flex-col gap-4 overflow-auto p-2 m-2'>
-                    {/*------OBLIGATORY FIELDS------ */}
-                    <Field name={'sku'}>
-                        {field => (
-                            <TextFieldInput
-                                autofocus={true}
-                                field={field}
-                                label='Sku'
-                            />
-                        )}
+            {/* Form */}
+            <form onSubmit={onSubmit} className='mt-6 mb-6 flex flex-col gap-2'>
+                <div className='flex max-h-110 flex-col gap-4 overflow-auto px-6 py-2'>
+                    <Field name='sku'>
+                        {field => <TextFieldInput autofocus field={field} label='SKU' />}
                     </Field>
-                    <Field
-                        name={'name'}
-                        validators={{ onBlur: z.string().min(3, 'Too short') }}
-                    >
-                        {field => <TextFieldInput field={field} label='Name' />}
+                    <Field name='name' validators={{ onBlur: z.string().min(3, 'Mínimo 3 caracteres') }}>
+                        {field => <TextFieldInput field={field} label='Nombre' />}
                     </Field>
-                    <Field name={'brand'}>
-                        {field => (
-                            <TextFieldInput field={field} label='Brand' />
-                        )}
+                    <Field name='brand'>
+                        {field => <TextFieldInput field={field} label='Marca' />}
                     </Field>
-                    <Field name={'price'}>
-                        {field => (
-                            <TextFieldInput
-                                field={field}
-                                label='Price'
-                                type='number'
-                            />
-                        )}
+                    <Field name='price'>
+                        {field => <TextFieldInput field={field} label='Precio' type='number' />}
                     </Field>
-                    <Field name={'tax'}>
-                        {field => (
-                            <TextFieldInput
-                                field={field}
-                                label='Tax'
-                                type='number'
-                            />
-                        )}
+                    <Field name='tax'>
+                        {field => <TextFieldInput field={field} label='IVA (%)' type='number' />}
                     </Field>
                     <Field name='status'>
                         {field => (
                             <SingleSelectInput
                                 field={field}
-                                label='Status'
+                                label='Estado'
                                 options={productStatus}
                                 addOption={false}
                             />
                         )}
                     </Field>
-                    <Field name={'shortDescription'}>
-                        {field => (
-                            <TextFieldInput
-                                field={field}
-                                label='Short Description'
-                            />
-                        )}
+                    <Field name='shortDescription'>
+                        {field => <TextFieldInput field={field} label='Descripción corta' />}
                     </Field>
-
-                    {/*------OPTIONAL FIELDS------ */}
-
-                    <Field name={'longDescription'}>
-                        {field => (
-                            <TextFieldInput
-                                field={field}
-                                label='Long Description'
-                            />
-                        )}
+                    <Field name='longDescription'>
+                        {field => <TextFieldInput field={field} label='Descripción larga' />}
                     </Field>
-                    <Field name={'mainCategory'}>
+                    <Field name='mainCategory'>
                         {field => (
                             <SingleSelectInput
                                 field={field}
-                                label='Main Category'
+                                label='Categoría principal'
                                 options={categories.map(cat => cat.name)}
                             />
                         )}
                     </Field>
-                    <Field name={'categories'}>
+                    <Field name='categories'>
                         {field => (
                             <MultipleSelectInput
                                 field={field}
-                                label='Other Categories'
+                                label='Otras categorías'
                                 options={categories.map(cat => cat.name)}
                             />
                         )}
                     </Field>
-                    <Field name={'stock'}>
-                        {field => (
-                            <TextFieldInput
-                                field={field}
-                                label='Stock'
-                                type='number'
-                            />
-                        )}
+                    <Field name='stock'>
+                        {field => <TextFieldInput field={field} label='Stock' type='number' />}
                     </Field>
-
-                    <Field name={'images'}>
+                    <Field name='images'>
                         {field => <ImagesInput field={field} />}
                     </Field>
                 </div>
 
-                {/* ------DISPLAY ERROR------*/}
                 {isError && (
-                    <Alert severity='error'>Error submitting form</Alert>
+                    <div className='mx-6'>
+                        <Alert severity='error'>Error al guardar el producto</Alert>
+                    </div>
                 )}
 
-                {/* ------ACTIONS BUTTOMS--------- */}
-                <div className='flex justify-around'>
-                    <Button
-                        type={'submit'}
-                        variant={'contained'}
-                        disabled={isPending}
-                    >
-                        {isPending ? 'Submitting...' : 'Submit'}
-                    </Button>
-                    <Button
-                        type={'reset'}
-                        variant={'contained'}
+                <div className='mt-2 flex justify-end gap-3 px-6'>
+                    <button
+                        type='button'
                         onClick={handleCancel}
+                        className='rounded-xl border border-white/20 px-6 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:border-white/40 hover:text-white'
                     >
-                        Cancel
-                    </Button>
+                        Cancelar
+                    </button>
+                    <button
+                        type='submit'
+                        disabled={isPending}
+                        className='flex items-center gap-2 rounded-xl bg-linear-to-r from-[#667eea] to-[#764ba2] px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60'
+                    >
+                        {isPending && (
+                            <svg className='h-4 w-4 animate-spin' viewBox='0 0 24 24' fill='none'>
+                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
+                            </svg>
+                        )}
+                        {isPending ? 'Guardando...' : 'Guardar'}
+                    </button>
                 </div>
             </form>
-
-            <Button
-                sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}
-                variant='text'
-                onClick={onClose}
-            >
-                <Close />
-            </Button>
         </Dialog>
     );
 };

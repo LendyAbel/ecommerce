@@ -1,4 +1,4 @@
-import { Alert, Box } from '@mui/material';
+import { Alert } from '@mui/material';
 import ProductCard from '../components/product/ProductCard';
 import type { Product } from '../types/productTypes';
 import useProducts from '../hooks/product/useProducts';
@@ -48,10 +48,12 @@ const Products = () => {
     // --- loading ------------------------------
     if (isProductsLoading) {
         return (
-            <div className='m-auto w-[80%]'>
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <ProductCardSkeleton key={i} />
-                ))}
+            <div className='m-auto mt-4 w-[90%] max-w-6xl'>
+                <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <ProductCardSkeleton key={i} />
+                    ))}
+                </div>
             </div>
         );
     }
@@ -66,7 +68,7 @@ const Products = () => {
 
     return (
         <div className='relative min-h-screen'>
-            <div className='m-auto mt-4 w-[80%]'>
+            <div className='m-auto mt-4 w-[90%] max-w-6xl'>
                 <ProductFilters
                     searchQuery={searchQuery}
                     onSearchChange={setSearchQuery}
@@ -80,13 +82,11 @@ const Products = () => {
                         No hay productos que coincidan con tu búsqueda.
                     </p>
                 ) : (
-                    <Box component='section' display='grid' gap={2}>
+                    <section className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
                         {filteredProducts.map((product: Product) => (
-                            <div key={product.id}>
-                                <ProductCard product={product} />
-                            </div>
+                            <ProductCard key={product.id} product={product} />
                         ))}
-                    </Box>
+                    </section>
                 )}
             </div>
 

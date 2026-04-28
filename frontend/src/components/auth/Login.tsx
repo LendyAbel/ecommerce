@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router';
 import { useAuthStore } from '../../store/authStore';
 import { useState } from 'react';
 import axios from 'axios';
+import { motion } from 'motion/react';
 
 type LoginProps = {
     showLogin: boolean;
@@ -17,7 +18,7 @@ const Login = ({ showLogin }: LoginProps) => {
     const navigate = useNavigate();
     const [serverError, setServerError] = useState<string | null>(null);
 
-    const { Field, handleSubmit } = useForm({
+    const { Field, handleSubmit, state } = useForm({
         defaultValues: {
             email: '',
             password: '',
@@ -47,8 +48,14 @@ const Login = ({ showLogin }: LoginProps) => {
     };
 
     return (
-        <div
-            className={`absolute top-0 left-0 flex h-full w-1/2 flex-col items-center justify-center px-10 transition-all duration-400 ease-out ${showLogin ? 'translateX(0) auto opacity-100' : 'translateX(-40px) none opacity-0'}`}
+        <motion.div
+            className='absolute top-0 left-0 flex h-full w-1/2 flex-col items-center justify-center px-10'
+            animate={{
+                opacity: showLogin ? 1 : 0,
+                x: showLogin ? 0 : -40,
+                pointerEvents: showLogin ? 'auto' : 'none',
+            }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
         >
             <form onSubmit={onSubmit} className='w-full max-w-xs'>
                 <p className='text-xs font-semibold tracking-[0.25em] text-purple-400 uppercase'>
@@ -103,13 +110,20 @@ const Login = ({ showLogin }: LoginProps) => {
                 )}
 
                 <button
-                    type={'submit'}
-                    className='mt-5 w-full rounded-xl bg-linear-to-r from-[#667eea] to-[#764ba2] py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95'
+                    type='submit'
+                    disabled={state.isSubmitting}
+                    className='mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-[#667eea] to-[#764ba2] py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60'
                 >
+                    {state.isSubmitting && (
+                        <svg className='h-4 w-4 animate-spin' viewBox='0 0 24 24' fill='none'>
+                            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
+                        </svg>
+                    )}
                     ENTRAR
                 </button>
             </form>
-        </div>
+        </motion.div>
     );
 };
 
