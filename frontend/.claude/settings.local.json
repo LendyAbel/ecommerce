@@ -1,8 +1,28 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(grep -E \"\\\\.\\(config|json|ts\\)$\")",
-      "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend/**)"
+    "permissions": {
+        "allow": [
+            "Bash(grep -E \"\\\\.\\(config|json|ts\\)$\")",
+            "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend/**)"
+        ]
+    },
+    "agents": [
+        {
+            "name": "ui-ux",
+            "triggers": [
+                "ui",
+                "ux",
+                "interfaz",
+                "componente",
+                "diseño",
+                "accesibilidad",
+                "a11y",
+                "responsive",
+                "css",
+                "formulario",
+                "usabilidad",
+                "aria",
+                "navegación"
+            ]
+        }
     ]
-  }
 }

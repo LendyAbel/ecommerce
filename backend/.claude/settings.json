@@ -1,0 +1,42 @@
+{
+    "autoInvoke": true,
+    "agents": [
+        {
+            "name": "backend",
+            "triggers": [
+                "backend",
+                "api",
+                "endpoint",
+                "servicio",
+                "base de datos",
+                "sql",
+                "orm",
+                "controlador",
+                "repository",
+                "entity",
+                "migrations",
+                "typeorm",
+                "prisma",
+                "arquitectura"
+            ]
+        },
+        {
+            "name": "tester",
+            "triggers": [
+                "test",
+                "testing",
+                "prueba",
+                "cobertura",
+                "coverage",
+                "jest",
+                "vitest",
+                "mock",
+                "spy",
+                "assertion",
+                "test unitario",
+                "test de integración",
+                "e2e"
+            ]
+        }     
+    ]
+}
