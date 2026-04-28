@@ -6,13 +6,18 @@ import { useForm } from '@tanstack/react-form';
 import { RegisterFormSchema } from '../../schemas/userSchema';
 import { useNavigate } from 'react-router';
 import TextFieldInput from '../common/TextFieldInput';
+import { useState } from 'react';
+import axios from 'axios';
 
 type RegisterProps = {
     showLogin: boolean;
 };
+
 const Register = ({ showLogin }: RegisterProps) => {
     const register = useAuthStore(state => state.register);
     const navigate = useNavigate();
+    const [serverError, setServerError] = useState<string | null>(null);
+
     const { Field, handleSubmit } = useForm({
         defaultValues: {
             name: '',
@@ -23,15 +28,22 @@ const Register = ({ showLogin }: RegisterProps) => {
             onSubmit: RegisterFormSchema,
         },
         onSubmit: async ({ value }) => {
-            console.log(value);
-            await register(value);
-            navigate('/products');
+            setServerError(null);
+            try {
+                await register(value);
+                navigate('/products');
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    setServerError(error.response?.data?.error ?? 'Error al crear la cuenta');
+                } else {
+                    setServerError('Error inesperado. Inténtalo de nuevo.');
+                }
+            }
         },
     });
 
     const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('register');
         handleSubmit();
     };
 
@@ -108,6 +120,10 @@ const Register = ({ showLogin }: RegisterProps) => {
                         )}
                     </Field>
                 </div>
+
+                {serverError && (
+                    <p className='mt-3 text-xs font-medium text-red-400'>{serverError}</p>
+                )}
 
                 <button
                     type={'submit'}

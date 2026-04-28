@@ -4,6 +4,7 @@ import authService from '../services/auth.service';
 
 type AuthStore = {
     user: User | null;
+    isAuthLoading: boolean;
     setUser: (user: User | null) => void;
     login: (data: LoginForm) => Promise<void>;
     register: (data: RegisterForm) => Promise<void>;
@@ -13,11 +14,11 @@ type AuthStore = {
 
 export const useAuthStore = create<AuthStore>(set => ({
     user: null,
+    isAuthLoading: true,
     setUser: user => set({ user }),
     login: async data => {
         const user = await authService.login(data);
         set({ user });
-        console.log(user);
     },
     register: async data => {
         await authService.register(data);
@@ -26,17 +27,19 @@ export const useAuthStore = create<AuthStore>(set => ({
             password: data.password,
         });
         set({ user });
-        console.log(user);
     },
-
     logout: async () => {
         await authService.logout();
         set({ user: null });
-        console.log('logout');
     },
     me: async () => {
-        const user = await authService.me();
-        set({ user });
-        console.log(user);
+        try {
+            const user = await authService.me();
+            set({ user });
+        } catch {
+            set({ user: null });
+        } finally {
+            set({ isAuthLoading: false });
+        }
     },
 }));

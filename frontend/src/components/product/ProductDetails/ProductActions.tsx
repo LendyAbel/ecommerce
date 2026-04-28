@@ -2,16 +2,21 @@ import { IconButton, Tooltip } from '@mui/material';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import { useCartStore } from '../../../store/cartStore';
+import type { Product } from '../../../types/productTypes';
 
 type ProductActionsProps = {
-    stock: number | undefined;
+    product: Product;
 };
 
-const ProductActions = ({ stock = 0 }: ProductActionsProps) => {
+const ProductActions = ({ product }: ProductActionsProps) => {
+    const addItem = useCartStore(state => state.addItem);
+
     return (
         <div className='flex items-center gap-3 pt-2'>
             <button
-                disabled={stock === 0}
+                disabled={product.stock === 0}
+                onClick={() => addItem(product)}
                 className='flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40'
             >
                 <ShoppingCartOutlinedIcon fontSize='small' />

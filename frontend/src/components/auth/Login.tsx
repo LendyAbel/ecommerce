@@ -5,6 +5,8 @@ import { useForm } from '@tanstack/react-form';
 import { LoginFormSchema } from '../../schemas/userSchema';
 import { useNavigate } from 'react-router';
 import { useAuthStore } from '../../store/authStore';
+import { useState } from 'react';
+import axios from 'axios';
 
 type LoginProps = {
     showLogin: boolean;
@@ -13,6 +15,8 @@ type LoginProps = {
 const Login = ({ showLogin }: LoginProps) => {
     const login = useAuthStore(state => state.login);
     const navigate = useNavigate();
+    const [serverError, setServerError] = useState<string | null>(null);
+
     const { Field, handleSubmit } = useForm({
         defaultValues: {
             email: '',
@@ -22,16 +26,23 @@ const Login = ({ showLogin }: LoginProps) => {
             onSubmit: LoginFormSchema,
         },
         onSubmit: async ({ value }) => {
-            console.log(value);
-            await login(value);
-            navigate('/products');
+            setServerError(null);
+            try {
+                await login(value);
+                navigate('/products');
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.log(error.response);
+                    setServerError(error.response?.data?.error ?? 'Credenciales incorrectas');
+                } else {
+                    setServerError('Error inesperado. Inténtalo de nuevo.');
+                }
+            }
         },
     });
 
-
     const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('login');
         handleSubmit();
     };
 
@@ -86,6 +97,10 @@ const Login = ({ showLogin }: LoginProps) => {
                 <p className='mt-2 cursor-pointer text-right text-xs text-purple-400 hover:text-purple-300'>
                     ¿Olvidaste tu contraseña?
                 </p>
+
+                {serverError && (
+                    <p className='mt-3 text-xs font-medium text-red-400'>{serverError}</p>
+                )}
 
                 <button
                     type={'submit'}

@@ -16,7 +16,7 @@ const register = async (data: RegisterForm): Promise<User | null> => {
     const res = await api.post('/register', data);
     console.log('register',res.data.user);
 
-    return res.data;
+    return res.data.user;
 };
 
 const logout = async () => {

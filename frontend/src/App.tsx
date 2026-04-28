@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router';
 
 import Navbar from './components/layout/Navbar';
+import ProtectedRoute from './components/layout/ProtectedRoute';
 
 import Home from './pages/Home';
 import Products from './pages/Products';
@@ -13,33 +14,25 @@ import { useEffect } from 'react';
 
 function App() {
     const me = useAuthStore(state => state.me);
-    const setUser = useAuthStore(state => state.setUser);
 
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                await me();
-            } catch {
-                setUser(null);
-            }
-        };
-        
-        checkAuth();
-    }, [me, setUser]);
+        me();
+    }, [me]);
 
     return (
-        <>
-            <Navbar>
-                <Routes>
-                    <Route path='/' element={<Home />} />
-                    <Route path='/products' element={<Products />} />
+        <Navbar>
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/products' element={<Products />} />
+                <Route path='/products/:id' element={<ProductDetails />} />
+                <Route path='/about' element={<About />} />
+                <Route path='/auth' element={<Authenticate />} />
+
+                <Route element={<ProtectedRoute />}>
                     <Route path='/cart' element={<Cart />} />
-                    <Route path='/about' element={<About />} />
-                    <Route path='/products/:id' element={<ProductDetails />} />
-                    <Route path='/auth' element={<Authenticate />} />
-                </Routes>
-            </Navbar>
-        </>
+                </Route>
+            </Routes>
+        </Navbar>
     );
 }
 

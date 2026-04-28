@@ -114,7 +114,7 @@ const ProductDetails = () => {
                     </div>
 
                     {/* Acciones */}
-                    <ProductActions stock={product.stock} />
+                    <ProductActions product={product} />
                     <Button
                         variant={'contained'}
                         color={'error'}
