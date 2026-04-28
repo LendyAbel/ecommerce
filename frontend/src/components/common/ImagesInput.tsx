@@ -61,7 +61,7 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                 <FormControl fullWidth sx={sxInputStyle}>
                     <FormLabel id='radio-label'>Images</FormLabel>
                     {images.length === 0 && (
-                        <p className='py-2 text-sm text-gray-400'>
+                        <p className='py-2 text-sm text-text-38'>
                             No images. Add one
                         </p>
                     )}

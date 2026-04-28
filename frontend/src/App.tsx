@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router';
 
-import Navbar from './components/layout/Navbar';
-import ProtectedRoute from './components/layout/ProtectedRoute';
+import Navbar from './layouts/Navbar';
+import ProtectedRoute from './layouts/ProtectedRoute';
 
 import Home from './pages/Home';
 import Products from './pages/Products';

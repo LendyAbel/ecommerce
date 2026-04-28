@@ -69,31 +69,33 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
             slotProps={{
                 paper: {
                     sx: {
-                        background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
-                        borderRadius: '24px',
+                        background: 'var(--color-surface)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '16px',
+                        boxShadow: 'var(--shadow-xl)',
                     },
                 },
             }}
         >
             {/* Header */}
-            <div className='relative px-6 pt-6 pb-0'>
-                <p className='text-xs font-semibold tracking-[0.25em] text-purple-400 uppercase'>
+            <div className='relative px-6 pb-0 pt-6'>
+                <p className='text-xs font-semibold uppercase tracking-[0.25em] text-primary'>
                     Administración
                 </p>
-                <h2 className='mt-1 font-[Georgia,serif] text-2xl font-bold text-white'>
+                <h2 className='mt-1 font-display text-2xl font-bold text-text'>
                     Nuevo producto
                 </h2>
                 <button
                     type='button'
                     onClick={onClose}
-                    className='absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition-colors duration-200 hover:bg-white/10 hover:text-white'
+                    className='absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-text-60 transition-colors duration-200 hover:bg-panel hover:text-text'
                 >
                     <Close fontSize='small' />
                 </button>
             </div>
 
             {/* Form */}
-            <form onSubmit={onSubmit} className='mt-6 mb-6 flex flex-col gap-2'>
+            <form onSubmit={onSubmit} className='mb-6 mt-6 flex flex-col gap-2'>
                 <div className='flex max-h-110 flex-col gap-4 overflow-auto px-6 py-2'>
                     <Field name='sku'>
                         {field => <TextFieldInput autofocus field={field} label='SKU' />}
@@ -162,14 +164,14 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                     <button
                         type='button'
                         onClick={handleCancel}
-                        className='rounded-xl border border-white/20 px-6 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:border-white/40 hover:text-white'
+                        className='btn btn-ghost rounded-xl border border-border px-6 py-2.5 text-sm'
                     >
                         Cancelar
                     </button>
                     <button
                         type='submit'
                         disabled={isPending}
-                        className='flex items-center gap-2 rounded-xl bg-linear-to-r from-[#667eea] to-[#764ba2] px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60'
+                        className='btn btn-primary disabled:cursor-not-allowed disabled:opacity-60'
                     >
                         {isPending && (
                             <svg className='h-4 w-4 animate-spin' viewBox='0 0 24 24' fill='none'>

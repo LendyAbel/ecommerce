@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
-import CartBage from '../cart/CartBage';
-import { useAuthStore } from '../../store/authStore';
+import CartBage from '../components/cart/CartBage';
+import { useAuthStore } from '../store/authStore';
 
 type Props = {
     children: ReactNode;
@@ -9,7 +9,7 @@ type Props = {
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
-        isActive ? 'text-white' : 'text-white/50 hover:text-white'
+        isActive ? 'text-primary' : 'text-text-60 hover:text-text'
     }`;
 
 const Navbar = ({ children }: Props) => {
@@ -20,9 +20,9 @@ const Navbar = ({ children }: Props) => {
         <>
             <nav
                 aria-label='Navegación principal'
-                className='flex h-12 w-full items-center justify-between border-b border-white/10 bg-[#0f0c29]/90 px-6 backdrop-blur-md'
+                className='flex h-12 w-full items-center justify-between border-b border-border bg-surface/90 px-6 backdrop-blur-md'
             >
-                <span className='text-xs font-semibold tracking-widest text-purple-400 uppercase'>
+                <span className='text-xs font-semibold uppercase tracking-widest text-primary'>
                     {user ? `Hola, ${user.name}` : 'Bienvenido'}
                 </span>
 
@@ -45,7 +45,7 @@ const Navbar = ({ children }: Props) => {
                             <button
                                 type='button'
                                 onClick={logout}
-                                className='text-xs font-semibold tracking-widest text-white/50 uppercase transition-colors duration-200 hover:cursor-pointer hover:text-white'
+                                className='cursor-pointer text-xs font-semibold uppercase tracking-widest text-text-60 transition-colors duration-200 hover:text-error'
                             >
                                 Salir
                             </button>

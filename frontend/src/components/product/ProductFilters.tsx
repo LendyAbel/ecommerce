@@ -28,7 +28,7 @@ const ProductFilters = ({
                     input: {
                         startAdornment: (
                             <InputAdornment position='start'>
-                                <SearchIcon fontSize='small' sx={{ color: 'rgba(255,255,255,0.4)' }} />
+                                <SearchIcon fontSize='small' sx={{ color: 'var(--color-text-38)' }} />
                             </InputAdornment>
                         ),
                     },
@@ -46,16 +46,19 @@ const ProductFilters = ({
                         flexWrap: 'wrap',
                         gap: 0.5,
                         '& .MuiToggleButton-root': {
-                            color: 'rgba(255,255,255,0.5)',
-                            borderColor: 'rgba(255,255,255,0.15)',
+                            color: 'var(--color-text-60)',
+                            borderColor: 'var(--color-border)',
                             borderRadius: '20px !important',
                             px: 2,
+                            fontSize: '0.75rem',
+                            fontWeight: 500,
                             '&:hover': {
-                                background: 'rgba(255,255,255,0.08)',
-                                borderColor: 'rgba(255,255,255,0.3)',
+                                background: 'var(--color-primary-10)',
+                                borderColor: 'var(--color-primary-20)',
+                                color: 'var(--color-primary)',
                             },
                             '&.Mui-selected': {
-                                background: 'linear-gradient(to right, #667eea, #764ba2)',
+                                background: 'var(--color-primary)',
                                 color: 'white',
                                 borderColor: 'transparent',
                                 '&:hover': { opacity: 0.9 },
@@ -63,9 +66,7 @@ const ProductFilters = ({
                         },
                     }}
                 >
-                    <ToggleButton value=''>
-                        Todas
-                    </ToggleButton>
+                    <ToggleButton value=''>Todas</ToggleButton>
                     {categories.map(cat => (
                         <ToggleButton key={cat} value={cat}>
                             {cat}

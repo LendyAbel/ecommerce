@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../store/authStore';
 import { CircularProgress } from '@mui/material';
 
 const ProtectedRoute = () => {

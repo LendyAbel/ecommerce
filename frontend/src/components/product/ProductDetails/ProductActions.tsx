@@ -17,7 +17,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
                 type='button'
                 disabled={product.stock === 0}
                 onClick={() => addItem(product)}
-                className='flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-[#667eea] to-[#764ba2] px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40'
+                className='btn btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-40'
             >
                 <ShoppingCartOutlinedIcon fontSize='small' />
                 Añadir al carrito
@@ -26,7 +26,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             <button
                 type='button'
                 title='Guardar en favoritos'
-                className='flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 text-gray-400 transition-all duration-200 hover:border-purple-300 hover:text-purple-500'
+                className='flex h-11 w-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
             >
                 <FavoriteBorderIcon fontSize='small' />
             </button>
@@ -34,7 +34,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             <button
                 type='button'
                 title='Compartir'
-                className='flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 text-gray-400 transition-all duration-200 hover:border-purple-300 hover:text-purple-500'
+                className='flex h-11 w-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
             >
                 <ShareOutlinedIcon fontSize='small' />
             </button>

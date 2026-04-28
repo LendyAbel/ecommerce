@@ -40,17 +40,11 @@ const TextFieldInput = ({
                         >
                             {showPassword ? (
                                 <VisibilityOffOutlinedIcon
-                                    sx={{
-                                        color: 'rgba(255,255,255,0.4)',
-                                        fontSize: 18,
-                                    }}
+                                    sx={{ color: 'var(--color-text-38)', fontSize: 18 }}
                                 />
                             ) : (
                                 <VisibilityOutlinedIcon
-                                    sx={{
-                                        color: 'rgba(255,255,255,0.4)',
-                                        fontSize: 18,
-                                    }}
+                                    sx={{ color: 'var(--color-text-38)', fontSize: 18 }}
                                 />
                             )}
                         </IconButton>

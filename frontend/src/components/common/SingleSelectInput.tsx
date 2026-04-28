@@ -84,7 +84,7 @@ const SingleSelectInput = ({
                         ))}
                     </Select>
                     {!isValid && isTouched && (
-                        <small className='absolute top-4 right-10 text-red-600'>
+                        <small className='absolute top-4 right-10 text-error'>
                             {errors[0]?.message}
                         </small>
                     )}

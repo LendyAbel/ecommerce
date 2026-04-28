@@ -20,14 +20,8 @@ const Register = ({ showLogin }: RegisterProps) => {
     const [serverError, setServerError] = useState<string | null>(null);
 
     const { Field, handleSubmit, state } = useForm({
-        defaultValues: {
-            name: '',
-            email: '',
-            password: '',
-        },
-        validators: {
-            onSubmit: RegisterFormSchema,
-        },
+        defaultValues: { name: '', email: '', password: '' },
+        validators: { onSubmit: RegisterFormSchema },
         onSubmit: async ({ value }) => {
             setServerError(null);
             try {
@@ -59,26 +53,21 @@ const Register = ({ showLogin }: RegisterProps) => {
             transition={{ duration: 0.4, ease: 'easeOut', delay: showLogin ? 0 : 0.2 }}
         >
             <form onSubmit={onSubmit} className='w-full max-w-xs'>
-                <p className='text-xs font-semibold tracking-[0.25em] text-purple-400 uppercase'>
+                <p className='text-xs font-semibold uppercase tracking-[0.25em] text-primary'>
                     Crear cuenta
                 </p>
-                <h2 className='mt-1 font-[Georgia,serif] text-2xl font-bold text-white'>
+                <h2 className='mt-1 font-display text-2xl font-bold text-text'>
                     Registrarse
                 </h2>
 
                 <div className='mt-7 flex flex-col gap-4'>
-                    <Field name={'name'}>
+                    <Field name='name'>
                         {field => (
                             <TextFieldInput
                                 field={field}
                                 label='Nombre'
                                 startIcon={
-                                    <PersonOutlineIcon
-                                        sx={{
-                                            color: 'rgba(255,255,255,0.4)',
-                                            fontSize: 18,
-                                        }}
-                                    />
+                                    <PersonOutlineIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
                                 }
                             />
                         )}
@@ -90,12 +79,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 label='Email'
                                 type='email'
                                 startIcon={
-                                    <EmailOutlinedIcon
-                                        sx={{
-                                            color: 'rgba(255,255,255,0.4)',
-                                            fontSize: 18,
-                                        }}
-                                    />
+                                    <EmailOutlinedIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
                                 }
                             />
                         )}
@@ -107,12 +91,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 label='Contraseña'
                                 type='password'
                                 startIcon={
-                                    <LockOutlinedIcon
-                                        sx={{
-                                            color: 'rgba(255,255,255,0.4)',
-                                            fontSize: 18,
-                                        }}
-                                    />
+                                    <LockOutlinedIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
                                 }
                             />
                         )}
@@ -120,13 +99,13 @@ const Register = ({ showLogin }: RegisterProps) => {
                 </div>
 
                 {serverError && (
-                    <p className='mt-3 text-xs font-medium text-red-400'>{serverError}</p>
+                    <p className='mt-3 text-xs font-medium text-error'>{serverError}</p>
                 )}
 
                 <button
                     type='submit'
                     disabled={state.isSubmitting}
-                    className='mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-[#667eea] to-[#764ba2] py-2.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60'
+                    className='btn btn-primary btn-full mt-6'
                 >
                     {state.isSubmitting && (
                         <svg className='h-4 w-4 animate-spin' viewBox='0 0 24 24' fill='none'>

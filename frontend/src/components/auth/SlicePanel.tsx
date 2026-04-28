@@ -10,13 +10,13 @@ const SlicePanel = ({ showLogin, setShowLogin }: SlicePanelProps) => {
     return (
         <motion.div
             className='absolute top-0 left-0 z-20 flex h-full w-1/2 flex-col items-center justify-center gap-6 px-12 text-center'
-            style={{ background: 'linear-gradient(160deg, #667eea 0%, #764ba2 100%)' }}
+            style={{ background: 'linear-gradient(160deg, var(--color-primary) 0%, var(--color-secondary) 100%)' }}
             animate={{
                 x: showLogin ? '100%' : '0%',
-                borderRadius: showLogin ? '0 24px 24px 0' : '24px 0 0 24px',
+                borderRadius: showLogin ? '0 16px 16px 0' : '16px 0 0 16px',
                 boxShadow: showLogin
-                    ? '-8px 0 32px rgba(0,0,0,0.3)'
-                    : '8px 0 32px rgba(0,0,0,0.3)',
+                    ? '-8px 0 32px rgba(61,111,232,0.25)'
+                    : '8px 0 32px rgba(61,111,232,0.25)',
             }}
             transition={{
                 duration: 0.7,
@@ -42,13 +42,13 @@ const SlicePanel = ({ showLogin, setShowLogin }: SlicePanelProps) => {
             </div>
 
             <div className='relative z-10'>
-                <p className='text-xs font-semibold tracking-[0.3em] text-purple-200 uppercase'>
+                <p className='text-xs font-semibold uppercase tracking-[0.3em] text-white/80'>
                     {showLogin ? '¿Nuevo aquí?' : '¿Ya tienes cuenta?'}
                 </p>
-                <h2 className='mt-2 font-[Georgia,serif] text-3xl font-bold tracking-[-0.02em] text-white'>
+                <h2 className='mt-2 font-display text-3xl font-bold tracking-[-0.02em] text-white'>
                     {showLogin ? 'Únete a nosotros' : 'Bienvenido de nuevo'}
                 </h2>
-                <p className='mt-3 text-sm leading-relaxed text-purple-100 opacity-80'>
+                <p className='mt-3 text-sm leading-relaxed text-white/80'>
                     {showLogin
                         ? 'Crea tu cuenta y empieza a explorar.'
                         : 'Inicia sesión para continuar donde lo dejaste.'}
@@ -56,7 +56,7 @@ const SlicePanel = ({ showLogin, setShowLogin }: SlicePanelProps) => {
                 <button
                     type='button'
                     onClick={() => setShowLogin(!showLogin)}
-                    className='mt-6 rounded-full border-2 border-white px-8 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-white hover:text-purple-700 active:scale-95'
+                    className='mt-6 rounded-full border-2 border-white/70 px-8 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-white hover:text-primary active:scale-95'
                 >
                     {showLogin ? 'Registrarse' : 'Iniciar sesión'}
                 </button>

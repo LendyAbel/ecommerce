@@ -1,11 +1,6 @@
-//------- helpers
-//------------------------
-
 const formatPrice = (price: string | number) =>
     parseFloat(String(price)).toFixed(2);
 
-//------- component
-//-----------------------
 type ProductPriceProps = {
     price: number;
     tax?: number;
@@ -17,7 +12,7 @@ const ProductPrice = ({ price, tax, compact = false }: ProductPriceProps) => {
 
     if (compact) {
         return (
-            <span className='text-lg font-extrabold text-white'>
+            <span className='text-lg font-extrabold text-text'>
                 {formatPrice(price)} €
             </span>
         );
@@ -25,11 +20,11 @@ const ProductPrice = ({ price, tax, compact = false }: ProductPriceProps) => {
 
     return (
         <div className='flex items-end gap-3'>
-            <span className='text-4xl font-extrabold text-white'>
+            <span className='text-4xl font-extrabold text-text'>
                 {formatPrice(price)} €
             </span>
             {priceWithTax && (
-                <span className='mb-1 text-sm text-gray-400'>
+                <span className='mb-1 text-sm text-text-60'>
                     {formatPrice(priceWithTax)} € con IVA ({tax}%)
                 </span>
             )}

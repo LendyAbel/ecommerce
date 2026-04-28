@@ -11,13 +11,11 @@ const ProductStockBadge = ({ stock = 0, compact = false }: ProductStockBadgeProp
             <span
                 className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
                     stock > 0
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-600'
+                        ? 'bg-success-20 text-success'
+                        : 'bg-error-20 text-error'
                 }`}
             >
-                <span
-                    className={`h-1.5 w-1.5 rounded-full ${stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                />
+                <span className={`h-1.5 w-1.5 rounded-full ${stock > 0 ? 'bg-success' : 'bg-error'}`} />
                 {stock > 0 ? 'En stock' : 'Sin stock'}
             </span>
         );
@@ -27,14 +25,12 @@ const ProductStockBadge = ({ stock = 0, compact = false }: ProductStockBadgeProp
         <div className='flex items-center gap-2 text-sm'>
             <InventoryOutlinedIcon
                 fontSize='small'
-                className={stock > 0 ? 'text-green-600' : 'text-red-500'}
+                sx={{ color: stock > 0 ? 'var(--color-success)' : 'var(--color-error)' }}
             />
             {stock > 0 ? (
-                <span className='font-medium text-green-700'>
-                    {stock} unidades en stock
-                </span>
+                <span className='font-medium text-success'>{stock} unidades en stock</span>
             ) : (
-                <span className='font-medium text-red-500'>Sin stock</span>
+                <span className='font-medium text-error'>Sin stock</span>
             )}
         </div>
     );
