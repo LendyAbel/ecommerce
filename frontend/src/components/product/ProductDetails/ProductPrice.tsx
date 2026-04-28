@@ -17,7 +17,7 @@ const ProductPrice = ({ price, tax, compact = false }: ProductPriceProps) => {
 
     if (compact) {
         return (
-            <span className='text-lg font-extrabold text-gray-900'>
+            <span className='text-lg font-extrabold text-white'>
                 {formatPrice(price)} €
             </span>
         );
@@ -25,7 +25,7 @@ const ProductPrice = ({ price, tax, compact = false }: ProductPriceProps) => {
 
     return (
         <div className='flex items-end gap-3'>
-            <span className='text-4xl font-extrabold text-gray-900'>
+            <span className='text-4xl font-extrabold text-white'>
                 {formatPrice(price)} €
             </span>
             {priceWithTax && (

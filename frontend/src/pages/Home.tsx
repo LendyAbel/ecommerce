@@ -11,11 +11,9 @@ const Home = () => {
     const featured = products?.slice(0, 4) ?? [];
 
     return (
-        <div>
+        <div className='bg-linear-120 from-[#0f0c29] via-[#302b63] to-[#24243e]'>
             {/* Hero */}
-            <section
-                className='relative flex min-h-105 flex-col items-center justify-center bg-linear-120 from-[#0f0c29] via-[#302b63] to-[#24243e] px-6 py-20 text-center text-white'
-            >
+            <section className='relative flex min-h-105 flex-col items-center justify-center px-6 py-20 text-center text-white'>
                 <p className='mb-2 text-xs font-semibold tracking-[0.3em] text-purple-300 uppercase'>
                     Bienvenido a nuestra tienda
                 </p>
@@ -46,7 +44,7 @@ const Home = () => {
 
             {/* Productos destacados */}
             <section className='mx-auto w-[90%] max-w-5xl py-14'>
-                <h2 className='mb-6 text-2xl font-bold text-gray-900'>Productos destacados</h2>
+                <h2 className='mb-6 font-[Georgia,serif] text-2xl font-bold text-white'>Productos destacados</h2>
 
                 <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4'>
                     {isProductsLoading
@@ -62,7 +60,7 @@ const Home = () => {
                     <div className='mt-8 text-center'>
                         <NavLink
                             to='/products'
-                            className='rounded-xl border border-gray-300 px-6 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50'
+                            className='rounded-xl border border-white/20 px-6 py-2.5 text-sm font-semibold text-white/70 transition-all duration-200 hover:border-white/40 hover:text-white'
                         >
                             Ver todos los productos
                         </NavLink>
@@ -71,16 +69,16 @@ const Home = () => {
             </section>
 
             {/* CTA */}
-            <section className='border-t border-gray-100 bg-gray-50 py-14 text-center'>
+            <section className='border-t border-white/10 py-14 text-center'>
                 {user ? (
-                    <p className='text-lg font-medium text-gray-700'>
+                    <p className='text-lg font-medium text-white/70'>
                         Hola de nuevo,{' '}
-                        <span className='font-bold text-purple-600'>{user.name}</span>. ¡Que tengas
+                        <span className='font-bold text-purple-400'>{user.name}</span>. ¡Que tengas
                         una buena compra!
                     </p>
                 ) : (
                     <div className='flex flex-col items-center gap-4'>
-                        <p className='text-lg font-medium text-gray-700'>
+                        <p className='text-lg font-medium text-white/70'>
                             ¿Tienes una cuenta? Inicia sesión para comprar.
                         </p>
                         <NavLink

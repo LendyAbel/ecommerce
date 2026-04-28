@@ -1,4 +1,3 @@
-import { Alert } from '@mui/material';
 import ProductCard from '../components/product/ProductCard';
 import type { Product } from '../types/productTypes';
 import useProducts from '../hooks/product/useProducts';
@@ -45,29 +44,30 @@ const Products = () => {
         });
     }, [products, searchQuery, selectedCategory]);
 
-    // --- loading ------------------------------
     if (isProductsLoading) {
         return (
-            <div className='m-auto mt-4 w-[90%] max-w-6xl'>
-                <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <ProductCardSkeleton key={i} />
-                    ))}
+            <div className='relative min-h-[calc(100vh-48px)] bg-linear-120 from-[#0f0c29] via-[#302b63] to-[#24243e]'>
+                <div className='m-auto pt-4 w-[90%] max-w-6xl'>
+                    <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <ProductCardSkeleton key={i} />
+                        ))}
+                    </div>
                 </div>
             </div>
         );
     }
-    // --- error --------------------------------
+
     if (isProductsError) {
         return (
-            <div className='m-auto w-[80%]'>
-                <Alert severity='error'>Error loading products</Alert>
+            <div className='flex min-h-[calc(100vh-48px)] items-start bg-linear-120 from-[#0f0c29] via-[#302b63] to-[#24243e]'>
+                <p className='m-auto mt-20 text-center text-red-400'>Error al cargar los productos</p>
             </div>
         );
     }
 
     return (
-        <div className='relative min-h-screen'>
+        <div className='relative border min-h-[calc(100vh-48px)] bg-linear-120 from-[#0f0c29] via-[#302b63] to-[#24243e]'>
             <div className='m-auto mt-4 w-[90%] max-w-6xl'>
                 <ProductFilters
                     searchQuery={searchQuery}
@@ -78,7 +78,7 @@ const Products = () => {
                 />
 
                 {filteredProducts.length === 0 ? (
-                    <p className='py-12 text-center text-gray-400'>
+                    <p className='py-12 text-center text-white/50'>
                         No hay productos que coincidan con tu búsqueda.
                     </p>
                 ) : (

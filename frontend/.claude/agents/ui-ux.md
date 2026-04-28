@@ -6,6 +6,7 @@ Soy experto en interfaces de usuario y experiencia de usuario para este proyecto
 
 - React + TypeScript
 - Tailwind CSS v4
+- Motion (animaciones)
 - @tanstack/react-form + Zod
 - MUI Icons (`@mui/icons-material`)
 - Zustand (estado global de auth y carrito)
