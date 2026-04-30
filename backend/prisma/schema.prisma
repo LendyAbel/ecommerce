@@ -7,51 +7,82 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ProductStatus {
+  published
+  discontinued
+  draft
+}
+
 model Product {
-  id String @id @default(uuid())
-  sku String @unique
-  name String
+  id               String        @id @unique @default(uuid())
+  sku              String        @unique
+  name             String
   shortDescription String
-  longDescription String?
-  brand String?
-  price Float
-  tax Int? @default(21)
-  stock Int @default(0)
-  status String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  longDescription  String?
+  brand            String?
+  price            Float
+  tax              Int?          @default(21)
+  stock            Int           @default(0)
+  status           ProductStatus @default(draft)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
-  
-  images Image[]
+  images   Image[]
+  cartItem CartItem[]
+
   categories Category[] @relation("ProductCategories")
-  mainCategory Category? @relation("MainCategory", fields: [mainCategoryId], references: [id])
-  mainCategoryId String?
 
+  mainCategory   Category? @relation("MainCategory", fields: [mainCategoryId], references: [id])
+  mainCategoryId String?
 }
 
 model Image {
-  id String @id @default(uuid())
-  url String
+  id     String  @id @default(uuid())
+  url    String
   isMain Boolean @default(false)
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
 }
 
 model Category {
-  id String @id @default(uuid())
+  id   String @id @default(uuid())
   name String @unique
 
-  products Product[] @relation("ProductCategories")
+  products     Product[] @relation("ProductCategories")
   mainProducts Product[] @relation("MainCategory")
 }
 
 model User {
-  id String @id @default(uuid())
-  email String @unique
-  password String
-  name String
-  role String @default("customer")
+  id        String   @id @unique @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("customer")
+  cart      Cart?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id String @id @unique @default(uuid())
+
+  cartItems CartItem[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id       String @id @unique @default(uuid())
+  quantity Int
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String
 }

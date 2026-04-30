@@ -47,9 +47,14 @@ const login = async (data: LoginInput) => {
 };
 
 const getLoggedUser = async (token: string) => {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
-        userId: string;
-    };
+    let payload: { userId: string };
+    try {
+        payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+            userId: string;
+        };
+    } catch {
+        throw new AppError('Invalid or expired token', 401);
+    }
 
     const user = await prisma.user.findUnique({
         where: {

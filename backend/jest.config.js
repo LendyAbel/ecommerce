@@ -1,0 +1,14 @@
+/** @type {import('ts-jest').JestConfigWithTsJest} */
+module.exports = {
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    roots: ['<rootDir>/src'],
+    testMatch: ['**/*.test.ts'],
+    setupFiles: ['<rootDir>/src/tests/setup.ts'],
+    resetMocks: true,
+    globals: {
+        'ts-jest': {
+            tsconfig: 'tsconfig.test.json',
+        },
+    },
+};
