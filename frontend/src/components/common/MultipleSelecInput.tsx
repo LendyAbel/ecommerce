@@ -81,7 +81,6 @@ const MultipleSelectInput = ({
             ) : (
                 <TextField
                     fullWidth
-                    autoFocus
                     label={`New ${label}`}
                     variant='outlined'
                     value={newCategoryText}

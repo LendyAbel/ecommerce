@@ -18,6 +18,7 @@ type SingleSelectInputProps = {
     addOption?: boolean;
 };
 
+
 const SingleSelectInput = ({
     field,
     label,
@@ -92,7 +93,7 @@ const SingleSelectInput = ({
             ) : (
                 <TextField
                     fullWidth
-                    autoFocus
+                    
                     label={`New ${label}`}
                     variant='outlined'
                     value={newCategoryText}

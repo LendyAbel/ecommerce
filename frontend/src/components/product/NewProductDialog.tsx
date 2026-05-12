@@ -88,7 +88,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                 <button
                     type='button'
                     onClick={onClose}
-                    className='absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full text-text-60 transition-colors duration-200 hover:bg-panel hover:text-text'
+                    className='absolute right-5 top-5 flex size-8 items-center justify-center rounded-full text-text-60 transition-colors duration-200 hover:bg-panel hover:text-text'
                 >
                     <Close fontSize='small' />
                 </button>
@@ -174,7 +174,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                         className='btn btn-primary disabled:cursor-not-allowed disabled:opacity-60'
                     >
                         {isPending && (
-                            <svg className='h-4 w-4 animate-spin' viewBox='0 0 24 24' fill='none'>
+                            <svg className='size-4 animate-spin' viewBox='0 0 24 24' fill='none'>
                                 <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
                                 <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
                             </svg>

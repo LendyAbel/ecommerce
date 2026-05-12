@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { LoginForm, RegisterForm, User } from '../types/authTypes';
 import authService from '../services/auth.service';
+import { useCartStore } from './cartStore';
 
 type AuthStore = {
     user: User | null;
@@ -19,6 +20,7 @@ export const useAuthStore = create<AuthStore>(set => ({
     login: async data => {
         const user = await authService.login(data);
         set({ user });
+        await useCartStore.getState().fetchCart();
     },
     register: async data => {
         await authService.register(data);
@@ -27,15 +29,18 @@ export const useAuthStore = create<AuthStore>(set => ({
             password: data.password,
         });
         set({ user });
+        await useCartStore.getState().fetchCart();
     },
     logout: async () => {
         await authService.logout();
         set({ user: null });
+        useCartStore.getState().reset();
     },
     me: async () => {
         try {
             const user = await authService.me();
             set({ user });
+            await useCartStore.getState().fetchCart();
         } catch {
             set({ user: null });
         } finally {

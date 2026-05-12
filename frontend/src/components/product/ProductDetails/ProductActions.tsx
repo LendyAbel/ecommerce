@@ -1,7 +1,9 @@
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import { useNavigate } from 'react-router';
 import { useCartStore } from '../../../store/cartStore';
+import { useAuthStore } from '../../../store/authStore';
 import type { Product } from '../../../types/productTypes';
 
 type ProductActionsProps = {
@@ -10,13 +12,24 @@ type ProductActionsProps = {
 
 const ProductActions = ({ product }: ProductActionsProps) => {
     const addItem = useCartStore(state => state.addItem);
+    const isLoading = useCartStore(state => state.isLoading);
+    const user = useAuthStore(state => state.user);
+    const navigate = useNavigate();
+
+    const handleAddToCart = () => {
+        if (!user) {
+            navigate('/auth');
+            return;
+        }
+        addItem(product.id);
+    };
 
     return (
         <div className='flex items-center gap-3 pt-2'>
             <button
                 type='button'
-                disabled={product.stock === 0}
-                onClick={() => addItem(product)}
+                disabled={product.stock === 0 || isLoading}
+                onClick={handleAddToCart}
                 className='btn btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-40'
             >
                 <ShoppingCartOutlinedIcon fontSize='small' />
@@ -26,7 +39,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             <button
                 type='button'
                 title='Guardar en favoritos'
-                className='flex h-11 w-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
+                className='flex size-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
             >
                 <FavoriteBorderIcon fontSize='small' />
             </button>
@@ -34,7 +47,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             <button
                 type='button'
                 title='Compartir'
-                className='flex h-11 w-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
+                className='flex size-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
             >
                 <ShareOutlinedIcon fontSize='small' />
             </button>

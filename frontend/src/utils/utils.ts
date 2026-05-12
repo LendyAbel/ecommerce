@@ -38,9 +38,3 @@ export const sxButtonStyle = {
         color: 'var(--color-text-38)',
     },
 };
-
-export const sxRadioLabelStyle = {
-    '& .MuiFormControlLabel-label': { color: 'var(--color-text-60)' },
-    '& .MuiRadio-root': { color: 'var(--color-text-38)' },
-    '& .MuiRadio-root.Mui-checked': { color: 'var(--color-primary)' },
-};

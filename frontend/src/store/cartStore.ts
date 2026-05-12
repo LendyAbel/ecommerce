@@ -1,54 +1,73 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { CartItem } from '../types/cartTypes';
-import type { Product } from '../types/productTypes';
+import type { Cart } from '../types/cartTypes';
+import cartService from '../services/cart.service';
 
 type CartStore = {
-    items: CartItem[];
-    addItem: (product: Product, quantity?: number) => void;
-    removeItem: (productId: string) => void;
-    updateQuantity: (productId: string, quantity: number) => void;
-    clearCart: () => void;
+    cart: Cart | null;
+    isLoading: boolean;
+    fetchCart: () => Promise<void>;
+    addItem: (productId: string, quantity?: number) => Promise<void>;
+    updateItem: (itemId: string, quantity: number) => Promise<void>;
+    removeItem: (itemId: string) => Promise<void>;
+    clearCart: () => Promise<void>;
+    reset: () => void;
     totalItems: () => number;
     totalPrice: () => number;
 };
 
-export const useCartStore = create<CartStore>()(
-    persist(
-        (set, get) => ({
-            items: [],
-            addItem: (product, quantity = 1) => {
-                const existing = get().items.find(i => i.product.id === product.id);
-                if (existing) {
-                    set({
-                        items: get().items.map(i =>
-                            i.product.id === product.id
-                                ? { ...i, quantity: i.quantity + quantity }
-                                : i,
-                        ),
-                    });
-                } else {
-                    set({ items: [...get().items, { product, quantity }] });
-                }
-            },
-            removeItem: productId =>
-                set({ items: get().items.filter(i => i.product.id !== productId) }),
-            updateQuantity: (productId, quantity) => {
-                if (quantity <= 0) {
-                    get().removeItem(productId);
-                    return;
-                }
-                set({
-                    items: get().items.map(i =>
-                        i.product.id === productId ? { ...i, quantity } : i,
-                    ),
-                });
-            },
-            clearCart: () => set({ items: [] }),
-            totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
-            totalPrice: () =>
-                get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
-        }),
-        { name: 'cart-storage' },
-    ),
-);
+export const useCartStore = create<CartStore>((set, get) => ({
+    cart: null,
+    isLoading: false,
+    fetchCart: async () => {
+        try {
+            set({ isLoading: true });
+            const cart = await cartService.getCart();
+            set({ cart });
+        } catch {
+            set({ cart: null });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    addItem: async (productId, quantity = 1) => {
+        set({ isLoading: true });
+        try {
+            const cart = await cartService.addItem(productId, quantity);
+            set({ cart });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    updateItem: async (itemId, quantity) => {
+        set({ isLoading: true });
+        try {
+            const cart = await cartService.updateItem(itemId, quantity);
+            set({ cart });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    removeItem: async (itemId) => {
+        set({ isLoading: true });
+        try {
+            const cart = await cartService.removeItem(itemId);
+            set({ cart });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    clearCart: async () => {
+        set({ isLoading: true });
+        try {
+            const cart = await cartService.clearCart();
+            set({ cart });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    reset: () => set({ cart: null }),
+    totalItems: () =>
+        get().cart?.cartItems.reduce((sum, i) => sum + i.quantity, 0) ?? 0,
+    totalPrice: () =>
+        get().cart?.cartItems.reduce((sum, i) => sum + i.product.price * i.quantity, 0) ?? 0,
+}));

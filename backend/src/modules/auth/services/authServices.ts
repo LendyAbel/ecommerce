@@ -57,15 +57,20 @@ const getLoggedUser = async (token: string) => {
     }
 
     const user = await prisma.user.findUnique({
-        where: {
-            id: payload.userId,
+        where: { id: payload.userId },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
         },
     });
 
     if (!user) throw new AppError('User not found', 404);
-    const { password: _, ...userWithoutPassword } = user;
-    
-    return { user: userWithoutPassword };
+
+    return { user };
 };
 
 export default { register, login, getLoggedUser };

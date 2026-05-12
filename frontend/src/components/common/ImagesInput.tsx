@@ -73,7 +73,7 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                     >
                         {images?.map((image, index) => {
                             return (
-                                <div key={index} className='flex w-full flex-row items-center gap-0.5'>
+                                <div key={image.url} className='flex w-full flex-row items-center gap-0.5'>
                                     <TextField
                                         fullWidth
                                         sx={sxInputStyle}

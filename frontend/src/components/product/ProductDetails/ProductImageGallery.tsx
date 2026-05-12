@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import type { Image, ProductStatus } from '../../types/productTypes';
+import type { Image, ProductStatus } from '../../../types/productTypes';
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-    published:    { label: 'Disponible',   className: 'bg-success-20 text-success' },
-    draft:        { label: 'Borrador',     className: 'bg-warning-20 text-warning' },
-    discontinued: { label: 'Descatalogado', className: 'bg-panel text-text-60' },
+    published: { label: 'Disponible', className: 'bg-success-20 text-success' },
+    draft: { label: 'Borrador', className: 'bg-warning-20 text-warning' },
+    discontinued: {
+        label: 'Descatalogado',
+        className: 'bg-panel text-text-60',
+    },
 };
 
 type ProductImageGalleryProps = {
@@ -13,7 +16,11 @@ type ProductImageGalleryProps = {
     productStatus: ProductStatus | undefined;
 };
 
-const ProductImageGallery = ({ images, productName, productStatus }: ProductImageGalleryProps) => {
+const ProductImageGallery = ({
+    images,
+    productName,
+    productStatus,
+}: ProductImageGalleryProps) => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const mainImageUrl =
@@ -29,7 +36,7 @@ const ProductImageGallery = ({ images, productName, productStatus }: ProductImag
 
     return (
         <div className='flex flex-col gap-3'>
-            <div className='relative overflow-hidden rounded-2xl border border-border bg-panel'>
+            <div className='border-border bg-panel relative overflow-hidden rounded-2xl border'>
                 {activeImage ? (
                     <img
                         src={activeImage}
@@ -37,13 +44,25 @@ const ProductImageGallery = ({ images, productName, productStatus }: ProductImag
                         className='h-105 w-full object-contain transition-all duration-300'
                     />
                 ) : (
-                    <div className='flex h-105 items-center justify-center text-text-38'>
-                        <svg className='h-16 w-16' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1} d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                    <div className='text-text-38 flex h-105 items-center justify-center'>
+                        <svg
+                            className=' size-16'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={1}
+                                d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
+                            />
                         </svg>
                     </div>
                 )}
-                <span className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}`}>
+                <span
+                    className={`absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}`}
+                >
                     {status.label}
                 </span>
             </div>
@@ -61,7 +80,11 @@ const ProductImageGallery = ({ images, productName, productStatus }: ProductImag
                                     : 'border-transparent opacity-50 hover:opacity-100'
                             }`}
                         >
-                            <img src={img.url} alt='' className='h-full w-full object-cover' />
+                            <img
+                                src={img.url}
+                                alt=''
+                                className='h-full w-full object-cover'
+                            />
                         </button>
                     ))}
                 </div>

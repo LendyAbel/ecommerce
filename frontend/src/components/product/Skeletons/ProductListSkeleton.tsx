@@ -36,8 +36,8 @@ const ProductListSkeleton = () => {
 
                     <div className='flex items-center gap-3 pt-2'>
                         <div className='skeleton h-11 flex-1 rounded-xl' />
-                        <div className='skeleton h-11 w-11 rounded-xl' />
-                        <div className='skeleton h-11 w-11 rounded-xl' />
+                        <div className='skeleton size-11 rounded-xl' />
+                        <div className='skeleton size-11 rounded-xl' />
                     </div>
                 </div>
             </div>
