@@ -62,12 +62,40 @@ const addNewProduct = async (data: ProductCrateInput) => {
 };
 
 const deleteProductById = async (id: string) => {
-    return prisma.product.delete({
-        where: {
-            id,
+    const product = await prisma.product.findUnique({
+        where: { id },
+        select: {
+            mainCategoryId: true,
+            categories: { select: { id: true } },
         },
+    });
+
+    if (!product) return null;
+
+    const categoryIds = new Set<string>();
+    if (product.mainCategoryId) categoryIds.add(product.mainCategoryId);
+    for (const cat of product.categories) categoryIds.add(cat.id);
+
+    const deleted = await prisma.product.delete({
+        where: { id },
         include: productInclude,
     });
+
+    for (const categoryId of categoryIds) {
+        const remaining = await prisma.product.count({
+            where: {
+                OR: [
+                    { mainCategoryId: categoryId },
+                    { categories: { some: { id: categoryId } } },
+                ],
+            },
+        });
+        if (remaining === 0) {
+            await prisma.category.delete({ where: { id: categoryId } });
+        }
+    }
+
+    return deleted;
 };
 
 export default {

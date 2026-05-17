@@ -12,7 +12,10 @@ const useAddNewProduct = () => {
         mutationFn: (newProductData: ProductForm) =>
             productsService.addNewProduct(newProductData),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['products'] });
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['products'] }),
+                queryClient.invalidateQueries({ queryKey: ['categories'] }),
+            ]);
         },
         onError: error => {
             console.log(error);

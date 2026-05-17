@@ -10,9 +10,11 @@ jest.mock('../lib/prisma', () => ({
             findUnique: jest.fn(),
             create: jest.fn(),
             delete: jest.fn(),
+            count: jest.fn(),
         },
         category: {
             findUnique: jest.fn(),
+            delete: jest.fn(),
         },
     },
 }));
@@ -187,7 +189,15 @@ describe('Products', () => {
     });
 
     describe('DELETE /api/products/:id', () => {
-        it('should delete a product when admin is authenticated', async () => {
+        beforeEach(() => {
+            (prisma.category.delete as jest.Mock).mockResolvedValue({});
+        });
+
+        it('should delete a product without categories and return 200', async () => {
+            (prisma.product.findUnique as jest.Mock).mockResolvedValue({
+                mainCategoryId: null,
+                categories: [],
+            });
             (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
             const token = adminToken();
 
@@ -197,6 +207,95 @@ describe('Products', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject({ id: mockProduct.id });
+            expect(prisma.category.delete).not.toHaveBeenCalled();
+        });
+
+        it('should delete orphaned mainCategory when no other product references it', async () => {
+            (prisma.product.findUnique as jest.Mock).mockResolvedValue({
+                mainCategoryId: 'cat-main-uuid',
+                categories: [],
+            });
+            (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
+            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            const token = adminToken();
+
+            const res = await request(app)
+                .delete(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`);
+
+            expect(res.status).toBe(200);
+            expect(prisma.category.delete).toHaveBeenCalledWith({
+                where: { id: 'cat-main-uuid' },
+            });
+        });
+
+        it('should delete orphaned many-to-many category when no other product references it', async () => {
+            (prisma.product.findUnique as jest.Mock).mockResolvedValue({
+                mainCategoryId: null,
+                categories: [{ id: 'cat-m2m-uuid' }],
+            });
+            (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
+            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            const token = adminToken();
+
+            const res = await request(app)
+                .delete(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`);
+
+            expect(res.status).toBe(200);
+            expect(prisma.category.delete).toHaveBeenCalledWith({
+                where: { id: 'cat-m2m-uuid' },
+            });
+        });
+
+        it('should not delete category still referenced by another product', async () => {
+            (prisma.product.findUnique as jest.Mock).mockResolvedValue({
+                mainCategoryId: 'cat-shared-uuid',
+                categories: [],
+            });
+            (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
+            (prisma.product.count as jest.Mock).mockResolvedValue(2);
+            const token = adminToken();
+
+            const res = await request(app)
+                .delete(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`);
+
+            expect(res.status).toBe(200);
+            expect(prisma.category.delete).not.toHaveBeenCalled();
+        });
+
+        it('should delete multiple orphaned categories', async () => {
+            (prisma.product.findUnique as jest.Mock).mockResolvedValue({
+                mainCategoryId: 'cat-1-uuid',
+                categories: [{ id: 'cat-2-uuid' }, { id: 'cat-3-uuid' }],
+            });
+            (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
+            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            const token = adminToken();
+
+            const res = await request(app)
+                .delete(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`);
+
+            expect(res.status).toBe(200);
+            expect(prisma.category.delete).toHaveBeenCalledTimes(3);
+        });
+
+        it('should deduplicate when mainCategory is also in categories list', async () => {
+            (prisma.product.findUnique as jest.Mock).mockResolvedValue({
+                mainCategoryId: 'cat-same-uuid',
+                categories: [{ id: 'cat-same-uuid' }],
+            });
+            (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
+            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            const token = adminToken();
+
+            await request(app)
+                .delete(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`);
+
+            expect(prisma.category.delete).toHaveBeenCalledTimes(1);
         });
 
         it('should return 401 when not authenticated', async () => {

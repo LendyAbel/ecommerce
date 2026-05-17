@@ -8,6 +8,7 @@ import ProductCardSkeleton from '../components/product/Skeletons/ProductCardSkel
 import ProductFilters from '../components/product/ProductFilters';
 import { useAuthStore } from '../store/authStore';
 import { useMemo, useState } from 'react';
+import useCategory from '../hooks/category/useCategory';
 
 const Products = () => {
     const { products, isProductsError, isProductsLoading } = useProducts();
@@ -16,16 +17,9 @@ const Products = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-
-    const categories = useMemo(() => {
-        if (!products) return [];
-        const cats = new Set<string>();
-        products.forEach(p => {
-            if (p.mainCategory?.name) cats.add(p.mainCategory.name);
-            p.categories?.forEach(c => cats.add(c.name));
-        });
-        return Array.from(cats).sort();
-    }, [products]);
+    const {categories} = useCategory()
+    const categoriesList = categories.map (c => c.name)
+    
 
     const filteredProducts = useMemo(() => {
         if (!products) return [];
@@ -76,7 +70,7 @@ const Products = () => {
                     onSearchChange={setSearchQuery}
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
-                    categories={categories}
+                    categories={categoriesList}
                 />
 
                 {filteredProducts.length === 0 ? (

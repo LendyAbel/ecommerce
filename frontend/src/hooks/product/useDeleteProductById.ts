@@ -10,7 +10,10 @@ const useDeleteProductById = () => {
     } = useMutation({
         mutationFn: (id: string) => productsService.deleteProductById(id),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['products'] });
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['products'] }),
+                queryClient.invalidateQueries({ queryKey: ['categories'] }),
+            ]);
         },
     });
     return { deleteProductById, isPending, isSuccess };
