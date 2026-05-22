@@ -25,7 +25,7 @@ const logout = async () => {
 
 const me = async (): Promise<User | null> => {
     const res = await api.get('/me');
-    console.log(res.data.user);
+    console.log('user: ',res.data.user);
     return res.data.user;
 };
 

@@ -6,8 +6,20 @@ const api = axios.create({
     withCredentials: true,
 });
 
-const getProducts = async (): Promise<Product[]> => {
-    const res = await api.get('/');
+export type SortBy = 'price_asc' | 'price_desc' | 'newest' | 'oldest';
+
+export type ProductFilters = {
+    search?: string;
+    category?: string;
+    sortBy?: SortBy;
+};
+
+const getProducts = async (filters: ProductFilters = {}): Promise<Product[]> => {
+    const params: Record<string, string> = {};
+    if (filters.search) params.search = filters.search;
+    if (filters.category) params.category = filters.category;
+    if (filters.sortBy) params.sortBy = filters.sortBy;
+    const res = await api.get('/', { params });
     return res.data;
 };
 

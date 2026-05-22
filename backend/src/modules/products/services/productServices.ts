@@ -1,6 +1,6 @@
 import { prisma } from '../../../lib/prisma';
 import { normalizeName } from '../../../lib/utils';
-import { ProductCrateInput } from '../productTypes';
+import { ProductCrateInput, ProductQuery } from '../productTypes';
 
 const productInclude = {
     images: true,
@@ -8,9 +8,45 @@ const productInclude = {
     categories: true,
 } as const;
 
-const getAllProducts = async () => {
-        return prisma.product.findMany({ include: productInclude });
+const getAllProducts = async (filters: ProductQuery = {}) => {
+    const { search, category, sortBy } = filters;
+
+    const andConditions: object[] = [];
+
+    if (search) {
+        const pattern = `%${search}%`;
+        const matches = await prisma.$queryRaw<{ id: string }[]>`
+            SELECT id FROM "Product"
+            WHERE unaccent(name) ILIKE unaccent(${pattern})
+               OR unaccent(brand) ILIKE unaccent(${pattern})
+               OR unaccent("shortDescription") ILIKE unaccent(${pattern})
+        `;
+        andConditions.push({ id: { in: matches.map(m => m.id) } });
+    }
+
+    if (category) {
+        andConditions.push({
+            OR: [
+                { mainCategory: { name: { equals: category, mode: 'insensitive' } } },
+                { categories: { some: { name: { equals: category, mode: 'insensitive' } } } },
+            ],
+        });
+    }
+
+    const orderBy =
+        sortBy === 'price_asc' ? { price: 'asc' as const }
+        : sortBy === 'price_desc' ? { price: 'desc' as const }
+        : sortBy === 'oldest' ? { createdAt: 'asc' as const }
+        : { createdAt: 'desc' as const };
+
+    return prisma.product.findMany({
+        where: andConditions.length ? { AND: andConditions } : {},
+        orderBy,
+        include: productInclude,
+    });
 };
+
+
 
 const getProductById = async (id: string) => {
     return prisma.product.findUnique({

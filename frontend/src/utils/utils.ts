@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 export const sxInputStyle = {
     '& .MuiOutlinedInput-root': {
         borderRadius: '8px',
@@ -8,7 +10,10 @@ export const sxInputStyle = {
         '&.Mui-focused fieldset': { borderColor: 'var(--color-border-focus)' },
     },
     '& .MuiInputBase-input': { color: 'var(--color-text)' },
-    '& .MuiInputBase-input::placeholder': { color: 'var(--color-text-38)', opacity: 1 },
+    '& .MuiInputBase-input::placeholder': {
+        color: 'var(--color-text-38)',
+        opacity: 1,
+    },
     '& .MuiSelect-select': { color: 'var(--color-text)' },
     '& .MuiInputLabel-root': { color: 'var(--color-text-60)' },
     '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-primary)' },
@@ -19,10 +24,11 @@ export const sxInputStyle = {
     '& .MuiFormControlLabel-label': { color: 'var(--color-text-60)' },
     '& .MuiSelect-icon': { color: 'var(--color-text-60)' },
     '& input[type=number]': { MozAppearance: 'textfield' },
-    '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
-        WebkitAppearance: 'none',
-        margin: 0,
-    },
+    '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
+        {
+            WebkitAppearance: 'none',
+            margin: 0,
+        },
 };
 
 export const sxButtonStyle = {
@@ -37,4 +43,17 @@ export const sxButtonStyle = {
         borderColor: 'var(--color-border)',
         color: 'var(--color-text-38)',
     },
+};
+
+export const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+    return debouncedValue;
 };

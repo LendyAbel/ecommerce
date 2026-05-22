@@ -33,7 +33,6 @@ const MultipleSelectInput = ({
 
     const handleAdd = () => {
         const trimmed = newCategoryText.trim();
-        console.log(trimmed);
         if (!trimmed) return;
 
         if (!localOptions.includes(trimmed)) {

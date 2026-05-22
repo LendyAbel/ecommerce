@@ -1,6 +1,6 @@
 import express from 'express';
 import productServices from '../services/productServices';
-import { ProductCreateSchema } from '../schemas/productsZodSchema';
+import { ProductCreateSchema, ProductQuerySchema } from '../schemas/productsZodSchema';
 import { AppError } from '../../../lib/AppError';
 import {
     authenticate,
@@ -11,8 +11,9 @@ import { getParam } from '../../../lib/utils';
 const router = express.Router();
 
 //Obtener todos los productos
-router.get('/', async (_req, res) => {
-    const products = await productServices.getAllProducts();
+router.get('/', async (req, res) => {
+    const filters = ProductQuerySchema.parse(req.query);
+    const products = await productServices.getAllProducts(filters);
     res.status(200).json(products);
 });
 

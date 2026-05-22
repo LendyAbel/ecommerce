@@ -41,3 +41,9 @@ export const ProductCreateSchema = z.object({
 });
 
 export const ProductUpdateSchema = ProductCreateSchema.partial();
+
+export const ProductQuerySchema = z.object({
+    search: z.string().trim().optional(),
+    category: z.string().trim().optional(),
+    sortBy: z.enum(['price_asc', 'price_desc', 'newest', 'oldest']).optional(),
+});

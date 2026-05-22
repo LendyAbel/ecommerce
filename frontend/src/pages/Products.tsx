@@ -7,40 +7,32 @@ import NewProductDialog from '../components/product/NewProductDialog';
 import ProductCardSkeleton from '../components/product/Skeletons/ProductCardSkeleton';
 import ProductFilters from '../components/product/ProductFilters';
 import { useAuthStore } from '../store/authStore';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import useCategory from '../hooks/category/useCategory';
+import type { SortBy } from '../services/products.service';
+import { useDebounce } from '../utils/utils';
 
 const Products = () => {
-    const { products, isProductsError, isProductsLoading } = useProducts();
-    const userRole = useAuthStore(state => state.user?.role);
-    const { isOpen, open, close } = useNewProductDialog();
-
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const {categories} = useCategory()
-    const categoriesList = categories.map (c => c.name)
-    
+    const [sortBy, setSortBy] = useState<SortBy>('newest');
 
-    const filteredProducts = useMemo(() => {
-        if (!products) return [];
-        return products.filter(p => {
-            const q = searchQuery.toLowerCase();
-            const matchesSearch =
-                !q ||
-                p.name.toLowerCase().includes(q) ||
-                p.brand.toLowerCase().includes(q) ||
-                p.shortDescription.toLowerCase().includes(q);
-            const matchesCategory =
-                !selectedCategory ||
-                p.mainCategory?.name === selectedCategory ||
-                p.categories?.some(c => c.name === selectedCategory);
-            return matchesSearch && matchesCategory;
-        });
-    }, [products, searchQuery, selectedCategory]);
+    const debouncedSearch = useDebounce(searchQuery, 350);
+
+    const { products, isProductsError, isProductsLoading } = useProducts({
+        search: debouncedSearch,
+        category: selectedCategory,
+        sortBy,
+    });
+    const userRole = useAuthStore(state => state.user?.role);
+    const newProductDialog = useNewProductDialog();
+
+    const { categories } = useCategory();
+    const categoriesList = categories.map(c => c.name);
 
     if (isProductsLoading) {
         return (
-            <div className='relative min-h-[calc(100vh-48px)] bg-bg'>
+            <div className='bg-bg relative min-h-[calc(100vh-48px)]'>
                 <div className='m-auto w-[90%] max-w-6xl pt-4'>
                     <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
                         {Array.from({ length: 6 }).map((_, i) => (
@@ -54,8 +46,8 @@ const Products = () => {
 
     if (isProductsError) {
         return (
-            <div className='flex min-h-[calc(100vh-48px)] items-start bg-bg'>
-                <p className='m-auto mt-20 text-center text-error'>
+            <div className='bg-bg flex min-h-[calc(100vh-48px)] items-start'>
+                <p className='text-error m-auto mt-20 text-center'>
                     Error al cargar los productos
                 </p>
             </div>
@@ -63,7 +55,7 @@ const Products = () => {
     }
 
     return (
-        <div className='relative min-h-[calc(100vh-48px)] bg-bg'>
+        <div className='bg-bg relative min-h-[calc(100vh-48px)]'>
             <div className='m-auto mt-4 w-[90%] max-w-6xl'>
                 <ProductFilters
                     searchQuery={searchQuery}
@@ -71,23 +63,30 @@ const Products = () => {
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
                     categories={categoriesList}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
                 />
 
-                {filteredProducts.length === 0 ? (
-                    <p className='py-12 text-center text-text-38'>
+                {products.length === 0 ? (
+                    <p className='text-text-38 py-12 text-center'>
                         No hay productos que coincidan con tu búsqueda.
                     </p>
                 ) : (
                     <section className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-                        {filteredProducts.map((product: Product) => (
+                        {products.map((product: Product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </section>
                 )}
             </div>
 
-            {userRole === 'admin' && <AddProductButton onClick={open} />}
-            <NewProductDialog isOpen={isOpen} onClose={close} />
+            {userRole === 'admin' && (
+                <AddProductButton onClick={newProductDialog.open} />
+            )}
+            <NewProductDialog
+                isOpen={newProductDialog.isOpen}
+                onClose={newProductDialog.close}
+            />
         </div>
     );
 };

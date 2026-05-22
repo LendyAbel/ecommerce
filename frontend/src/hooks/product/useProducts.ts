@@ -1,14 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
-import productsService from '../../services/products.service';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import productsService, { type ProductFilters } from '../../services/products.service';
 
-const useProducts = () => {
+const useProducts = (filters: ProductFilters = {}) => {
     const {
         data,
         isLoading: isProductsLoading,
         isError: isProductsError,
     } = useQuery({
-        queryKey: ['products'],
-        queryFn: productsService.getProducts,
+        queryKey: ['products', filters],
+        queryFn: () => productsService.getProducts(filters),
+        placeholderData: keepPreviousData,
     });
 
     const products = data ?? [];

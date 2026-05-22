@@ -1,6 +1,16 @@
-import { TextField, InputAdornment, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import {
+    TextField,
+    InputAdornment,
+    ToggleButton,
+    ToggleButtonGroup,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { sxInputStyle } from '../../utils/utils';
+import type { SortBy } from '../../services/products.service';
 
 type ProductFiltersProps = {
     searchQuery: string;
@@ -8,7 +18,16 @@ type ProductFiltersProps = {
     selectedCategory: string;
     onCategoryChange: (value: string) => void;
     categories: string[];
+    sortBy: SortBy;
+    onSortChange: (value: SortBy) => void;
 };
+
+const sortOptions: { value: SortBy; label: string }[] = [
+    { value: 'newest', label: 'Más recientes' },
+    { value: 'oldest', label: 'Más antiguos' },
+    { value: 'price_asc', label: 'Precio: menor a mayor' },
+    { value: 'price_desc', label: 'Precio: mayor a menor' },
+];
 
 const ProductFilters = ({
     searchQuery,
@@ -16,25 +35,60 @@ const ProductFilters = ({
     selectedCategory,
     onCategoryChange,
     categories,
+    sortBy,
+    onSortChange,
 }: ProductFiltersProps) => {
     return (
         <div className='mb-6 flex flex-col gap-4'>
-            <TextField
-                value={searchQuery}
-                onChange={e => onSearchChange(e.target.value)}
-                placeholder='Buscar productos...'
-                size='small'
-                slotProps={{
-                    input: {
-                        startAdornment: (
-                            <InputAdornment position='start'>
-                                <SearchIcon fontSize='small' sx={{ color: 'var(--color-text-38)' }} />
-                            </InputAdornment>
-                        ),
-                    },
-                }}
-                sx={{ ...sxInputStyle, maxWidth: 360 }}
-            />
+            <div className='flex flex-wrap items-center gap-3'>
+                <TextField
+                    value={searchQuery}
+                    onChange={e => onSearchChange(e.target.value)}
+                    placeholder='Buscar productos...'
+                    size='small'
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position='start'>
+                                    <SearchIcon fontSize='small' sx={{ color: 'var(--color-text-38)' }} />
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
+                    sx={{ ...sxInputStyle, flex: '1 1 200px', maxWidth: 360 }}
+                />
+
+                <FormControl size='small' sx={{ ...sxInputStyle, minWidth: 200 }}>
+                    <InputLabel>Ordenar por</InputLabel>
+                    <Select
+                        value={sortBy}
+                        label='Ordenar por'
+                        onChange={e => onSortChange(e.target.value as SortBy)}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    bgcolor: 'var(--color-surface)',
+                                    color: 'var(--color-text)',
+                                    border: '1px solid var(--color-border)',
+                                    '& .MuiMenuItem-root:hover': {
+                                        bgcolor: 'var(--color-primary-10)',
+                                    },
+                                    '& .MuiMenuItem-root.Mui-selected': {
+                                        bgcolor: 'var(--color-primary-10)',
+                                        color: 'var(--color-primary)',
+                                    },
+                                },
+                            },
+                        }}
+                    >
+                        {sortOptions.map(opt => (
+                            <MenuItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </div>
 
             {categories.length > 0 && (
                 <ToggleButtonGroup
