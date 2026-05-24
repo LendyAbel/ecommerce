@@ -4,17 +4,17 @@ import TextFieldInput from '../common/TextFieldInput';
 import { useForm } from '@tanstack/react-form';
 import { LoginFormSchema } from '../../schemas/userSchema';
 import { useNavigate } from 'react-router';
-import { useAuthStore } from '../../store/authStore';
 import { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'motion/react';
+import { useAuth } from '../../hooks/auth/useAuth';
 
 type LoginProps = {
     showLogin: boolean;
 };
 
 const Login = ({ showLogin }: LoginProps) => {
-    const login = useAuthStore(state => state.login);
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [serverError, setServerError] = useState<string | null>(null);
 
@@ -28,7 +28,10 @@ const Login = ({ showLogin }: LoginProps) => {
                 navigate('/products');
             } catch (error) {
                 if (axios.isAxiosError(error)) {
-                    setServerError(error.response?.data?.error ?? 'Credenciales incorrectas');
+                    setServerError(
+                        error.response?.data?.error ??
+                            'Credenciales incorrectas',
+                    );
                 } else {
                     setServerError('Error inesperado. Inténtalo de nuevo.');
                 }
@@ -52,10 +55,10 @@ const Login = ({ showLogin }: LoginProps) => {
             transition={{ duration: 0.4, ease: 'easeOut' }}
         >
             <form onSubmit={onSubmit} className='w-full max-w-xs'>
-                <p className='text-xs font-semibold uppercase tracking-[0.25em] text-primary'>
+                <p className='text-primary text-xs font-semibold tracking-[0.25em] uppercase'>
                     Bienvenido
                 </p>
-                <h2 className='mt-1 font-display text-2xl font-bold text-text'>
+                <h2 className='font-display text-text mt-1 text-2xl font-bold'>
                     Iniciar sesión
                 </h2>
 
@@ -66,7 +69,12 @@ const Login = ({ showLogin }: LoginProps) => {
                                 field={field}
                                 label='Email'
                                 startIcon={
-                                    <EmailOutlinedIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
+                                    <EmailOutlinedIcon
+                                        sx={{
+                                            color: 'var(--color-text-38)',
+                                            fontSize: 18,
+                                        }}
+                                    />
                                 }
                             />
                         )}
@@ -78,19 +86,26 @@ const Login = ({ showLogin }: LoginProps) => {
                                 label='Contraseña'
                                 type='password'
                                 startIcon={
-                                    <LockOutlinedIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
+                                    <LockOutlinedIcon
+                                        sx={{
+                                            color: 'var(--color-text-38)',
+                                            fontSize: 18,
+                                        }}
+                                    />
                                 }
                             />
                         )}
                     </Field>
                 </div>
 
-                <p className='mt-2 cursor-pointer text-right text-xs text-primary hover:text-primary-hover'>
+                <p className='text-primary hover:text-primary-hover mt-2 cursor-pointer text-right text-xs'>
                     ¿Olvidaste tu contraseña?
                 </p>
 
                 {serverError && (
-                    <p className='mt-3 text-xs font-medium text-error'>{serverError}</p>
+                    <p className='text-error mt-3 text-xs font-medium'>
+                        {serverError}
+                    </p>
                 )}
 
                 <button
@@ -99,9 +114,24 @@ const Login = ({ showLogin }: LoginProps) => {
                     className='btn btn-primary btn-full mt-5'
                 >
                     {state.isSubmitting && (
-                        <svg className='size-4 animate-spin' viewBox='0 0 24 24' fill='none'>
-                            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-                            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
+                        <svg
+                            className='size-4 animate-spin'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                        >
+                            <circle
+                                className='opacity-25'
+                                cx='12'
+                                cy='12'
+                                r='10'
+                                stroke='currentColor'
+                                strokeWidth='4'
+                            />
+                            <path
+                                className='opacity-75'
+                                fill='currentColor'
+                                d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z'
+                            />
                         </svg>
                     )}
                     ENTRAR

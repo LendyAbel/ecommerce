@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import CartBage from '../components/cart/CartBage';
 import { useAuthStore } from '../store/authStore';
+import { useAuth } from '../hooks/auth/useAuth';
 
 type Props = {
     children: ReactNode;
@@ -13,16 +14,16 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     }`;
 
 const Navbar = ({ children }: Props) => {
+    const { logout } = useAuth();
     const user = useAuthStore(state => state.user);
-    const logout = useAuthStore(state => state.logout);
 
     return (
         <>
             <nav
                 aria-label='Navegación principal'
-                className='flex h-12 w-full items-center justify-between border-b border-border bg-surface/90 px-6 backdrop-blur-md'
+                className='border-border bg-surface/90 flex h-12 w-full items-center justify-between border-b px-6 backdrop-blur-md'
             >
-                <span className='text-xs font-semibold uppercase tracking-widest text-primary'>
+                <span className='text-primary text-xs font-semibold tracking-widest uppercase'>
                     {user ? `Hola, ${user.name}` : 'Bienvenido'}
                 </span>
 
@@ -41,20 +42,22 @@ const Navbar = ({ children }: Props) => {
                 <div className='flex items-center gap-3'>
                     {user ? (
                         <>
-                            <CartBage />
                             <button
                                 type='button'
-                                onClick={logout}
-                                className='cursor-pointer text-xs font-semibold uppercase tracking-widest text-text-60 transition-colors duration-200 hover:text-error'
+                                onClick={() => logout()}
+                                className='text-text-60 hover:text-error cursor-pointer text-xs font-semibold tracking-widest uppercase transition-colors duration-200'
                             >
                                 Salir
                             </button>
                         </>
                     ) : (
-                        <NavLink to='/auth' className={navLinkClass}>
-                            Iniciar sesión
-                        </NavLink>
+                        <>
+                            <NavLink to='/auth' className={navLinkClass}>
+                                Iniciar sesión
+                            </NavLink>
+                        </>
                     )}
+                    <CartBage />
                 </div>
             </nav>
             {children}

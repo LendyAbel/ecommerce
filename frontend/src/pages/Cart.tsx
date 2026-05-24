@@ -15,8 +15,12 @@ const Cart = () => {
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
     const clearCart = useCartStore(state => state.clearCart);
-    const totalPrice = useCartStore(state => state.totalPrice());
+
+    const totalPrice = useCartStore(state => state.totalPrice);
+
     const items = cart?.cartItems ?? [];
+
+    console.log(cart);
 
     if (isLoading) {
         return (
@@ -52,13 +56,13 @@ const Cart = () => {
                 <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
                     {/* Lista de items */}
                     <div className='flex flex-col gap-4 md:col-span-2'>
-                        {items.map(({ id, product, quantity }) => {
+                        {items.map(({ product, quantity }) => {
                             const mainImage =
                                 product.images?.find(img => img.isMain)?.url ??
                                 product.images?.[0]?.url;
                             return (
                                 <div
-                                    key={id}
+                                    key={product.id}
                                     className='border-border bg-surface flex items-center gap-4 rounded-2xl border p-4 shadow-sm'
                                 >
                                     {mainImage ? (
@@ -93,12 +97,10 @@ const Cart = () => {
                                                     color: 'var(--color-text-60)',
                                                 }}
                                                 onClick={() =>
-                                                    quantity - 1 <= 0
-                                                        ? removeItem(id)
-                                                        : updateItem(
-                                                              id,
-                                                              quantity - 1,
-                                                          )
+                                                    updateItem(
+                                                        product.id,
+                                                        quantity - 1,
+                                                    )
                                                 }
                                             >
                                                 <RemoveIcon fontSize='small' />
@@ -114,7 +116,10 @@ const Cart = () => {
                                                     color: 'var(--color-text-60)',
                                                 }}
                                                 onClick={() =>
-                                                    updateItem(id, quantity + 1)
+                                                    updateItem(
+                                                        product.id,
+                                                        quantity + 1,
+                                                    )
                                                 }
                                             >
                                                 <AddIcon fontSize='small' />
@@ -134,7 +139,9 @@ const Cart = () => {
                                                 opacity: 0.6,
                                                 '&:hover': { opacity: 1 },
                                             }}
-                                            onClick={() => removeItem(id)}
+                                            onClick={() =>
+                                                removeItem(product.id)
+                                            }
                                         >
                                             <DeleteOutlineIcon fontSize='small' />
                                         </IconButton>
@@ -154,7 +161,7 @@ const Cart = () => {
                         <div className='text-text-60 my-4 flex justify-between text-sm'>
                             <span>Subtotal</span>
                             <span className='text-text font-semibold'>
-                                {formatPrice(totalPrice)}
+                                {formatPrice(totalPrice())}
                             </span>
                         </div>
 

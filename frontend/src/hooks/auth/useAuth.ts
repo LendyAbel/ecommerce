@@ -1,0 +1,70 @@
+import { useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '../../store/authStore';
+import authService from '../../services/auth.service';
+import { useSyncCart } from '../cart/useSyncCart';
+import { useCartStore } from '../../store/cartStore';
+
+export const useAuth = () => {
+    const queryClient = useQueryClient();
+    const setUser = useAuthStore(state => state.setUser);
+    const { syncWithBackendAsync, fetchFromBackendAsync, replaceCartAsync } = useSyncCart();
+    const meQuery = useQuery({
+        queryKey: ['user'],
+        queryFn: authService.me,
+        retry: false,
+    });
+
+    // On page load/refresh: user already logged in → backend is source of truth, just fetch
+    // Do NOT use syncWithBackendAsync here: it calls addItem and would duplicate quantities
+    useEffect(() => {
+        if (meQuery.isSuccess) {
+            setUser(meQuery.data);
+            fetchFromBackendAsync();
+            console.log('Fetch Cart on ME');
+        }
+        if (meQuery.isError) {
+            setUser(null);
+        }
+    }, [meQuery.isSuccess, meQuery.isError, meQuery.data, setUser, fetchFromBackendAsync]);
+
+    const loginMutation = useMutation({
+        mutationFn: authService.login,
+        onSuccess: async user => {
+            setUser(user);
+            await syncWithBackendAsync();
+            console.log('Sync Cart on LOGIN');
+        },
+    });
+
+    const registerMutation = useMutation({
+        mutationFn: authService.register,
+        onSuccess: async user => {
+            setUser(user);
+            await syncWithBackendAsync();
+            console.log('Sync Cart on REGISTER');
+        },
+    });
+
+    const logoutMutation = useMutation({
+        mutationFn: async () => {
+            await replaceCartAsync();
+            console.log('Sync Cart on LOGOUT');
+            await authService.logout();
+        },
+        onSuccess: () => {
+            setUser(null);
+            useCartStore.getState().clearCart();
+            queryClient.resetQueries({ queryKey: ['user'] });
+        },
+    });
+
+    return {
+        isAuthLoading: meQuery.isLoading,
+        login: loginMutation.mutateAsync,
+        register: registerMutation.mutateAsync,
+        logout: logoutMutation.mutateAsync,
+        isLoginPending: loginMutation.isPending,
+        isRegisterPending: registerMutation.isPending,
+    };
+};

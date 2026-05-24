@@ -1,7 +1,6 @@
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import { useAuthStore } from '../../store/authStore';
 import { useForm } from '@tanstack/react-form';
 import { RegisterFormSchema } from '../../schemas/userSchema';
 import { useNavigate } from 'react-router';
@@ -9,13 +8,14 @@ import TextFieldInput from '../common/TextFieldInput';
 import { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'motion/react';
+import { useAuth } from '../../hooks/auth/useAuth';
 
 type RegisterProps = {
     showLogin: boolean;
 };
 
 const Register = ({ showLogin }: RegisterProps) => {
-    const register = useAuthStore(state => state.register);
+    const { register } = useAuth();
     const navigate = useNavigate();
     const [serverError, setServerError] = useState<string | null>(null);
 
@@ -29,7 +29,10 @@ const Register = ({ showLogin }: RegisterProps) => {
                 navigate('/products');
             } catch (error) {
                 if (axios.isAxiosError(error)) {
-                    setServerError(error.response?.data?.error ?? 'Error al crear la cuenta');
+                    setServerError(
+                        error.response?.data?.error ??
+                            'Error al crear la cuenta',
+                    );
                 } else {
                     setServerError('Error inesperado. Inténtalo de nuevo.');
                 }
@@ -50,13 +53,17 @@ const Register = ({ showLogin }: RegisterProps) => {
                 x: showLogin ? 40 : 0,
                 pointerEvents: showLogin ? 'none' : 'auto',
             }}
-            transition={{ duration: 0.4, ease: 'easeOut', delay: showLogin ? 0 : 0.2 }}
+            transition={{
+                duration: 0.4,
+                ease: 'easeOut',
+                delay: showLogin ? 0 : 0.2,
+            }}
         >
             <form onSubmit={onSubmit} className='w-full max-w-xs'>
-                <p className='text-xs font-semibold uppercase tracking-[0.25em] text-primary'>
+                <p className='text-primary text-xs font-semibold tracking-[0.25em] uppercase'>
                     Crear cuenta
                 </p>
-                <h2 className='mt-1 font-display text-2xl font-bold text-text'>
+                <h2 className='font-display text-text mt-1 text-2xl font-bold'>
                     Registrarse
                 </h2>
 
@@ -67,7 +74,12 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 field={field}
                                 label='Nombre'
                                 startIcon={
-                                    <PersonOutlineIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
+                                    <PersonOutlineIcon
+                                        sx={{
+                                            color: 'var(--color-text-38)',
+                                            fontSize: 18,
+                                        }}
+                                    />
                                 }
                             />
                         )}
@@ -79,7 +91,12 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 label='Email'
                                 type='email'
                                 startIcon={
-                                    <EmailOutlinedIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
+                                    <EmailOutlinedIcon
+                                        sx={{
+                                            color: 'var(--color-text-38)',
+                                            fontSize: 18,
+                                        }}
+                                    />
                                 }
                             />
                         )}
@@ -91,7 +108,12 @@ const Register = ({ showLogin }: RegisterProps) => {
                                 label='Contraseña'
                                 type='password'
                                 startIcon={
-                                    <LockOutlinedIcon sx={{ color: 'var(--color-text-38)', fontSize: 18 }} />
+                                    <LockOutlinedIcon
+                                        sx={{
+                                            color: 'var(--color-text-38)',
+                                            fontSize: 18,
+                                        }}
+                                    />
                                 }
                             />
                         )}
@@ -99,7 +121,9 @@ const Register = ({ showLogin }: RegisterProps) => {
                 </div>
 
                 {serverError && (
-                    <p className='mt-3 text-xs font-medium text-error'>{serverError}</p>
+                    <p className='text-error mt-3 text-xs font-medium'>
+                        {serverError}
+                    </p>
                 )}
 
                 <button
@@ -108,9 +132,24 @@ const Register = ({ showLogin }: RegisterProps) => {
                     className='btn btn-primary btn-full mt-6'
                 >
                     {state.isSubmitting && (
-                        <svg className='size-4 animate-spin' viewBox='0 0 24 24' fill='none'>
-                            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-                            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
+                        <svg
+                            className='size-4 animate-spin'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                        >
+                            <circle
+                                className='opacity-25'
+                                cx='12'
+                                cy='12'
+                                r='10'
+                                stroke='currentColor'
+                                strokeWidth='4'
+                            />
+                            <path
+                                className='opacity-75'
+                                fill='currentColor'
+                                d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z'
+                            />
                         </svg>
                     )}
                     CREAR CUENTA

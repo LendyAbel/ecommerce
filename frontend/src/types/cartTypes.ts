@@ -1,5 +1,14 @@
 import type { Product } from './productTypes';
 
+export type LocalCartItem = {
+    quantity: number;
+    product: Product;
+};
+
+export type LocalCart = {
+    cartItems: LocalCartItem[];
+};
+
 export type CartItem = {
     id: string;
     quantity: number;

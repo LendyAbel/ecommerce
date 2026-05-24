@@ -1,9 +1,7 @@
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
-import { useNavigate } from 'react-router';
 import { useCartStore } from '../../../store/cartStore';
-import { useAuthStore } from '../../../store/authStore';
 import type { Product } from '../../../types/productTypes';
 
 type ProductActionsProps = {
@@ -13,15 +11,9 @@ type ProductActionsProps = {
 const ProductActions = ({ product }: ProductActionsProps) => {
     const addItem = useCartStore(state => state.addItem);
     const isLoading = useCartStore(state => state.isLoading);
-    const user = useAuthStore(state => state.user);
-    const navigate = useNavigate();
 
     const handleAddToCart = () => {
-        if (!user) {
-            navigate('/auth');
-            return;
-        }
-        addItem(product.id);
+        addItem({product});
     };
 
     return (

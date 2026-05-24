@@ -9,15 +9,10 @@ import Cart from './pages/Cart';
 import About from './pages/About';
 import ProductDetails from './components/product/ProductDetails';
 import Authenticate from './pages/Authenticate';
-import { useAuthStore } from './store/authStore';
-import { useEffect } from 'react';
+import { useAuth } from './hooks/auth/useAuth';
 
 function App() {
-    const me = useAuthStore(state => state.me);
-
-    useEffect(() => {
-        me();
-    }, [me]);
+    useAuth();
 
     return (
         <Navbar>
@@ -27,10 +22,9 @@ function App() {
                 <Route path='/products/:id' element={<ProductDetails />} />
                 <Route path='/about' element={<About />} />
                 <Route path='/auth' element={<Authenticate />} />
+                <Route path='/cart' element={<Cart />} />
 
-                <Route element={<ProtectedRoute />}>
-                    <Route path='/cart' element={<Cart />} />
-                </Route>
+                <Route element={<ProtectedRoute />}></Route>
             </Routes>
         </Navbar>
     );
