@@ -1,6 +1,7 @@
 import express from 'express';
 import categoriesServices from '../services/categoriesServices';
 import { getParam, normalizeName } from '../../../lib/utils';
+import { authenticate, requireAdmin } from '../../../middlewares/authMiddleware';
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ router.get('/', async (_req, res) => {
     res.status(200).json(categories);
 });
 
-router.delete('/:name', async (req, res) => {
+router.delete('/:name', authenticate, requireAdmin, async (req, res) => {
     const nameParam = getParam(req.params['name']);
     const name = normalizeName(decodeURIComponent(nameParam));
     if (!name || name.trim() === '') {

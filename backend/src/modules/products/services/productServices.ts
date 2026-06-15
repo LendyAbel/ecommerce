@@ -1,5 +1,6 @@
 import { prisma } from '../../../lib/prisma';
 import { normalizeName } from '../../../lib/utils';
+import { serializeProduct } from '../../../lib/serializers';
 import { ProductCrateInput, ProductQuery } from '../productTypes';
 
 const productInclude = {
@@ -39,24 +40,26 @@ const getAllProducts = async (filters: ProductQuery = {}) => {
         : sortBy === 'oldest' ? { createdAt: 'asc' as const }
         : { createdAt: 'desc' as const };
 
-    return prisma.product.findMany({
+    const products = await prisma.product.findMany({
         where: andConditions.length ? { AND: andConditions } : {},
         orderBy,
         include: productInclude,
     });
+    return products.map(serializeProduct);
 };
 
 
 
 const getProductById = async (id: string) => {
-    return prisma.product.findUnique({
+    const product = await prisma.product.findUnique({
         where: { id },
         include: productInclude,
     });
+    return product ? serializeProduct(product) : null;
 };
 
 const addNewProduct = async (data: ProductCrateInput) => {
-    return prisma.product.create({
+    const product = await prisma.product.create({
         data: {
             sku: data.sku,
             name: data.name,
@@ -95,6 +98,7 @@ const addNewProduct = async (data: ProductCrateInput) => {
         },
         include: productInclude,
     });
+    return serializeProduct(product);
 };
 
 const deleteProductById = async (id: string) => {
@@ -131,7 +135,7 @@ const deleteProductById = async (id: string) => {
         }
     }
 
-    return deleted;
+    return serializeProduct(deleted);
 };
 
 export default {

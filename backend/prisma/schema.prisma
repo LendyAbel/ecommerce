@@ -13,6 +13,11 @@ enum ProductStatus {
   draft
 }
 
+enum UserRole {
+  admin
+  customer
+}
+
 model Product {
   id               String        @id @unique @default(uuid())
   sku              String        @unique
@@ -20,7 +25,7 @@ model Product {
   shortDescription String
   longDescription  String?
   brand            String?
-  price            Float
+  price            Decimal       @db.Decimal(10, 2)
   tax              Int?          @default(21)
   stock            Int           @default(0)
   status           ProductStatus @default(draft)
@@ -58,7 +63,7 @@ model User {
   email     String   @unique
   password  String
   name      String
-  role      String   @default("customer")
+  role      UserRole @default(customer)
   cart      Cart?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

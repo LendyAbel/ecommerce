@@ -1,6 +1,9 @@
 import 'dotenv/config';
+import bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../generated/prisma/client';
+import { PrismaClient, ProductStatus, UserRole } from '../generated/prisma/client';
+
+const SALT_ROUNDS = 10;
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new PrismaPg({ connectionString });
@@ -115,11 +118,11 @@ const products = [
         ],
     },
 ];
+// Passwords en texto plano; se hashean con bcrypt en el seed (ver main()).
 const users = [
     {
         email: 'admin@test.com',
-        password:
-            '$2b$10$H.LrockOpNuXy3EaXiPD3OoJbGatmrZu2rPJl66WmuRVE/BpikOoe',
+        password: 'admin',
         name: 'Admin',
         role: 'admin',
     },
@@ -127,21 +130,22 @@ const users = [
         email: 'user@test.com',
         password: 'user',
         name: 'User',
-        role: 'user',
+        role: 'customer',
     },
 ];
 
 async function main() {
     // Crea los usuarios
     for (const u of users) {
+        const hashedPassword = await bcrypt.hash(u.password, SALT_ROUNDS);
         const user = await prisma.user.upsert({
             where: { email: u.email },
             update: {},
             create: {
                 email: u.email,
-                password: u.password,
+                password: hashedPassword,
                 name: u.name,
-                role: u.role,
+                role: u.role as UserRole,
             },
         });
         console.log(`✅ Usuario creado: ${user.email}`);
@@ -178,7 +182,7 @@ async function main() {
                 price: p.price,
                 tax: p.tax,
                 stock: p.stock,
-                status: p.status,
+                status: p.status as ProductStatus,
                 mainCategory: {
                     connect: { id: mainCat.id },
                 },

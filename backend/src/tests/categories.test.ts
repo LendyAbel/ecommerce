@@ -1,4 +1,5 @@
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../app';
 
 // --- Mocks ---
@@ -16,6 +17,16 @@ jest.mock('../lib/prisma', () => ({
 }));
 
 import { prisma } from '../lib/prisma';
+
+// --- Helpers ---
+const adminToken = () =>
+    jwt.sign({ userId: 'admin-uuid', role: 'admin' }, process.env.JWT_SECRET!);
+
+const customerToken = () =>
+    jwt.sign(
+        { userId: 'customer-uuid', role: 'customer' },
+        process.env.JWT_SECRET!,
+    );
 
 // --- Data ---
 const mockCategory = {
@@ -71,9 +82,9 @@ describe('Categories', () => {
                 mockCategory,
             );
 
-            const res = await request(app).delete(
-                '/api/categories/electronica',
-            );
+            const res = await request(app)
+                .delete('/api/categories/electronica')
+                .set('Cookie', `token=${adminToken()}`);
 
             expect(res.status).toBe(200);
         });
@@ -89,9 +100,9 @@ describe('Categories', () => {
                 mockCategory,
             );
 
-            const res = await request(app).delete(
-                '/api/categories/ELECTR%C3%93NICA',
-            );
+            const res = await request(app)
+                .delete('/api/categories/ELECTR%C3%93NICA')
+                .set('Cookie', `token=${adminToken()}`);
 
             expect(res.status).toBe(200);
             expect(prisma.category.findUnique).toHaveBeenCalledWith(
@@ -104,18 +115,34 @@ describe('Categories', () => {
         it('should return 404 when category does not exist', async () => {
             (prisma.category.findUnique as jest.Mock).mockResolvedValue(null);
 
-            const res = await request(app).delete(
-                '/api/categories/non-existent',
-            );
+            const res = await request(app)
+                .delete('/api/categories/non-existent')
+                .set('Cookie', `token=${adminToken()}`);
 
             expect(res.status).toBe(404);
         });
 
         it('should return 400 when name is empty', async () => {
-            const res = await request(app).delete('/api/categories/%20');
+            const res = await request(app)
+                .delete('/api/categories/%20')
+                .set('Cookie', `token=${adminToken()}`);
 
             expect(res.status).toBe(400);
             expect(res.body).toHaveProperty('error', 'category name is required');
+        });
+
+        it('should return 401 when not authenticated', async () => {
+            const res = await request(app).delete('/api/categories/electronica');
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 403 when authenticated user is not admin', async () => {
+            const res = await request(app)
+                .delete('/api/categories/electronica')
+                .set('Cookie', `token=${customerToken()}`);
+
+            expect(res.status).toBe(403);
         });
     });
 });

@@ -1,5 +1,6 @@
 import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
+import { serializeCart } from '../../../lib/serializers';
 import { AddItemInput, UpdateItemInput } from '../schemas/cartZodSchema';
 
 const cartInclude = {
@@ -16,13 +17,22 @@ const cartInclude = {
     },
 };
 
+const fetchCart = async (userId: string) => {
+    const cart = await prisma.cart.findUnique({
+        where: { userId },
+        include: cartInclude,
+    });
+    return cart ? serializeCart(cart) : null;
+};
+
 const getOrCreateCart = async (userId: string) => {
-    return prisma.cart.upsert({
+    const cart = await prisma.cart.upsert({
         where: { userId },
         update: {},
         create: { userId },
         include: cartInclude,
     });
+    return serializeCart(cart);
 };
 
 const addItem = async (userId: string, data: AddItemInput) => {
@@ -51,7 +61,7 @@ const addItem = async (userId: string, data: AddItemInput) => {
         });
     }
 
-    return prisma.cart.findUnique({ where: { userId }, include: cartInclude });
+    return fetchCart(userId);
 };
 
 const updateItem = async (
@@ -70,10 +80,7 @@ const updateItem = async (
         where: { id: itemId },
         data: { quantity: data.quantity },
     });
-    return prisma.cart.findUnique({
-        where: { userId },
-        include: cartInclude,
-    });
+    return fetchCart(userId);
 };
 
 const removeItem = async (userId: string, itemId: string) => {
@@ -85,7 +92,7 @@ const removeItem = async (userId: string, itemId: string) => {
         throw new AppError('Item not found', 404);
 
     await prisma.cartItem.delete({ where: { id: itemId } });
-    return prisma.cart.findUnique({ where: { userId }, include: cartInclude });
+    return fetchCart(userId);
 };
 
 const clearCart = async (userId: string) => {
@@ -93,10 +100,7 @@ const clearCart = async (userId: string) => {
     if (!cart) throw new AppError('Cart not found', 404);
 
     await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-    return prisma.cart.findUnique({
-        where: { userId },
-        include: cartInclude,
-    });
+    return fetchCart(userId);
 };
 
 export default { getOrCreateCart, addItem, updateItem, removeItem, clearCart };

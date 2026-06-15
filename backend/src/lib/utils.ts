@@ -1,3 +1,5 @@
+import { AppError } from './AppError';
+
 export const normalizeName = (value: string): string => {
     return value
         .trim()
@@ -7,6 +9,7 @@ export const normalizeName = (value: string): string => {
 };
 
 export const getParam = (param: string | string[] | undefined): string => {
-    if (!param || Array.isArray(param)) throw new Error('Invalid param');
+    if (!param || Array.isArray(param))
+        throw new AppError('Invalid parameter', 400);
     return param;
 };
