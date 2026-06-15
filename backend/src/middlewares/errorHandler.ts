@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { Prisma } from '../../generated/prisma/client';
 import { AppError } from '../lib/AppError';
+import { logger } from '../lib/logger';
 
 const handleZodError = (error: unknown, res: Response): boolean => {
     if (!(error instanceof ZodError)) return false;
@@ -62,7 +63,7 @@ const handlePrismaError = (error: unknown, res: Response): boolean => {
 
 export const errorHandler = (
     error: unknown,
-    _req: Request,
+    req: Request,
     res: Response,
     _next: NextFunction,
 ): void => {
@@ -74,6 +75,8 @@ export const errorHandler = (
         return;
     }
 
-    console.error('Unhandled error:', error);
+    // req.log is attached by pino-http and carries the request-id; fall back to
+    // the base logger if the request logger is unavailable.
+    (req.log ?? logger).error({ err: error }, 'Unhandled error');
     res.status(500).json({ error: 'Internal server error' });
 };

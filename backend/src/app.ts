@@ -11,11 +11,13 @@ import authRouter from './modules/auth/routers/authRouter';
 import cartRouter from './modules/cart/routers/cartRouter';
 import { errorHandler } from './middlewares/errorHandler';
 import { authLimiter, generalLimiter } from './middlewares/rateLimiters';
+import { httpLogger } from './middlewares/httpLogger';
 
 const app = express();
 
 const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:5173';
 
+app.use(httpLogger);
 app.use(helmet());
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(compression());

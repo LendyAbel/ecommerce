@@ -9,6 +9,7 @@ jest.mock('../lib/prisma', () => {
             findMany: jest.fn(),
             findUnique: jest.fn(),
             create: jest.fn(),
+            update: jest.fn(),
             delete: jest.fn(),
         },
         category: {
@@ -214,6 +215,106 @@ describe('Products', () => {
                 .send({ ...validProductPayload, tax: 150 });
 
             expect(res.status).toBe(400);
+        });
+    });
+
+    describe('PATCH /api/products/:id', () => {
+        it('should update a product when admin is authenticated', async () => {
+            (prisma.product.update as jest.Mock).mockResolvedValue({
+                ...mockProduct,
+                name: 'Updated Name',
+            });
+            const token = adminToken();
+
+            const res = await request(app)
+                .patch(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`)
+                .send({ name: 'Updated Name' });
+
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject({ name: 'Updated Name' });
+        });
+
+        it('should only send the provided fields to Prisma (PATCH semantics)', async () => {
+            (prisma.product.update as jest.Mock).mockResolvedValue(mockProduct);
+            const token = adminToken();
+
+            await request(app)
+                .patch(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`)
+                .send({ price: 49.99 });
+
+            expect(prisma.product.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: { id: mockProduct.id },
+                    data: { price: 49.99 },
+                }),
+            );
+        });
+
+        it('should replace categories and images when provided', async () => {
+            (prisma.product.update as jest.Mock).mockResolvedValue(mockProduct);
+            const token = adminToken();
+
+            await request(app)
+                .patch(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`)
+                .send({
+                    categories: ['Electronics'],
+                    images: [{ url: 'https://x.com/a.png', isMain: true }],
+                });
+
+            const callData = (prisma.product.update as jest.Mock).mock
+                .calls[0][0].data;
+            expect(callData.categories).toMatchObject({ set: [] });
+            expect(callData.images).toMatchObject({ deleteMany: {} });
+        });
+
+        it('should return 400 when more than one image is marked as main', async () => {
+            const token = adminToken();
+
+            const res = await request(app)
+                .patch(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`)
+                .send({
+                    images: [
+                        { url: 'https://x.com/a.png', isMain: true },
+                        { url: 'https://x.com/b.png', isMain: true },
+                    ],
+                });
+
+            expect(res.status).toBe(400);
+            expect(prisma.product.update).not.toHaveBeenCalled();
+        });
+
+        it('should return 400 when price is negative', async () => {
+            const token = adminToken();
+
+            const res = await request(app)
+                .patch(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`)
+                .send({ price: -5 });
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 401 when not authenticated', async () => {
+            const res = await request(app)
+                .patch(`/api/products/${mockProduct.id}`)
+                .send({ name: 'Updated Name' });
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 403 when authenticated as customer', async () => {
+            const token = customerToken();
+
+            const res = await request(app)
+                .patch(`/api/products/${mockProduct.id}`)
+                .set('Cookie', `token=${token}`)
+                .send({ name: 'Updated Name' });
+
+            expect(res.status).toBe(403);
         });
     });
 

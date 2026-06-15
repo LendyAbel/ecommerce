@@ -2,8 +2,10 @@
     // Visit https://aka.ms/tsconfig to read more about this file
     "compilerOptions": {
         // File Layout
-        // "rootDir": "./src",
-        // "outDir": "./dist",
+        // rootDir is intentionally left unset: src imports the Prisma client from
+        // ../generated (outside src), so tsc infers the project root as the common
+        // ancestor and emits to dist/src + dist/generated.
+        "outDir": "./dist",
 
         // Environment Settings
         // See also https://aka.ms/tsconfig/module
@@ -43,5 +45,7 @@
         "esModuleInterop": true,
 
         "forceConsistentCasingInFileNames": true
-    }
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
 }

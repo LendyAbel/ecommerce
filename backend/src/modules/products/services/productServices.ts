@@ -2,7 +2,7 @@ import { Prisma } from '../../../../generated/prisma/client';
 import { prisma } from '../../../lib/prisma';
 import { normalizeName } from '../../../lib/utils';
 import { serializeProduct } from '../../../lib/serializers';
-import { ProductCrateInput, ProductQuery } from '../productTypes';
+import { ProductCrateInput, ProductQuery, ProductUpdateInput } from '../productTypes';
 
 const productInclude = {
     images: true,
@@ -142,6 +142,60 @@ const addNewProduct = async (data: ProductCrateInput) => {
     return serializeProduct(product);
 };
 
+const updateProduct = async (id: string, data: ProductUpdateInput) => {
+    // PATCH semantics: only the keys present in `data` are touched. Scalars are
+    // copied through as-is; relations (categories/images/mainCategory) are
+    // fully replaced when provided.
+    const updateData: Prisma.ProductUpdateInput = {};
+
+    if (data.sku !== undefined) updateData.sku = data.sku;
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.shortDescription !== undefined)
+        updateData.shortDescription = data.shortDescription;
+    if (data.longDescription !== undefined)
+        updateData.longDescription = data.longDescription;
+    if (data.brand !== undefined) updateData.brand = data.brand;
+    if (data.price !== undefined) updateData.price = data.price;
+    if (data.tax !== undefined) updateData.tax = data.tax;
+    if (data.stock !== undefined) updateData.stock = data.stock;
+    if (data.status !== undefined) updateData.status = data.status;
+
+    if (data.mainCategory !== undefined) {
+        updateData.mainCategory = {
+            connectOrCreate: {
+                where: { name: normalizeName(data.mainCategory) },
+                create: { name: normalizeName(data.mainCategory) },
+            },
+        };
+    }
+
+    if (data.categories !== undefined) {
+        // Replace the whole M-N set: clear existing links, then connect/create.
+        updateData.categories = {
+            set: [],
+            connectOrCreate: data.categories.map(name => ({
+                where: { name: normalizeName(name) },
+                create: { name: normalizeName(name) },
+            })),
+        };
+    }
+
+    if (data.images !== undefined) {
+        // Replace all images for this product.
+        updateData.images = {
+            deleteMany: {},
+            create: data.images,
+        };
+    }
+
+    const product = await prisma.product.update({
+        where: { id },
+        data: updateData,
+        include: productInclude,
+    });
+    return serializeProduct(product);
+};
+
 const deleteProductById = async (id: string) => {
     const product = await prisma.product.findUnique({
         where: { id },
@@ -190,6 +244,7 @@ const deleteProductById = async (id: string) => {
 export default {
     getAllProducts,
     addNewProduct,
+    updateProduct,
     deleteProductById,
     getProductById,
 };

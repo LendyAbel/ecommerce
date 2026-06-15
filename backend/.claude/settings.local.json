@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Select-Object ProcessId, @{n='Cmd';e={$_.CommandLine.Substring\\(0,[Math]::Min\\(80,$_.CommandLine.Length\\)\\)}} | Format-Table -AutoSize)",
+      "PowerShell(Stop-Process -Id 25252,30064,28996 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue)",
+      "Bash(NODE_ENV=production node _shutdown_check.js)",
+      "Bash(echo \">> exit code: $?\")",
+      "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend\" && rm -f _shutdown_check.js && echo \"removed temp check\")",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -match 'ecommerce' -and $_.CommandLine -match 'index|_shutdown' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue; \"killed $\\($_.ProcessId\\)\" }; Write-Output \"cleanup done\")",
+      "Bash(npx jest *)",
+      "Bash(grep -E '\\\\.\\(js|d\\\\.ts\\)\\(\\\\.map\\)?$')"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\lendysan\\Documents\\MI CARPETA\\++mio\\+++CURSO HTML\\Apps\\ecommerce\\backend"
     ]
   }
 }

@@ -10,7 +10,7 @@ Leyenda: ✅ completada · 🔄 en progreso · ⬜ pendiente. Cada subfase/fase 
 
 - ✅ **Fase 1 — Correcciones críticas y seguridad** (completada)
 - ✅ **Fase 2 — Optimización de consultas e índices** (completada)
-- ⬜ Fase 3 — Refactor y robustez
+- ✅ **Fase 3 — Refactor y robustez** (completada)
 - ⬜ Fase 4 — Features nuevas para e-commerce completo
 
 ## Contexto
@@ -112,28 +112,74 @@ Cualquiera puede borrar categorías y desasignar productos.
 
 ---
 
-## Fase 3 — Refactor y robustez
+## ✅ Fase 3 — Refactor y robustez — COMPLETADA
 
-### 3.1 Capa de controladores y uniformidad
+> Verificación global: `tsc --noEmit` sin errores, 72/72 tests en verde. Controladores extraídos en los 4 módulos,
+> `PATCH /api/products/:id` con bug de defaults corregido, logging estructurado con `pino`/`pino-http`, cierre ordenado
+> ante `SIGTERM`/`SIGINT` (verificado) y build arreglado (`npm run build` + `npm start` funcionando, `/health` 200).
+
+### ✅ 3.1 Capa de controladores y uniformidad — COMPLETADA
+> Implementado: un `controllers/*Controller.ts` por módulo (products, auth, cart, categories) con handlers finos
+> (parse → service → status/json); los routers quedan solo con el wiring (ruta + middlewares + controlador). Se
+> unificó el error inline `res.status(400).json(...)` de categorías a `AppError(400)` (misma respuesta). `tsc`
+> limpio, 65/65 tests en verde.
+
 Las rutas mezclan parseo Zod, llamada a servicio y respuesta inline; la estructura es desigual entre módulos.
 - Mantener el patrón router→service (es correcto), pero **extraer controladores** finos por módulo (parse → service →
   status/json) y dejar los routers solo con el wiring. Sin sobre-ingeniería.
 
-### 3.2 Producto: completar CRUD
+### ✅ 3.2 Producto: completar CRUD — COMPLETADA
+> Implementado: `PATCH /api/products/:id` (admin) → `productServices.updateProduct` con semántica PATCH (solo toca las
+> claves presentes). `categories` e `images`, si llegan, se reemplazan por completo (`set: []`+`connectOrCreate` /
+> `deleteMany: {}`+`create`); `mainCategory` con `connectOrCreate`; id inexistente → P2025 → 404. `isMain` única vía
+> `ImagesArraySchema.refine(...)` (compartido por create/update).
+>
+> **Bug encontrado y corregido:** `ProductUpdateSchema = ProductCreateSchema.partial()` heredaba los `.default()`
+> (Zod v4), así que un PATCH de un solo campo reseteaba `stock`/`tax` y **borraba categorías e imágenes**. Se refactorizó
+> el schema (`productFields` base sin defaults; los defaults viven solo en `ProductCreateSchema`). 7 tests nuevos,
+> 72/72 en verde, `tsc` limpio.
+>
+> Alcance: el reemplazo de categorías/mainCategory puede dejar categorías huérfanas; su limpieza no entra en 3.2.
+
 Existe `ProductUpdateSchema` (`src/modules/products/schemas/productsZodSchema.ts`) pero **no hay** endpoint ni
 servicio de update.
 - Implementar `PATCH /api/products/:id` (admin) con `updateProduct` (manejar reemplazo de imágenes y re-conexión de
   categorías). Validar `isMain` única entre imágenes.
 
-### 3.3 Logger estructurado
+### ✅ 3.3 Logger estructurado — COMPLETADA
+> Implementado: `pino` + `pino-http` (+`pino-pretty` dev). `src/lib/logger.ts` (nivel vía `LOG_LEVEL`, `silent` en
+> test, pretty en dev, JSON en prod) y `src/middlewares/httpLogger.ts` (request-id `req.id`, `req.log` por petición,
+> ignora `/health`). `errorHandler` loguea con `req.log ?? logger` (`{ err }`, queda atado al request-id) en vez de
+> `console.error`. `index.ts` arranca con `logger.info` (mantiene el listado de rutas auth/products/categories/cart).
+> `LOG_LEVEL` documentado en `.env.example`. `tsc` limpio, 72/72 tests en verde, arranque verificado (HTTP 200) y
+> emisión JSON confirmada.
+
 - Sustituir `console.*` por `pino` (o `winston`): logs JSON con nivel, request-id y middleware de request logging. El
   `errorHandler` registra con el logger en vez de `console.error`.
 
-### 3.4 Cierre ordenado y arranque
-`src/index.ts` — manejar `SIGTERM/SIGINT` con `server.close()` + `prisma.$disconnect()`, y handlers de
-`unhandledRejection`/`uncaughtException`.
+### ✅ 3.4 Cierre ordenado y arranque — COMPLETADA
+> Implementado en `src/index.ts`: captura del `server`, `gracefulShutdown` para `SIGTERM`/`SIGINT` (`server.close()` →
+> `prisma.$disconnect()` → exit 0) con timeout de seguridad (10s, `unref`) y guard anti-doble-señal; handlers de
+> `unhandledRejection` (loguea + cierre ordenado) y `uncaughtException` (loguea `fatal` + exit 1). El logger de
+> prod/test pasó a destino **síncrono** (`pino.destination({ sync: true })`) para no perder logs en el `exit`.
+> Verificado el flujo completo (SIGINT → "Shutdown complete" → exit 0); 72/72 tests en verde, `tsc` limpio.
+>
+> ⚠️ Pendiente para 3.5 (infra): `npm run build` está roto — `outDir`/`rootDir` comentados hacen que `tsc` emita los
+> `.js` dentro de `src/` mientras `npm start` apunta a `dist/`. Arreglarlo requiere reubicar el cliente Prisma generado
+> (vive fuera de `src` y se importa como `.ts`), por eso no se tocó aquí. Añadir además `dist`/`*.js` compilados a
+> `.gitignore`.
 
-### 3.5 Tests e infra
+### ✅ 3.5 Tests e infra — COMPLETADA
+> Implementado: tests del nuevo endpoint `PATCH /api/products/:id` añadidos en 3.2 (7 casos). La regresión admin-only de
+> `DELETE /api/categories/:name` ya estaba cubierta (`categories.test.ts`: 401 + 403). **Build arreglado** (era el hueco
+> real de infra): `tsconfig` con `outDir: dist` (sin `rootDir`, raíz inferida porque `src` importa el cliente Prisma de
+> `../generated`), `include: ["src"]`, `start` → `node dist/src/index.js`, `dist` añadido a `.gitignore`. Verificado:
+> `npm run build` compila y `npm start` arranca con `/health` 200 (BD up). `.env.example` ya completo (incluye
+> `LOG_LEVEL`). 72/72 tests, `tsc` limpio.
+>
+> Opcionales **omitidos por decisión del usuario** (2026-06-15): CI con GitHub Actions, `api.http` y OpenAPI/Swagger.
+> Quedan disponibles para retomar más adelante si se quieren.
+
 - Tests para nuevos endpoints (update producto, órdenes, checkout) siguiendo el patrón existente
   (`src/tests/cart.test.ts`).
 - Test de regresión: `DELETE /api/categories/:name` exige admin (Fase 1.1).
