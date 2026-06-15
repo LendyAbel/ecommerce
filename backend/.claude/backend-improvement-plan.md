@@ -4,6 +4,15 @@
 > `Float` → `Decimal`. Las fases están ordenadas: primero estabilizar/asegurar, luego optimizar/refactorizar, y por
 > último construir las features que faltan.
 
+## Estado de avance
+
+Leyenda: ✅ completada · 🔄 en progreso · ⬜ pendiente. Cada subfase/fase se marca aquí al terminarla.
+
+- ✅ **Fase 1 — Correcciones críticas y seguridad** (completada)
+- ⬜ Fase 2 — Optimización de consultas e índices
+- ⬜ Fase 3 — Refactor y robustez
+- ⬜ Fase 4 — Features nuevas para e-commerce completo
+
 ## Contexto
 
 El backend (Node + Express 5 + Prisma 7 + PostgreSQL) ya cubre auth, productos, categorías y carrito, con tests
@@ -13,14 +22,21 @@ checkout, pagos, reseñas, etc.).
 
 ---
 
-## Fase 1 — Correcciones críticas y seguridad (prioridad máxima)
+## ✅ Fase 1 — Correcciones críticas y seguridad (prioridad máxima) — COMPLETADA
 
-### 1.1 Bug de autorización: borrar categorías es público
+> Verificación global de la fase: `tsc --noEmit` sin errores, 62/62 tests en verde, 14 migraciones aplicadas sin
+> drift, servidor arranca y `/health` responde. Archivos nuevos: `src/lib/serializers.ts`,
+> `src/middlewares/rateLimiters.ts`. Dependencias añadidas: `helmet`, `cors`, `compression`, `express-rate-limit`.
+
+### ✅ 1.1 Bug de autorización: borrar categorías es público — COMPLETADA
 `src/modules/categories/routers/categoriesRouter.ts` — `DELETE /:name` **no** tiene `authenticate`/`requireAdmin`.
 Cualquiera puede borrar categorías y desasignar productos.
 - Añadir `authenticate, requireAdmin` (reusar `src/middlewares/authMiddleware.ts`).
 
-### 1.2 `price` Float → Decimal (dinero)
+### ✅ 1.2 `price` Float → Decimal (dinero) — COMPLETADA
+> Implementado: `Decimal(10,2)` en el schema; migraciones `..._price_to_decimal` y `..._price_decimal_precision`
+> aplicadas. Serialización Decimal→number en `serializers.ts` aplicada en `productServices` y `cartServices`.
+
 `prisma/schema.prisma` — `price Float` provoca errores de redondeo.
 - Cambiar a `price Decimal @db.Decimal(10, 2)`. Crear migración.
 - Ajustar `addNewProduct`/respuestas en `src/modules/products/services/productServices.ts`: Prisma devuelve `Decimal`;
@@ -28,18 +44,29 @@ Cualquiera puede borrar categorías y desasignar productos.
   `Prisma.Decimal` al crear.
 - Mismo criterio para futuros campos monetarios (totales de orden). `tax` queda `Int` (% — OK).
 
-### 1.3 Seed inconsistente y password sin hashear
+### ✅ 1.3 Seed inconsistente y password sin hashear — COMPLETADA
+> Implementado: `role: 'customer'` y passwords hasheados con bcrypt en el seed; tipados `ProductStatus`/`UserRole`
+> corregidos. (Credenciales dev: `admin@test.com`/`admin`, `user@test.com`/`user`.)
+
 `prisma/seed.ts` — el usuario `user@test.com` tiene `role: 'user'` (el resto del código espera `'customer'`) y
 `password: 'user'` **sin hashear** (login con bcrypt fallará).
 - Corregir `role` a `'customer'` y hashear el password con `bcrypt.hash` dentro del seed.
 
-### 1.4 Endurecer middlewares de la app
+### ✅ 1.4 Endurecer middlewares de la app — COMPLETADA
+> Implementado: helmet, cors (`FRONTEND_URL` + credentials), compression, `express.json({ limit: '1mb' })`,
+> `GET /health` con ping a BD, y rate limiters (`generalLimiter` en `/api`, `authLimiter` en login/register, con
+> `skip` en test). `FRONTEND_URL` documentada en `.env.example`.
+
 `src/app.ts` — faltan capas estándar de seguridad/operación:
 - `helmet`, `cors` (origen del frontend + `credentials: true`), `express-rate-limit` (global suave + estricto en
   `/api/auth/login` y `/register`), `compression`, y `express.json({ limit: '1mb' })`.
 - Añadir `GET /health` (estado + ping a BD).
 
-### 1.5 Limpieza y consistencia
+### ✅ 1.5 Limpieza y consistencia — COMPLETADA
+> Implementado: `console.log` de register eliminado; `getParam` lanza `AppError(400)`; password `min(8)` en
+> `RegisterSchema`; `User.role` convertido a enum `UserRole` (migración `..._user_role_enum`, normaliza `'user'`→
+> `'customer'`).
+
 - Quitar `console.log(user)` de `src/modules/auth/routers/authRouter.ts` (registro).
 - `getParam` en `src/lib/utils.ts` lanza `Error` genérico → el `errorHandler` lo trata como 500. Cambiar a
   `AppError(..., 400)`.
