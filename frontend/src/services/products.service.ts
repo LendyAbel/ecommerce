@@ -12,13 +12,26 @@ export type ProductFilters = {
     search?: string;
     category?: string;
     sortBy?: SortBy;
+    page?: number;
+    limit?: number;
 };
 
-const getProducts = async (filters: ProductFilters = {}): Promise<Product[]> => {
+export type PaginatedProducts = {
+    data: Product[];
+    total: number;
+    page: number;
+    limit: number;
+};
+
+const getProducts = async (
+    filters: ProductFilters = {},
+): Promise<PaginatedProducts> => {
     const params: Record<string, string> = {};
     if (filters.search) params.search = filters.search;
     if (filters.category) params.category = filters.category;
     if (filters.sortBy) params.sortBy = filters.sortBy;
+    if (filters.page) params.page = String(filters.page);
+    if (filters.limit) params.limit = String(filters.limit);
     const res = await api.get('/', { params });
     return res.data;
 };

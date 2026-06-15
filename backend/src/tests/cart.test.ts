@@ -3,16 +3,15 @@ import jwt from 'jsonwebtoken';
 import app from '../app';
 
 // --- Mocks ---
-jest.mock('../lib/prisma', () => ({
-    prisma: {
+jest.mock('../lib/prisma', () => {
+    const prismaMock = {
         cart: {
             upsert: jest.fn(),
             findUnique: jest.fn(),
         },
         cartItem: {
-            findFirst: jest.fn(),
             findUnique: jest.fn(),
-            create: jest.fn(),
+            upsert: jest.fn(),
             update: jest.fn(),
             delete: jest.fn(),
             deleteMany: jest.fn(),
@@ -20,8 +19,14 @@ jest.mock('../lib/prisma', () => ({
         product: {
             findUnique: jest.fn(),
         },
-    },
-}));
+        $transaction: jest.fn(),
+    };
+    // Run interactive transactions against the same mock client.
+    prismaMock.$transaction.mockImplementation((cb: (tx: typeof prismaMock) => unknown) =>
+        cb(prismaMock),
+    );
+    return { prisma: prismaMock };
+});
 
 import { prisma } from '../lib/prisma';
 
@@ -69,6 +74,14 @@ const mockCart = {
 
 // --- Tests ---
 describe('Cart', () => {
+    // resetMocks wipes the factory implementation before each test, so re-wire
+    // $transaction to run interactive callbacks against the mock client.
+    beforeEach(() => {
+        (prisma.$transaction as jest.Mock).mockImplementation(
+            (cb: (tx: typeof prisma) => unknown) => cb(prisma),
+        );
+    });
+
     describe('GET /api/cart', () => {
         it('should return the user cart with status 200', async () => {
             (prisma.cart.upsert as jest.Mock).mockResolvedValue(mockCart);
@@ -103,15 +116,14 @@ describe('Cart', () => {
     });
 
     describe('POST /api/cart/items', () => {
-        it('should add a new item to the cart', async () => {
+        it('should add a new item to the cart via upsert', async () => {
             (prisma.product.findUnique as jest.Mock).mockResolvedValue(
                 mockProduct,
             );
             (prisma.cart.upsert as jest.Mock).mockResolvedValue(mockCart);
-            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue(null);
-            (prisma.cartItem.create as jest.Mock).mockResolvedValue(
-                mockCartItem,
-            );
+            (prisma.cartItem.upsert as jest.Mock).mockResolvedValue({
+                quantity: 2,
+            });
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
             const token = customerToken();
 
@@ -121,7 +133,17 @@ describe('Cart', () => {
                 .send({ productId: PRODUCT_ID, quantity: 2 });
 
             expect(res.status).toBe(200);
-            expect(prisma.cartItem.create).toHaveBeenCalled();
+            expect(prisma.cartItem.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: {
+                        cartId_productId: {
+                            cartId: CART_ID,
+                            productId: PRODUCT_ID,
+                        },
+                    },
+                    update: { quantity: { increment: 2 } },
+                }),
+            );
         });
 
         it('should increment quantity when item already exists in cart', async () => {
@@ -129,11 +151,7 @@ describe('Cart', () => {
                 mockProduct,
             );
             (prisma.cart.upsert as jest.Mock).mockResolvedValue(mockCart);
-            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue(
-                mockCartItem,
-            );
-            (prisma.cartItem.update as jest.Mock).mockResolvedValue({
-                ...mockCartItem,
+            (prisma.cartItem.upsert as jest.Mock).mockResolvedValue({
                 quantity: 4,
             });
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
@@ -145,11 +163,31 @@ describe('Cart', () => {
                 .send({ productId: PRODUCT_ID, quantity: 2 });
 
             expect(res.status).toBe(200);
-            expect(prisma.cartItem.update).toHaveBeenCalledWith(
+            expect(prisma.cartItem.upsert).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    data: { quantity: 4 },
+                    update: { quantity: { increment: 2 } },
                 }),
             );
+        });
+
+        it('should return 409 when requested quantity exceeds stock', async () => {
+            (prisma.product.findUnique as jest.Mock).mockResolvedValue({
+                ...mockProduct,
+                stock: 3,
+            });
+            (prisma.cart.upsert as jest.Mock).mockResolvedValue(mockCart);
+            (prisma.cartItem.upsert as jest.Mock).mockResolvedValue({
+                quantity: 5,
+            });
+            const token = customerToken();
+
+            const res = await request(app)
+                .post('/api/cart/items')
+                .set('Cookie', `token=${token}`)
+                .send({ productId: PRODUCT_ID, quantity: 5 });
+
+            expect(res.status).toBe(409);
+            expect(res.body).toHaveProperty('error', 'Not enough stock');
         });
 
         it('should return 404 when product does not exist', async () => {
@@ -181,10 +219,9 @@ describe('Cart', () => {
                 mockProduct,
             );
             (prisma.cart.upsert as jest.Mock).mockResolvedValue(mockCart);
-            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue(null);
-            (prisma.cartItem.create as jest.Mock).mockResolvedValue(
-                mockCartItem,
-            );
+            (prisma.cartItem.upsert as jest.Mock).mockResolvedValue({
+                quantity: 1,
+            });
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
             const token = customerToken();
 
@@ -193,9 +230,10 @@ describe('Cart', () => {
                 .set('Cookie', `token=${token}`)
                 .send({ productId: PRODUCT_ID });
 
-            expect(prisma.cartItem.create).toHaveBeenCalledWith(
+            expect(prisma.cartItem.upsert).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    data: expect.objectContaining({ quantity: 1 }),
+                    create: expect.objectContaining({ quantity: 1 }),
+                    update: { quantity: { increment: 1 } },
                 }),
             );
         });
@@ -231,6 +269,24 @@ describe('Cart', () => {
             expect(prisma.cartItem.update).toHaveBeenCalledWith(
                 expect.objectContaining({ data: { quantity: 5 } }),
             );
+        });
+
+        it('should return 409 when new quantity exceeds stock', async () => {
+            (prisma.cartItem.findUnique as jest.Mock).mockResolvedValue({
+                ...mockCartItem,
+                cart: { userId: USER_ID },
+                product: { stock: 3 },
+            });
+            const token = customerToken();
+
+            const res = await request(app)
+                .patch(`/api/cart/items/${ITEM_ID}`)
+                .set('Cookie', `token=${token}`)
+                .send({ quantity: 5 });
+
+            expect(res.status).toBe(409);
+            expect(res.body).toHaveProperty('error', 'Not enough stock');
+            expect(prisma.cartItem.update).not.toHaveBeenCalled();
         });
 
         it('should return 404 when item does not belong to user', async () => {

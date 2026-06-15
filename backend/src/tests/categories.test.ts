@@ -32,8 +32,7 @@ const customerToken = () =>
 const mockCategory = {
     id: 'cat-uuid-123',
     name: 'electronica',
-    products: [],
-    mainProducts: [],
+    _count: { products: 0, mainProducts: 0 },
 };
 
 // --- Tests ---

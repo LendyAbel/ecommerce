@@ -1,3 +1,4 @@
+import { Prisma } from '../../../../generated/prisma/client';
 import { prisma } from '../../../lib/prisma';
 import { normalizeName } from '../../../lib/utils';
 import { serializeProduct } from '../../../lib/serializers';
@@ -9,46 +10,86 @@ const productInclude = {
     categories: true,
 } as const;
 
-const getAllProducts = async (filters: ProductQuery = {}) => {
-    const { search, category, sortBy } = filters;
+// Turns a free-text search into a prefix tsquery ("lap top" -> "lap:* & top:*"),
+// stripping any character that is a tsquery operator so user input can't break it.
+const buildTsQuery = (search: string): string | null => {
+    const terms = search
+        .split(/\s+/)
+        .map(term => term.replace(/[^\p{L}\p{N}]/gu, ''))
+        .filter(Boolean);
+    return terms.length ? terms.map(term => `${term}:*`).join(' & ') : null;
+};
 
-    const andConditions: object[] = [];
+const getAllProducts = async (filters: Partial<ProductQuery> = {}) => {
+    const { search, category, sortBy, page = 1, limit = 20 } = filters;
+    const offset = (page - 1) * limit;
 
-    if (search) {
-        const pattern = `%${search}%`;
-        const matches = await prisma.$queryRaw<{ id: string }[]>`
-            SELECT id FROM "Product"
-            WHERE unaccent(name) ILIKE unaccent(${pattern})
-               OR unaccent(brand) ILIKE unaccent(${pattern})
-               OR unaccent("shortDescription") ILIKE unaccent(${pattern})
-        `;
-        andConditions.push({ id: { in: matches.map(m => m.id) } });
+    const conditions: Prisma.Sql[] = [];
+
+    const tsQuery = search ? buildTsQuery(search) : null;
+    if (tsQuery) {
+        conditions.push(
+            Prisma.sql`p."searchVector" @@ to_tsquery('simple', f_unaccent(${tsQuery}))`,
+        );
     }
 
     if (category) {
-        andConditions.push({
-            OR: [
-                { mainCategory: { name: { equals: category, mode: 'insensitive' } } },
-                { categories: { some: { name: { equals: category, mode: 'insensitive' } } } },
-            ],
-        });
+        // Matches either the product's mainCategory or any of its M-N categories.
+        // "_ProductCategories" is Prisma's implicit join table (A=Category, B=Product).
+        conditions.push(Prisma.sql`(
+            EXISTS (
+                SELECT 1 FROM "Category" mc
+                WHERE mc.id = p."mainCategoryId" AND lower(mc.name) = lower(${category})
+            )
+            OR EXISTS (
+                SELECT 1 FROM "_ProductCategories" pc
+                JOIN "Category" c ON c.id = pc."A"
+                WHERE pc."B" = p.id AND lower(c.name) = lower(${category})
+            )
+        )`);
     }
 
-    const orderBy =
-        sortBy === 'price_asc' ? { price: 'asc' as const }
-        : sortBy === 'price_desc' ? { price: 'desc' as const }
-        : sortBy === 'oldest' ? { createdAt: 'asc' as const }
-        : { createdAt: 'desc' as const };
+    const where = conditions.length
+        ? Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`
+        : Prisma.empty;
 
+    // p.id is a deterministic tiebreaker so pagination is stable across pages.
+    const orderBy =
+        sortBy === 'price_asc' ? Prisma.sql`p.price ASC, p.id ASC`
+        : sortBy === 'price_desc' ? Prisma.sql`p.price DESC, p.id ASC`
+        : sortBy === 'oldest' ? Prisma.sql`p."createdAt" ASC, p.id ASC`
+        : Prisma.sql`p."createdAt" DESC, p.id ASC`;
+
+    // One query: filtered + ordered + paginated ids, plus the full count via a
+    // window function so we never load more than `limit` rows.
+    const rows = await prisma.$queryRaw<{ id: string; total: bigint }[]>(Prisma.sql`
+        SELECT p.id, count(*) OVER() AS total
+        FROM "Product" p
+        ${where}
+        ORDER BY ${orderBy}
+        LIMIT ${limit} OFFSET ${offset}
+    `);
+
+    const total = rows[0] ? Number(rows[0].total) : 0;
+    const ids = rows.map(row => row.id);
+
+    if (!ids.length) return { data: [], total, page, limit };
+
+    // Hydrate the (bounded) id list with relations in a single query.
     const products = await prisma.product.findMany({
-        where: andConditions.length ? { AND: andConditions } : {},
-        orderBy,
+        where: { id: { in: ids } },
         include: productInclude,
     });
-    return products.map(serializeProduct);
+
+    // findMany with `IN` does not preserve order, so re-sort to match the ids.
+    const byId = new Map(products.map(product => [product.id, product]));
+    const data = ids
+        .map(id => byId.get(id))
+        .filter((product): product is NonNullable<typeof product> => Boolean(product))
+        .map(serializeProduct);
+
+    return { data, total, page, limit };
 };
-
-
 
 const getProductById = async (id: string) => {
     const product = await prisma.product.findUnique({
@@ -116,26 +157,34 @@ const deleteProductById = async (id: string) => {
     if (product.mainCategoryId) categoryIds.add(product.mainCategoryId);
     for (const cat of product.categories) categoryIds.add(cat.id);
 
-    const deleted = await prisma.product.delete({
-        where: { id },
-        include: productInclude,
-    });
-
-    for (const categoryId of categoryIds) {
-        const remaining = await prisma.product.count({
-            where: {
-                OR: [
-                    { mainCategoryId: categoryId },
-                    { categories: { some: { id: categoryId } } },
-                ],
-            },
+    return prisma.$transaction(async tx => {
+        const deleted = await tx.product.delete({
+            where: { id },
+            include: productInclude,
         });
-        if (remaining === 0) {
-            await prisma.category.delete({ where: { id: categoryId } });
-        }
-    }
 
-    return serializeProduct(deleted);
+        if (categoryIds.size) {
+            // Single query: of the candidate categories, find the ones now left
+            // with no product referencing them (neither as main nor M-N), instead
+            // of running one count() per category.
+            const orphans = await tx.category.findMany({
+                where: {
+                    id: { in: [...categoryIds] },
+                    products: { none: {} },
+                    mainProducts: { none: {} },
+                },
+                select: { id: true },
+            });
+
+            if (orphans.length) {
+                await tx.category.deleteMany({
+                    where: { id: { in: orphans.map(cat => cat.id) } },
+                });
+            }
+        }
+
+        return serializeProduct(deleted);
+    });
 };
 
 export default {

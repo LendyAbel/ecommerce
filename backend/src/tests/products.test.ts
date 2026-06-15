@@ -3,21 +3,28 @@ import jwt from 'jsonwebtoken';
 import app from '../app';
 
 // --- Mocks ---
-jest.mock('../lib/prisma', () => ({
-    prisma: {
+jest.mock('../lib/prisma', () => {
+    const prismaMock = {
         product: {
             findMany: jest.fn(),
             findUnique: jest.fn(),
             create: jest.fn(),
             delete: jest.fn(),
-            count: jest.fn(),
         },
         category: {
             findUnique: jest.fn(),
-            delete: jest.fn(),
+            findMany: jest.fn(),
+            deleteMany: jest.fn(),
         },
-    },
-}));
+        $queryRaw: jest.fn(),
+        $transaction: jest.fn(),
+    };
+    // Run interactive transactions against the same mock client.
+    prismaMock.$transaction.mockImplementation((cb: (tx: typeof prismaMock) => unknown) =>
+        cb(prismaMock),
+    );
+    return { prisma: prismaMock };
+});
 
 import { prisma } from '../lib/prisma';
 
@@ -61,8 +68,19 @@ const validProductPayload = {
 
 // --- Tests ---
 describe('Products', () => {
+    // resetMocks wipes the factory implementation before each test, so re-wire
+    // $transaction to run interactive callbacks against the mock client.
+    beforeEach(() => {
+        (prisma.$transaction as jest.Mock).mockImplementation(
+            (cb: (tx: typeof prisma) => unknown) => cb(prisma),
+        );
+    });
+
     describe('GET /api/products', () => {
-        it('should return all products with status 200', async () => {
+        it('should return a paginated payload with status 200', async () => {
+            (prisma.$queryRaw as jest.Mock).mockResolvedValue([
+                { id: mockProduct.id, total: 1 },
+            ]);
             (prisma.product.findMany as jest.Mock).mockResolvedValue([
                 mockProduct,
             ]);
@@ -70,22 +88,33 @@ describe('Products', () => {
             const res = await request(app).get('/api/products');
 
             expect(res.status).toBe(200);
-            expect(Array.isArray(res.body)).toBe(true);
-            expect(res.body).toHaveLength(1);
-            expect(res.body[0]).toMatchObject({ sku: mockProduct.sku });
+            expect(res.body).toMatchObject({ total: 1, page: 1, limit: 20 });
+            expect(Array.isArray(res.body.data)).toBe(true);
+            expect(res.body.data).toHaveLength(1);
+            expect(res.body.data[0]).toMatchObject({ sku: mockProduct.sku });
         });
 
-        it('should return empty array when no products exist', async () => {
-            (prisma.product.findMany as jest.Mock).mockResolvedValue([]);
+        it('should return an empty page when no products match', async () => {
+            (prisma.$queryRaw as jest.Mock).mockResolvedValue([]);
 
             const res = await request(app).get('/api/products');
 
             expect(res.status).toBe(200);
-            expect(res.body).toEqual([]);
+            expect(res.body).toMatchObject({ data: [], total: 0 });
+            expect(prisma.product.findMany).not.toHaveBeenCalled();
+        });
+
+        it('should honor page and limit query params', async () => {
+            (prisma.$queryRaw as jest.Mock).mockResolvedValue([]);
+
+            const res = await request(app).get('/api/products?page=2&limit=5');
+
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject({ page: 2, limit: 5 });
         });
 
         it('should not require authentication', async () => {
-            (prisma.product.findMany as jest.Mock).mockResolvedValue([]);
+            (prisma.$queryRaw as jest.Mock).mockResolvedValue([]);
 
             const res = await request(app).get('/api/products');
 
@@ -190,7 +219,10 @@ describe('Products', () => {
 
     describe('DELETE /api/products/:id', () => {
         beforeEach(() => {
-            (prisma.category.delete as jest.Mock).mockResolvedValue({});
+            (prisma.category.deleteMany as jest.Mock).mockResolvedValue({
+                count: 0,
+            });
+            (prisma.category.findMany as jest.Mock).mockResolvedValue([]);
         });
 
         it('should delete a product without categories and return 200', async () => {
@@ -207,7 +239,9 @@ describe('Products', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject({ id: mockProduct.id });
-            expect(prisma.category.delete).not.toHaveBeenCalled();
+            // No candidate categories -> the orphan recompute is skipped entirely.
+            expect(prisma.category.findMany).not.toHaveBeenCalled();
+            expect(prisma.category.deleteMany).not.toHaveBeenCalled();
         });
 
         it('should delete orphaned mainCategory when no other product references it', async () => {
@@ -216,7 +250,9 @@ describe('Products', () => {
                 categories: [],
             });
             (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
-            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            (prisma.category.findMany as jest.Mock).mockResolvedValue([
+                { id: 'cat-main-uuid' },
+            ]);
             const token = adminToken();
 
             const res = await request(app)
@@ -224,8 +260,8 @@ describe('Products', () => {
                 .set('Cookie', `token=${token}`);
 
             expect(res.status).toBe(200);
-            expect(prisma.category.delete).toHaveBeenCalledWith({
-                where: { id: 'cat-main-uuid' },
+            expect(prisma.category.deleteMany).toHaveBeenCalledWith({
+                where: { id: { in: ['cat-main-uuid'] } },
             });
         });
 
@@ -235,7 +271,9 @@ describe('Products', () => {
                 categories: [{ id: 'cat-m2m-uuid' }],
             });
             (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
-            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            (prisma.category.findMany as jest.Mock).mockResolvedValue([
+                { id: 'cat-m2m-uuid' },
+            ]);
             const token = adminToken();
 
             const res = await request(app)
@@ -243,8 +281,8 @@ describe('Products', () => {
                 .set('Cookie', `token=${token}`);
 
             expect(res.status).toBe(200);
-            expect(prisma.category.delete).toHaveBeenCalledWith({
-                where: { id: 'cat-m2m-uuid' },
+            expect(prisma.category.deleteMany).toHaveBeenCalledWith({
+                where: { id: { in: ['cat-m2m-uuid'] } },
             });
         });
 
@@ -254,7 +292,8 @@ describe('Products', () => {
                 categories: [],
             });
             (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
-            (prisma.product.count as jest.Mock).mockResolvedValue(2);
+            // The recompute query finds no orphans, so nothing is deleted.
+            (prisma.category.findMany as jest.Mock).mockResolvedValue([]);
             const token = adminToken();
 
             const res = await request(app)
@@ -262,16 +301,20 @@ describe('Products', () => {
                 .set('Cookie', `token=${token}`);
 
             expect(res.status).toBe(200);
-            expect(prisma.category.delete).not.toHaveBeenCalled();
+            expect(prisma.category.deleteMany).not.toHaveBeenCalled();
         });
 
-        it('should delete multiple orphaned categories', async () => {
+        it('should delete multiple orphaned categories in a single call', async () => {
             (prisma.product.findUnique as jest.Mock).mockResolvedValue({
                 mainCategoryId: 'cat-1-uuid',
                 categories: [{ id: 'cat-2-uuid' }, { id: 'cat-3-uuid' }],
             });
             (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
-            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            (prisma.category.findMany as jest.Mock).mockResolvedValue([
+                { id: 'cat-1-uuid' },
+                { id: 'cat-2-uuid' },
+                { id: 'cat-3-uuid' },
+            ]);
             const token = adminToken();
 
             const res = await request(app)
@@ -279,7 +322,12 @@ describe('Products', () => {
                 .set('Cookie', `token=${token}`);
 
             expect(res.status).toBe(200);
-            expect(prisma.category.delete).toHaveBeenCalledTimes(3);
+            expect(prisma.category.deleteMany).toHaveBeenCalledTimes(1);
+            expect(prisma.category.deleteMany).toHaveBeenCalledWith({
+                where: {
+                    id: { in: ['cat-1-uuid', 'cat-2-uuid', 'cat-3-uuid'] },
+                },
+            });
         });
 
         it('should deduplicate when mainCategory is also in categories list', async () => {
@@ -288,14 +336,21 @@ describe('Products', () => {
                 categories: [{ id: 'cat-same-uuid' }],
             });
             (prisma.product.delete as jest.Mock).mockResolvedValue(mockProduct);
-            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            (prisma.category.findMany as jest.Mock).mockResolvedValue([]);
             const token = adminToken();
 
             await request(app)
                 .delete(`/api/products/${mockProduct.id}`)
                 .set('Cookie', `token=${token}`);
 
-            expect(prisma.category.delete).toHaveBeenCalledTimes(1);
+            // Candidate ids are deduped before the recompute query.
+            expect(prisma.category.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        id: { in: ['cat-same-uuid'] },
+                    }),
+                }),
+            );
         });
 
         it('should return 401 when not authenticated', async () => {

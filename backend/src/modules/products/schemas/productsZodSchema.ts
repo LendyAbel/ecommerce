@@ -46,4 +46,6 @@ export const ProductQuerySchema = z.object({
     search: z.string().trim().optional(),
     category: z.string().trim().optional(),
     sortBy: z.enum(['price_asc', 'price_desc', 'newest', 'oldest']).optional(),
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
 });

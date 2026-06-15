@@ -9,7 +9,7 @@
 Leyenda: ✅ completada · 🔄 en progreso · ⬜ pendiente. Cada subfase/fase se marca aquí al terminarla.
 
 - ✅ **Fase 1 — Correcciones críticas y seguridad** (completada)
-- ⬜ Fase 2 — Optimización de consultas e índices
+- ✅ **Fase 2 — Optimización de consultas e índices** (completada)
 - ⬜ Fase 3 — Refactor y robustez
 - ⬜ Fase 4 — Features nuevas para e-commerce completo
 
@@ -76,40 +76,39 @@ Cualquiera puede borrar categorías y desasignar productos.
 
 ---
 
-## Fase 2 — Optimización de consultas e índices
+## ✅ Fase 2 — Optimización de consultas e índices — COMPLETADA
 
-### 2.1 Búsqueda de productos en una sola consulta
-`src/modules/products/services/productServices.ts` `getAllProducts` hace dos viajes a BD (`$queryRaw` de IDs +
-`findMany WHERE id IN (...)`), y la lista `IN` puede crecer sin límite.
-- Unificar en un solo `$queryRaw` paginado, o crear `searchVector tsvector` (full-text Postgres con `unaccent`) +
-  índice GIN y filtrar con `@@`. Recomendado: `tsvector` + GIN.
+> Verificación global: `tsc --noEmit` sin errores, 65/65 tests en verde, 16 migraciones aplicadas sin drift.
+> Búsqueda full-text verificada read-only contra la BD (acento/case-insensitive + prefijo). Frontend ajustado al
+> nuevo contrato paginado (queda 1 error TS preexistente y ajeno en `ProtectedRoute.tsx`).
 
-### 2.2 Paginación
-`getAllProducts` devuelve **todos** los productos con includes completos.
-- Añadir `page`/`limit` (o cursor) a `ProductQuerySchema` y `skip`/`take` + respuesta `{ data, total, page, limit }`.
+### ✅ 2.1 Búsqueda de productos en una sola consulta — COMPLETADA
+> Implementado: columna generada `searchVector tsvector` (name + brand + shortDescription, vía wrapper IMMUTABLE
+> `f_unaccent`) + índice GIN (migración `..._add_product_search_vector`). `getAllProducts` usa
+> `searchVector @@ to_tsquery('simple', f_unaccent(...))` con **prefijo** (`term:*`) y entrada saneada. Una sola
+> consulta SQL devuelve ids ordenados + paginados + `count(*) OVER()`; la hidratación con includes queda acotada a
+> `limit`. La columna se expone en el schema como `Unsupported("tsvector")?` con `@@index(type: Gin)` para evitar drift.
 
-### 2.3 Índices en el schema
-`prisma/schema.prisma` — Postgres no indexa FKs automáticamente.
-- Índices: `Product(mainCategoryId)`, `Product(status)`, `Product(createdAt)`, `Product(price)`, `Image(productId)`,
-  `CartItem(cartId)`, `CartItem(productId)`.
-- **`@@unique([cartId, productId])` en `CartItem`** (ver 2.4).
+### ✅ 2.2 Paginación — COMPLETADA
+> Implementado: `page`/`limit` en `ProductQuerySchema` (default 1/20, `limit` máx 100). `getAllProducts` devuelve
+> `{ data, total, page, limit }`. Frontend: `products.service.ts` (`PaginatedProducts`) y `useProducts` adaptados.
 
-### 2.4 Carrito: menos viajes y consistencia
-`src/modules/cart/services/cartServices.ts` `addItem` hace 5 round-trips y usa `findFirst` porque no hay constraint
-único.
-- Con `@@unique([cartId, productId])`, sustituir find-then-create por un único `cartItem.upsert` (`increment` en
-  update). Envolver en `prisma.$transaction` donde aplique.
-- Validar `quantity` contra `product.stock` al añadir/actualizar.
-- Reusar el `cartInclude` existente para devolver el carrito actualizado.
+### ✅ 2.3 Índices en el schema — COMPLETADA
+> Implementado (migración `..._add_indexes_and_cartitem_unique`): `Product(mainCategoryId|status|createdAt|price)`,
+> `Image(productId)`, `CartItem(productId)` y `@@unique([cartId, productId])`. Se omite `@@index([cartId])` por ser
+> redundante con el índice del unique compuesto (cartId es su columna líder).
 
-### 2.5 Categorías sin traer arrays de IDs
-`src/modules/categories/services/categoriesServices.ts` `getAllCategories` incluye arrays completos de `id` solo para
-contar.
-- Reemplazar por `_count: { select: { products: true, mainProducts: true } }`.
+### ✅ 2.4 Carrito: menos viajes y consistencia — COMPLETADA
+> Implementado: `addItem` reemplaza find-then-create por un único `cartItem.upsert` (`increment` en update) dentro de
+> `$transaction`, con validación de stock atómica (rollback si excede → 409). `updateItem` también valida stock.
 
-### 2.6 Borrado de producto sin N+1
-`deleteProductById` itera `product.count` por categoría secuencialmente.
-- Recalcular categorías huérfanas con una sola consulta agregada (o `Promise.all` de counts) dentro de transacción.
+### ✅ 2.5 Categorías sin traer arrays de IDs — COMPLETADA
+> Implementado: `getAllCategories` usa `_count: { select: { products: true, mainProducts: true } }`. Frontend solo
+> consume `id`/`name`, no afectado.
+
+### ✅ 2.6 Borrado de producto sin N+1 — COMPLETADA
+> Implementado: `deleteProductById` recalcula huérfanas con **una** consulta (`category.findMany` con filtros `none`)
+> + `deleteMany`, todo dentro de `$transaction`.
 
 ---
 

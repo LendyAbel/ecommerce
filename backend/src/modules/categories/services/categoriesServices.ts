@@ -2,10 +2,11 @@ import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
 
 const getAllCategories = async () => {
+    // _count makes Postgres count the relations server-side instead of shipping
+    // every related product id back just to take its array length.
     const categories = await prisma.category.findMany({
         include: {
-            products: { select: { id: true } },
-            mainProducts: { select: { id: true } },
+            _count: { select: { products: true, mainProducts: true } },
         },
     });
     return categories;

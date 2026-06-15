@@ -7,13 +7,16 @@ const useProducts = (filters: ProductFilters = {}) => {
         isLoading: isProductsLoading,
         isError: isProductsError,
     } = useQuery({
+        // Until a paginated UI exists, ask for the max page size so the listing
+        // keeps showing the full catalog. `data` is now the paginated envelope.
         queryKey: ['products', filters],
-        queryFn: () => productsService.getProducts(filters),
+        queryFn: () => productsService.getProducts({ limit: 100, ...filters }),
         placeholderData: keepPreviousData,
     });
 
-    const products = data ?? [];
+    const products = data?.data ?? [];
+    const total = data?.total ?? 0;
 
-    return { products, isProductsLoading, isProductsError };
+    return { products, total, isProductsLoading, isProductsError };
 };
 export default useProducts;
