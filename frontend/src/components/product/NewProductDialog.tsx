@@ -1,5 +1,4 @@
-import { Close } from '@mui/icons-material';
-import { Alert, Dialog } from '@mui/material';
+import { Alert } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import TextFieldInput from '../common/TextFieldInput';
 import SingleSelectInput from '../common/SingleSelectInput';
@@ -10,6 +9,7 @@ import { productFormSchema, productStatus } from '../../schemas/productZodSchema
 import z from 'zod';
 import useAddNewProduct from '../../hooks/product/useAddNewProduct';
 import useCategory from '../../hooks/category/useCategory';
+import { Button, Modal } from '@/shared/ui';
 
 const formDefaultValues: ProductForm = {
     name: '',
@@ -57,38 +57,12 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
     };
 
     return (
-        <Dialog
-            fullWidth
+        <Modal
             open={isOpen}
             onClose={onClose}
-            slotProps={{
-                paper: {
-                    sx: {
-                        background: 'var(--color-surface)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '16px',
-                        boxShadow: 'var(--shadow-xl)',
-                    },
-                },
-            }}
+            eyebrow='Administración'
+            title='Nuevo producto'
         >
-            {/* Header */}
-            <div className='relative px-6 pb-0 pt-6'>
-                <p className='text-xs font-semibold uppercase tracking-[0.25em] text-primary'>
-                    Administración
-                </p>
-                <h2 className='mt-1 font-display text-2xl font-bold text-text'>
-                    Nuevo producto
-                </h2>
-                <button
-                    type='button'
-                    onClick={onClose}
-                    className='absolute right-5 top-5 flex size-8 items-center justify-center rounded-full text-text-60 transition-colors duration-200 hover:bg-panel hover:text-text'
-                >
-                    <Close fontSize='small' />
-                </button>
-            </div>
-
             {/* Form */}
             <form onSubmit={onSubmit} className='mb-6 mt-6 flex flex-col gap-2'>
                 <div className='flex max-h-110 flex-col gap-4 overflow-auto px-6 py-2'>
@@ -156,29 +130,19 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                 )}
 
                 <div className='mt-2 flex justify-end gap-3 px-6'>
-                    <button
-                        type='button'
+                    <Button
+                        variant='ghost'
                         onClick={handleCancel}
-                        className='btn btn-ghost rounded-xl border border-border px-6 py-2.5 text-sm'
+                        className='rounded-xl border border-border px-6 py-2.5 text-sm'
                     >
                         Cancelar
-                    </button>
-                    <button
-                        type='submit'
-                        disabled={isPending}
-                        className='btn btn-primary disabled:cursor-not-allowed disabled:opacity-60'
-                    >
-                        {isPending && (
-                            <svg className='size-4 animate-spin' viewBox='0 0 24 24' fill='none'>
-                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
-                            </svg>
-                        )}
+                    </Button>
+                    <Button type='submit' loading={isPending}>
                         {isPending ? 'Guardando...' : 'Guardar'}
-                    </button>
+                    </Button>
                 </div>
             </form>
-        </Dialog>
+        </Modal>
     );
 };
 

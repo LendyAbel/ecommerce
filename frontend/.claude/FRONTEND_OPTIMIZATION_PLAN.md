@@ -102,11 +102,16 @@ Reglas: cada feature exporta vía `index.ts` (barrel); `pages/` solo compone; na
 - ✅ **2.5** `useSyncCart` paraleliza los `addItem` con `Promise.all` (antes bucle `await` secuencial) en `sync` y `replace`. Verificado en el backend que es seguro: `cart.upsert` atómico + `cartItem.upsert` por `@@unique([cartId, productId])` en transacción → productos distintos = filas distintas, sin carrera. `clearCart` se mantiene secuencial antes del replace (dependencia).
 - ✅ **2.6** Verificación: `npm run build` ✅ + `npm run lint` ✅ en verde. (Pendiente prueba manual en runtime con backend levantado.)
 
-### ⬜ Fase 3 — Librería de UI (`shared/ui`)
-- ⬜ **3.1** `Button` / `AsyncButton` (variantes + tamaños + estado loading) → reemplaza el patrón repetido 8+ veces.
-- ⬜ **3.2** `Card`, `Badge`, `Spinner`, `Modal` (envolviendo MUI Dialog), `Input`/`FormField`.
-- ⬜ **3.3** Unificar inputs de formulario: `AuthForm` compartido por `Login`/`Register`.
-- ⬜ **3.4** Verificación: UI sin regresiones visuales; lint/build OK.
+### ✅ Fase 3 — Librería de UI (`shared/ui`) — COMPLETADA
+- ✅ **3.1** Creado `shared/ui/Button.tsx` (variantes primary/secondary/accent/outline/ghost + tamaños sm/md/lg + `fullWidth` + `loading` con spinner integrado + `aria-busy`, `type='button'` por defecto) sobre las clases `.btn-*` existentes; barrel `shared/ui/index.ts`. Adoptado en los botones con spinner de `Login`, `Register` y `NewProductDialog` (2 botones) → eliminado el SVG de spinner duplicado 3-4 veces. Build + lint en verde.
+- ✅ **3.2** Primitivas (una por una):
+  - ✅ `Spinner` (`shared/ui/Spinner.tsx`): accesible con `label` / decorativo sin él; `Button` lo reutiliza (SVG inline eliminado) y `ProtectedRoute` sustituye MUI `CircularProgress` por él.
+  - ✅ `Card` (`shared/ui/Card.tsx`): encapsula `rounded-2xl border border-border bg-surface shadow-sm` + prop `padded`; adoptado en las 2 tarjetas de `Cart` (item y resumen).
+  - ✅ `Badge` (`shared/ui/Badge.tsx`): mapea las clases `.badge-*` (primary/success/warning/error/hot/new/best) que estaban definidas pero sin usar; adoptado en el modo compact de `ProductStockBadge`.
+  - ✅ `Modal` (`shared/ui/Modal.tsx`): envuelve MUI `Dialog` con el estilo de superficie + cabecera opcional (`eyebrow`/`title`) y botón de cierre **accesible** (`aria-label='Cerrar'`); adoptado en `NewProductDialog` (eliminado su Dialog, header y el import de `Close`).
+  - ✅ `Input`/`FormField`: **no se crea nada nuevo** (decisión YAGNI). La capa ya existe en `components/common/` (`TextFieldInput` + selects + `ImagesInput`, tied a TanStack Form); su **reubicación a `shared/`** se hará en la Fase 6. Mejora aplicada: error de `TextFieldInput` usa el token `text-error` en vez de `text-red-500`.
+- ✅ **3.3** Creado `AuthForm` genérico (`components/auth/AuthForm.tsx`): encapsula la lógica de envío (Zod + `ApiError` + navigate) y la maquetación; campos por config. `Login` y `Register` reescritos sobre él (de ~120/140 líneas a ~60 cada uno) manteniendo su `motion.div`. Tipos resueltos: `icon: JSX.Element`, `schema: ZodType<TValues, TValues>`.
+- ✅ **3.4** Verificación: `npm run build` ✅ + `npm run lint` ✅.
 
 ### ⬜ Fase 4 — Rendimiento
 - ⬜ **4.1** Code-splitting por ruta con `React.lazy` + `<Suspense fallback>`.

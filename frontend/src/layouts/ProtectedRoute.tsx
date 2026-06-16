@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router';
 import { useAuthStore } from '../store/authStore';
-import { CircularProgress } from '@mui/material';
+import { Spinner } from '@/shared/ui';
 
 const ProtectedRoute = () => {
     const user = useAuthStore(state => state.user);
@@ -9,7 +9,7 @@ const ProtectedRoute = () => {
     if (isAuthLoading) {
         return (
             <div className='flex h-screen items-center justify-center'>
-                <CircularProgress />
+                <Spinner className='text-primary size-10' label='Cargando' />
             </div>
         );
     }

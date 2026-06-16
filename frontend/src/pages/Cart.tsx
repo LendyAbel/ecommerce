@@ -5,6 +5,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useCartStore } from '../store/cartStore';
+import { Card } from '@/shared/ui';
 
 const formatPrice = (value: number) =>
     value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
@@ -50,9 +51,9 @@ const Cart = () => {
                                 product.images?.find(img => img.isMain)?.url ??
                                 product.images?.[0]?.url;
                             return (
-                                <div
+                                <Card
                                     key={product.id}
-                                    className='border-border bg-surface flex items-center gap-4 rounded-2xl border p-4 shadow-sm'
+                                    className='flex items-center gap-4 p-4'
                                 >
                                     {mainImage ? (
                                         <img
@@ -135,13 +136,13 @@ const Cart = () => {
                                             <DeleteOutlineIcon fontSize='small' />
                                         </IconButton>
                                     </Tooltip>
-                                </div>
+                                </Card>
                             );
                         })}
                     </div>
 
                     {/* Resumen */}
-                    <div className='border-border bg-surface h-fit rounded-2xl border p-6 shadow-sm'>
+                    <Card padded className='h-fit'>
                         <h2 className='font-display text-text mb-4 text-lg font-bold'>
                             Resumen
                         </h2>
@@ -172,7 +173,7 @@ const Cart = () => {
                                 Vaciar carrito
                             </button>
                         </div>
-                    </div>
+                    </Card>
                 </div>
             </div>
         </div>

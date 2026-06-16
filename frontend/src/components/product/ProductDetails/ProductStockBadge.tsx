@@ -1,4 +1,5 @@
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
+import { Badge } from '@/shared/ui';
 
 type ProductStockBadgeProps = {
     stock: number | undefined;
@@ -8,16 +9,10 @@ type ProductStockBadgeProps = {
 const ProductStockBadge = ({ stock = 0, compact = false }: ProductStockBadgeProps) => {
     if (compact) {
         return (
-            <span
-                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                    stock > 0
-                        ? 'bg-success-20 text-success'
-                        : 'bg-error-20 text-error'
-                }`}
-            >
+            <Badge variant={stock > 0 ? 'success' : 'error'}>
                 <span className={`h-1.5 w-1.5 rounded-full ${stock > 0 ? 'bg-success' : 'bg-error'}`} />
                 {stock > 0 ? 'En stock' : 'Sin stock'}
-            </span>
+            </Badge>
         );
     }
 

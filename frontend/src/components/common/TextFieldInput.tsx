@@ -96,7 +96,7 @@ const TextFieldInput = ({
                 sx={sxInputStyle}
             />
             {hasError && (
-                <small id={errorId} className='absolute top-2.5 right-4 font-bold text-red-500'>
+                <small id={errorId} className='text-error absolute top-2.5 right-4 font-bold'>
                     {errors[0]?.message}
                 </small>
             )}
