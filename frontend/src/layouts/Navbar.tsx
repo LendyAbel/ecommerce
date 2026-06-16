@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
-import CartBage from '../components/cart/CartBage';
+import CartBadge from '../components/cart/CartBadge';
 import { useAuthStore } from '../store/authStore';
 import { useAuth } from '../hooks/auth/useAuth';
 
@@ -57,7 +57,7 @@ const Navbar = ({ children }: Props) => {
                             </NavLink>
                         </>
                     )}
-                    <CartBage />
+                    <CartBadge />
                 </div>
             </nav>
             {children}

@@ -10,7 +10,6 @@ type ProductActionsProps = {
 
 const ProductActions = ({ product }: ProductActionsProps) => {
     const addItem = useCartStore(state => state.addItem);
-    const isLoading = useCartStore(state => state.isLoading);
 
     const handleAddToCart = () => {
         addItem({product});
@@ -20,7 +19,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
         <div className='flex items-center gap-3 pt-2'>
             <button
                 type='button'
-                disabled={product.stock === 0 || isLoading}
+                disabled={product.stock === 0}
                 onClick={handleAddToCart}
                 className='btn btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-40'
             >

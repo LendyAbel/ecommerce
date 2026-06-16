@@ -1,16 +1,15 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Dialog } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
-import { useQuery } from '@tanstack/react-query';
-import categoriesService from '../../services/categories.service';
 import TextFieldInput from '../common/TextFieldInput';
 import SingleSelectInput from '../common/SingleSelectInput';
 import type { ProductForm } from '../../types/productTypes';
-import MultipleSelectInput from '../common/MultipleSelecInput';
+import MultipleSelectInput from '../common/MultipleSelectInput';
 import ImagesInput from '../common/ImagesInput';
 import { productFormSchema, productStatus } from '../../schemas/productZodSchema';
 import z from 'zod';
 import useAddNewProduct from '../../hooks/product/useAddNewProduct';
+import useCategory from '../../hooks/category/useCategory';
 
 const formDefaultValues: ProductForm = {
     name: '',
@@ -33,11 +32,7 @@ type NewProductDialogProps = {
 };
 
 const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
-    const { data } = useQuery({
-        queryKey: ['categories'],
-        queryFn: categoriesService.getCategories,
-    });
-    const categories = data ?? [];
+    const { categories } = useCategory();
 
     const { addNewProduct, isPending, isError } = useAddNewProduct();
 

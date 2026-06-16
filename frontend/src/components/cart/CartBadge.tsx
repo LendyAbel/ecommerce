@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import { ShoppingCart } from '@mui/icons-material';
 import { useCartStore } from '../../store/cartStore';
 
-const CartBage = () => {
+const CartBadge = () => {
     const navigate = useNavigate();
     const totalItems = useCartStore(state => state.totalItems());
 
@@ -23,4 +23,4 @@ const CartBage = () => {
     );
 };
 
-export default CartBage;
+export default CartBadge;

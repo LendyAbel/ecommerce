@@ -5,7 +5,7 @@ import { useForm } from '@tanstack/react-form';
 import { LoginFormSchema } from '../../schemas/userSchema';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
-import axios from 'axios';
+import { ApiError } from '@/lib/api/client';
 import { motion } from 'motion/react';
 import { useAuth } from '../../hooks/auth/useAuth';
 
@@ -27,14 +27,11 @@ const Login = ({ showLogin }: LoginProps) => {
                 await login(value);
                 navigate('/products');
             } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    setServerError(
-                        error.response?.data?.error ??
-                            'Credenciales incorrectas',
-                    );
-                } else {
-                    setServerError('Error inesperado. Inténtalo de nuevo.');
-                }
+                setServerError(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'Error inesperado. Inténtalo de nuevo.',
+                );
             }
         },
     });

@@ -11,7 +11,6 @@ const formatPrice = (value: number) =>
 
 const Cart = () => {
     const cart = useCartStore(state => state.cart);
-    const isLoading = useCartStore(state => state.isLoading);
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
     const clearCart = useCartStore(state => state.clearCart);
@@ -19,16 +18,6 @@ const Cart = () => {
     const totalPrice = useCartStore(state => state.totalPrice);
 
     const items = cart?.cartItems ?? [];
-
-    console.log(cart);
-
-    if (isLoading) {
-        return (
-            <div className='bg-bg flex min-h-[calc(100vh-48px)] items-center justify-center'>
-                <span className='text-text-60'>Cargando carrito...</span>
-            </div>
-        );
-    }
 
     if (items.length === 0) {
         return (

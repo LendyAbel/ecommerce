@@ -1,31 +1,22 @@
-import axios from 'axios';
+import { apiClient } from '@/lib/api/client';
 import type { LoginForm, RegisterForm, User } from '../types/authTypes';
 
-const api = axios.create({
-    baseURL: '/api/auth',
-    withCredentials: true,
-});
-
 const login = async (data: LoginForm): Promise<User | null> => {
-    const res = await api.post('/login', data);
-    console.log('login', res.data.user);
+    const res = await apiClient.post('/auth/login', data);
     return res.data.user;
 };
 
 const register = async (data: RegisterForm): Promise<User | null> => {
-    const res = await api.post('/register', data);
-    console.log('register',res.data.user);
-
+    const res = await apiClient.post('/auth/register', data);
     return res.data.user;
 };
 
 const logout = async () => {
-    await api.post('/logout');
+    await apiClient.post('/auth/logout');
 };
 
 const me = async (): Promise<User | null> => {
-    const res = await api.get('/me');
-    console.log('user: ',res.data.user);
+    const res = await apiClient.get('/auth/me');
     return res.data.user;
 };
 

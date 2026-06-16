@@ -24,7 +24,12 @@ function App() {
                 <Route path='/auth' element={<Authenticate />} />
                 <Route path='/cart' element={<Cart />} />
 
-                <Route element={<ProtectedRoute />}></Route>
+                <Route element={<ProtectedRoute />}>
+                {/* Rutas PRIVADAS (requieren sesión). Si no hay usuario,
+                    ProtectedRoute redirige a /auth. Aquí irán /checkout,
+                    /account, /orders:
+                    <Route path='/checkout' element={<Checkout />} /> */}
+                </Route>
             </Routes>
         </Navbar>
     );

@@ -4,8 +4,6 @@ import type { LocalCart, LocalCartItem } from '../types/cartTypes';
 
 type CartStore = {
     cart: LocalCart;
-    isLoading: boolean;
-    isSyncing: boolean;
 
     addItem: (
         item: Omit<LocalCartItem, 'quantity'> & { quantity?: number },
@@ -25,8 +23,6 @@ export const useCartStore = create<CartStore>()(
     persist(
         (set, get) => ({
             cart: EMPTY_CART,
-            isLoading: false,
-            isSyncing: false,
 
             addItem: ({ product, quantity = 1 }) => {
                 set(state => {

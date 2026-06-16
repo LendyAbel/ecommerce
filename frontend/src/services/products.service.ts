@@ -1,10 +1,5 @@
-import axios from 'axios';
+import { apiClient } from '@/lib/api/client';
 import type { Product, ProductForm } from '../types/productTypes';
-
-const api = axios.create({
-    baseURL: '/api/products',
-    withCredentials: true,
-});
 
 export type SortBy = 'price_asc' | 'price_desc' | 'newest' | 'oldest';
 
@@ -32,22 +27,22 @@ const getProducts = async (
     if (filters.sortBy) params.sortBy = filters.sortBy;
     if (filters.page) params.page = String(filters.page);
     if (filters.limit) params.limit = String(filters.limit);
-    const res = await api.get('/', { params });
+    const res = await apiClient.get('/products', { params });
     return res.data;
 };
 
 const getProductById = async (id: string): Promise<Product> => {
-    const res = await api.get(`/${id}`);
+    const res = await apiClient.get(`/products/${id}`);
     return res.data;
 };
 
 const addNewProduct = async (product: ProductForm): Promise<Product> => {
-    const res = await api.post('/', product);
+    const res = await apiClient.post('/products', product);
     return res.data;
 };
 
 const deleteProductById = async (id: string): Promise<Product> => {
-    const res = await api.delete(`/${id}`);
+    const res = await apiClient.delete(`/products/${id}`);
     return res.data;
 };
 

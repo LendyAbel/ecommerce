@@ -4,10 +4,12 @@ import { useAuthStore } from '../../store/authStore';
 import authService from '../../services/auth.service';
 import { useSyncCart } from '../cart/useSyncCart';
 import { useCartStore } from '../../store/cartStore';
+import { logger } from '@/lib/logger';
 
 export const useAuth = () => {
     const queryClient = useQueryClient();
     const setUser = useAuthStore(state => state.setUser);
+    const setAuthLoading = useAuthStore(state => state.setAuthLoading);
     const { syncWithBackendAsync, fetchFromBackendAsync, replaceCartAsync } = useSyncCart();
     const meQuery = useQuery({
         queryKey: ['user'],
@@ -15,13 +17,15 @@ export const useAuth = () => {
         retry: false,
     });
 
-    // On page load/refresh: user already logged in → backend is source of truth, just fetch
-    // Do NOT use syncWithBackendAsync here: it calls addItem and would duplicate quantities
+    useEffect(() => {
+        setAuthLoading(meQuery.isLoading);
+    }, [meQuery.isLoading, setAuthLoading]);
+
     useEffect(() => {
         if (meQuery.isSuccess) {
             setUser(meQuery.data);
             fetchFromBackendAsync();
-            console.log('Fetch Cart on ME');
+            logger.debug('Fetch Cart on ME');
         }
         if (meQuery.isError) {
             setUser(null);
@@ -33,7 +37,7 @@ export const useAuth = () => {
         onSuccess: async user => {
             setUser(user);
             await syncWithBackendAsync();
-            console.log('Sync Cart on LOGIN');
+            logger.debug('Sync Cart on LOGIN');
         },
     });
 
@@ -42,14 +46,14 @@ export const useAuth = () => {
         onSuccess: async user => {
             setUser(user);
             await syncWithBackendAsync();
-            console.log('Sync Cart on REGISTER');
+            logger.debug('Sync Cart on REGISTER');
         },
     });
 
     const logoutMutation = useMutation({
         mutationFn: async () => {
             await replaceCartAsync();
-            console.log('Sync Cart on LOGOUT');
+            logger.debug('Sync Cart on LOGOUT');
             await authService.logout();
         },
         onSuccess: () => {

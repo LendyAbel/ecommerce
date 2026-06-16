@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ProductForm } from '../../types/productTypes';
 import productsService from '../../services/products.service';
+import { logger } from '@/lib/logger';
 
 const useAddNewProduct = () => {
     const queryClient = useQueryClient();
@@ -18,7 +19,7 @@ const useAddNewProduct = () => {
             ]);
         },
         onError: error => {
-            console.log(error);
+            logger.error('Error al crear producto:', error);
         },
     });
     return { addNewProduct, isPending, isError };

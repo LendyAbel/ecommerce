@@ -1,29 +1,30 @@
 import { useMutation } from '@tanstack/react-query';
 import { useCartStore } from '../../store/cartStore';
 import cartService from '../../services/cart.service';
+import { logger } from '@/lib/logger';
 
 export const useSyncCart = () => {
-    // const queryClient = useQueryClient();
     const { cart } = useCartStore();
     const setCartItems = useCartStore(state => state.setCartItems);
 
     const syncMutation = useMutation({
         mutationKey: ['cart', 'sync'],
         mutationFn: async () => {
-            if (cart.cartItems.length === 0) {
-                return cartService.getCart();
-            }
-            for (const item of cart.cartItems) {
-                await cartService.addItem(item.product.id, item.quantity);
-            }
+            // Items en paralelo: cada producto es una fila distinta y el backend
+            // hace upsert atómico por (cartId, productId), así que no hay carrera.
+            await Promise.all(
+                cart.cartItems.map(item =>
+                    cartService.addItem(item.product.id, item.quantity),
+                ),
+            );
             return cartService.getCart();
         },
         onSuccess: data => {
-            console.log('syncmutation:', data);
+            logger.debug('syncmutation:', data);
             setCartItems(data.cartItems);
         },
         onError: error => {
-            console.error('Cart sync failed:', error);
+            logger.error('Cart sync failed:', error);
         },
     });
 
@@ -31,11 +32,11 @@ export const useSyncCart = () => {
         mutationKey: ['cart', 'fetch'],
         mutationFn: () => cartService.getCart(),
         onSuccess: data => {
-            console.log('fetchmutation:', data);
+            logger.debug('fetchmutation:', data);
             setCartItems(data.cartItems);
         },
         onError: error => {
-            console.error('Cart fetch failed:', error);
+            logger.error('Cart fetch failed:', error);
         },
     });
 
@@ -43,18 +44,21 @@ export const useSyncCart = () => {
     const replaceMutation = useMutation({
         mutationKey: ['cart', 'replace'],
         mutationFn: async () => {
+            // clearCart primero (dependencia), luego los items en paralelo.
             await cartService.clearCart();
-            for (const item of cart.cartItems) {
-                await cartService.addItem(item.product.id, item.quantity);
-            }
+            await Promise.all(
+                cart.cartItems.map(item =>
+                    cartService.addItem(item.product.id, item.quantity),
+                ),
+            );
             return cartService.getCart();
         },
         onSuccess: data => {
-            console.log('replacemutation:', data);
+            logger.debug('replacemutation:', data);
             setCartItems(data.cartItems);
         },
         onError: error => {
-            console.error('Cart replace failed:', error);
+            logger.error('Cart replace failed:', error);
         },
     });
 

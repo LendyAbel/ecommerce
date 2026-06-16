@@ -1,7 +1,7 @@
 import ProductCard from '../components/product/ProductCard';
 import type { Product } from '../types/productTypes';
 import useProducts from '../hooks/product/useProducts';
-import AddProductButton from '../components/product/AddProductButtom';
+import AddProductButton from '../components/product/AddProductButton';
 import useNewProductDialog from '../hooks/product/useNewProductDialog';
 import NewProductDialog from '../components/product/NewProductDialog';
 import ProductCardSkeleton from '../components/product/Skeletons/ProductCardSkeleton';

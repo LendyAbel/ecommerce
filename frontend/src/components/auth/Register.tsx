@@ -6,7 +6,7 @@ import { RegisterFormSchema } from '../../schemas/userSchema';
 import { useNavigate } from 'react-router';
 import TextFieldInput from '../common/TextFieldInput';
 import { useState } from 'react';
-import axios from 'axios';
+import { ApiError } from '@/lib/api/client';
 import { motion } from 'motion/react';
 import { useAuth } from '../../hooks/auth/useAuth';
 
@@ -28,14 +28,11 @@ const Register = ({ showLogin }: RegisterProps) => {
                 await register(value);
                 navigate('/products');
             } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    setServerError(
-                        error.response?.data?.error ??
-                            'Error al crear la cuenta',
-                    );
-                } else {
-                    setServerError('Error inesperado. Inténtalo de nuevo.');
-                }
+                setServerError(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'Error inesperado. Inténtalo de nuevo.',
+                );
             }
         },
     });
