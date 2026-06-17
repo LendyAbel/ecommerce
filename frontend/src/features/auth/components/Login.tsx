@@ -1,15 +1,12 @@
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { LoginFormSchema } from '../../schemas/userSchema';
+import { LoginFormSchema } from '@/features/auth/schemas/userSchema';
 import { motion } from 'motion/react';
-import { useAuth } from '../../hooks/auth/useAuth';
-import AuthForm from './AuthForm';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import AuthForm from '@/features/auth/components/AuthForm';
+import { loginFields } from '@/features/auth/components/authFields';
 
 type LoginProps = {
     showLogin: boolean;
 };
-
-const iconSx = { color: 'var(--color-text-38)', fontSize: 18 };
 
 const Login = ({ showLogin }: LoginProps) => {
     const { login } = useAuth();
@@ -31,19 +28,7 @@ const Login = ({ showLogin }: LoginProps) => {
                 schema={LoginFormSchema}
                 defaultValues={{ email: '', password: '' }}
                 onAuthenticate={login}
-                fields={[
-                    {
-                        name: 'email',
-                        label: 'Email',
-                        icon: <EmailOutlinedIcon sx={iconSx} />,
-                    },
-                    {
-                        name: 'password',
-                        label: 'Contraseña',
-                        type: 'password',
-                        icon: <LockOutlinedIcon sx={iconSx} />,
-                    },
-                ]}
+                fields={loginFields}
                 footer={
                     <p className='text-primary hover:text-primary-hover mt-2 cursor-pointer text-right text-xs'>
                         ¿Olvidaste tu contraseña?

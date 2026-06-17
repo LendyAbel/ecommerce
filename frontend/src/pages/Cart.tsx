@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { useCartStore } from '../store/cartStore';
+import { useCartStore } from '@/features/cart/store/cartStore';
 import { Card } from '@/shared/ui';
 
 const formatPrice = (value: number) =>
@@ -59,6 +59,8 @@ const Cart = () => {
                                         <img
                                             src={mainImage}
                                             alt={product.name}
+                                            loading='lazy'
+                                            decoding='async'
                                             className='size-20 rounded-xl object-cover'
                                         />
                                     ) : (

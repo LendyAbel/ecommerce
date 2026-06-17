@@ -1,16 +1,12 @@
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import { RegisterFormSchema } from '../../schemas/userSchema';
+﻿import { RegisterFormSchema } from '@/features/auth/schemas/userSchema';
 import { motion } from 'motion/react';
-import { useAuth } from '../../hooks/auth/useAuth';
-import AuthForm from './AuthForm';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import AuthForm from '@/features/auth/components/AuthForm';
+import { registerFields } from '@/features/auth/components/authFields';
 
 type RegisterProps = {
     showLogin: boolean;
 };
-
-const iconSx = { color: 'var(--color-text-38)', fontSize: 18 };
 
 const Register = ({ showLogin }: RegisterProps) => {
     const { register } = useAuth();
@@ -37,25 +33,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                 schema={RegisterFormSchema}
                 defaultValues={{ name: '', email: '', password: '' }}
                 onAuthenticate={register}
-                fields={[
-                    {
-                        name: 'name',
-                        label: 'Nombre',
-                        icon: <PersonOutlineIcon sx={iconSx} />,
-                    },
-                    {
-                        name: 'email',
-                        label: 'Email',
-                        type: 'email',
-                        icon: <EmailOutlinedIcon sx={iconSx} />,
-                    },
-                    {
-                        name: 'password',
-                        label: 'Contraseña',
-                        type: 'password',
-                        icon: <LockOutlinedIcon sx={iconSx} />,
-                    },
-                ]}
+                fields={registerFields}
             />
         </motion.div>
     );

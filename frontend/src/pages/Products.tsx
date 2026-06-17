@@ -1,16 +1,17 @@
-import ProductCard from '../components/product/ProductCard';
-import type { Product } from '../types/productTypes';
-import useProducts from '../hooks/product/useProducts';
-import AddProductButton from '../components/product/AddProductButton';
-import useNewProductDialog from '../hooks/product/useNewProductDialog';
-import NewProductDialog from '../components/product/NewProductDialog';
-import ProductCardSkeleton from '../components/product/Skeletons/ProductCardSkeleton';
-import ProductFilters from '../components/product/ProductFilters';
-import { useAuthStore } from '../store/authStore';
-import { useState } from 'react';
-import useCategory from '../hooks/category/useCategory';
-import type { SortBy } from '../services/products.service';
-import { useDebounce } from '../utils/utils';
+import ProductCard from '@/features/products/components/ProductCard';
+import type { Product } from '@/features/products/types/productTypes';
+import useProducts from '@/features/products/hooks/useProducts';
+import AddProductButton from '@/features/products/components/AddProductButton';
+import useNewProductDialog from '@/features/products/hooks/useNewProductDialog';
+import NewProductDialog from '@/features/products/components/NewProductDialog';
+import ProductCardSkeleton from '@/features/products/components/skeletons/ProductCardSkeleton';
+import ProductFilters from '@/features/products/components/ProductFilters';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { useMemo, useState } from 'react';
+import useCategory from '@/features/categories/hooks/useCategory';
+import type { SortBy } from '@/features/products/api/products.service';
+import { useDebounce } from '@/shared/utils/utils';
+import { Button } from '@/shared/ui';
 
 const Products = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -19,7 +20,14 @@ const Products = () => {
 
     const debouncedSearch = useDebounce(searchQuery, 350);
 
-    const { products, isProductsError, isProductsLoading } = useProducts({
+    const {
+        products,
+        isProductsError,
+        isProductsLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useProducts({
         search: debouncedSearch,
         category: selectedCategory,
         sortBy,
@@ -28,7 +36,12 @@ const Products = () => {
     const newProductDialog = useNewProductDialog();
 
     const { categories } = useCategory();
-    const categoriesList = categories.map(c => c.name);
+    // Memoizado para no crear un array nuevo en cada render (p.ej. al teclear),
+    // lo que rompería la memoización de ProductFilters / Select.
+    const categoriesList = useMemo(
+        () => categories.map(c => c.name),
+        [categories],
+    );
 
     if (isProductsLoading) {
         return (
@@ -72,11 +85,25 @@ const Products = () => {
                         No hay productos que coincidan con tu búsqueda.
                     </p>
                 ) : (
-                    <section className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-                        {products.map((product: Product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
-                    </section>
+                    <>
+                        <section className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+                            {products.map((product: Product) => (
+                                <ProductCard key={product.id} product={product} />
+                            ))}
+                        </section>
+
+                        {hasNextPage && (
+                            <div className='mt-8 flex justify-center'>
+                                <Button
+                                    variant='outline'
+                                    loading={isFetchingNextPage}
+                                    onClick={() => fetchNextPage()}
+                                >
+                                    Cargar más
+                                </Button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 

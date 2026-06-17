@@ -3,3 +3,7 @@ export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as Modal } from './Modal';
 export { default as Spinner } from './Spinner';
+export { default as TextFieldInput } from './TextFieldInput';
+export { default as SingleSelectInput } from './SingleSelectInput';
+export { default as MultipleSelectInput } from './MultipleSelectInput';
+export { default as ImagesInput } from './ImagesInput';

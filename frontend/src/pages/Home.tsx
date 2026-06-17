@@ -1,14 +1,12 @@
 import { NavLink } from 'react-router';
-import { useAuthStore } from '../store/authStore';
-import useProducts from '../hooks/product/useProducts';
-import ProductCard from '../components/product/ProductCard';
-import ProductCardSkeleton from '../components/product/Skeletons/ProductCardSkeleton';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import useFeaturedProducts from '@/features/products/hooks/useFeaturedProducts';
+import ProductCard from '@/features/products/components/ProductCard';
+import ProductCardSkeleton from '@/features/products/components/skeletons/ProductCardSkeleton';
 
 const Home = () => {
     const user = useAuthStore(state => state.user);
-    const { products, isProductsLoading } = useProducts();
-
-    const featured = products?.slice(0, 4) ?? [];
+    const { featured, isFeaturedLoading } = useFeaturedProducts(4);
 
     return (
         <div className='bg-bg'>
@@ -53,14 +51,14 @@ const Home = () => {
                 </h2>
 
                 <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4'>
-                    {isProductsLoading
+                    {isFeaturedLoading
                         ? Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)
                         : featured.map(product => (
                               <ProductCard key={product.id} product={product} />
                           ))}
                 </div>
 
-                {!isProductsLoading && featured.length > 0 && (
+                {!isFeaturedLoading && featured.length > 0 && (
                     <div className='mt-8 text-center'>
                         <NavLink
                             to='/products'

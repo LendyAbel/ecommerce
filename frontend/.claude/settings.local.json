@@ -3,7 +3,25 @@
     "allow": [
       "Bash(grep -E \"\\\\.\\(config|json|ts\\)$\")",
       "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend/**)",
-      "PowerShell(npm run lint)"
+      "PowerShell(npm run lint)",
+      "Bash(git mv *)",
+      "Bash(mv src/components/auth/AuthMobile.tsx src/features/auth/components/)",
+      "Bash(mv src/components/auth/authFields.tsx src/features/auth/components/)",
+      "Bash(mv src/hooks/auth/useAuth.ts src/features/auth/hooks/)",
+      "Bash(mv src/services/auth.service.ts src/features/auth/api/)",
+      "Bash(mv src/store/authStore.ts src/features/auth/store/)",
+      "Bash(mv src/components/product/ProductCard.tsx src/features/products/components/)",
+      "Bash(mv src/components/product/ProductDetails.tsx src/features/products/components/)",
+      "Bash(mv src/components/product/ProductFilters.tsx src/features/products/components/)",
+      "Bash(mv src/components/product/AddProductButton.tsx src/features/products/components/)",
+      "Bash(mv src/components/product/NewProductDialog.tsx src/features/products/components/)",
+      "Bash(mv src/components/cart/CartBadge.tsx src/features/cart/components/)",
+      "Bash(mv src/hooks/cart/useSyncCart.ts src/features/cart/hooks/)",
+      "Bash(mv src/services/cart.service.ts src/features/cart/api/)",
+      "Bash(mv src/store/cartStore.ts src/features/cart/store/)",
+      "Bash(mv src/types/cartTypes.ts src/features/cart/types/)",
+      "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/frontend\" && \\\\ *)",
+      "PowerShell(npx tsc -b 2>&1)"
     ]
   },
   "agents": [

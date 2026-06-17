@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useNavigate } from 'react-router';
 import type { ZodType } from 'zod';
-import TextFieldInput from '../common/TextFieldInput';
+import TextFieldInput from '@/shared/ui/TextFieldInput';
 import { Button } from '@/shared/ui';
 import { ApiError } from '@/lib/api/client';
 
-type AuthFieldConfig<TValues> = {
+export type AuthFieldConfig<TValues> = {
     name: Extract<keyof TValues, string>;
     label: string;
     type?: 'text' | 'email' | 'password';

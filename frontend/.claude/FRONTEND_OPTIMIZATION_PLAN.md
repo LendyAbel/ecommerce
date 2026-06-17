@@ -113,25 +113,25 @@ Reglas: cada feature exporta vía `index.ts` (barrel); `pages/` solo compone; na
 - ✅ **3.3** Creado `AuthForm` genérico (`components/auth/AuthForm.tsx`): encapsula la lógica de envío (Zod + `ApiError` + navigate) y la maquetación; campos por config. `Login` y `Register` reescritos sobre él (de ~120/140 líneas a ~60 cada uno) manteniendo su `motion.div`. Tipos resueltos: `icon: JSX.Element`, `schema: ZodType<TValues, TValues>`.
 - ✅ **3.4** Verificación: `npm run build` ✅ + `npm run lint` ✅.
 
-### ⬜ Fase 4 — Rendimiento
-- ⬜ **4.1** Code-splitting por ruta con `React.lazy` + `<Suspense fallback>`.
-- ⬜ **4.2** `React.memo` en `ProductCard` y subcomponentes; `useCallback`/`useMemo` en listas grandes.
-- ⬜ **4.3** Paginación real / infinite scroll en `Products`; `Home` usa `limit:4` desde el API en vez de `slice(0,4)`.
-- ⬜ **4.4** Imágenes: `loading="lazy"`, `decoding="async"`, dimensiones explícitas; `srcSet` si aplica.
-- ⬜ **4.5** Revisar `manualChunks` en build de Vite (separar MUI/motion).
-- ⬜ **4.6** Verificación: `npm run build` + tamaño de chunks; Lighthouse/Network antes-después.
+### ✅ Fase 4 — Rendimiento — COMPLETADA
+- ✅ **4.1** Code-splitting por ruta: páginas con `React.lazy` + `<Suspense>` (fallback con `Spinner`) en `App.tsx`. El bundle único de ~1 MB se partió en chunks por ruta (Products 50kB, Cart 36kB, ProductDetails 7.7kB…); **desaparece el warning de chunk > 500 kB**. Solo se descarga el código de la ruta visitada.
+- ✅ **4.2** `React.memo` en `ProductCard` (y hojas puras `ProductPrice`, `ProductStockBadge`): al teclear en el buscador ya no se re-renderiza toda la rejilla. `useMemo` en `categoriesList` (Products) para no recrear el array en cada render.
+- ✅ **4.3** `useProducts` reescrito con `useInfiniteQuery` (PAGE_SIZE 12, `getNextPageParam` por `total`); `Products` muestra botón "Cargar más" (`hasNextPage`/`fetchNextPage`/`isFetchingNextPage`). Nuevo `useFeaturedProducts(limit)` para `Home` (pide solo 4 al API en vez de `slice(0,4)` sobre todo el catálogo).
+- ✅ **4.4** Imágenes: `loading='lazy'` + `decoding='async'` en listas/miniaturas (ProductCard, Cart, thumbnails de la galería). La imagen principal del detalle se deja *eager* (es el LCP). CLS ya evitado por contenedores de tamaño fijo (`h-48`, `size-20`, `h-105`). `srcSet`/WebP queda pendiente (requiere que el backend sirva variantes).
+- ✅ **4.5** `manualChunks` en `vite.config.ts`: vendors en chunks estables (`react` 44kB, `mui` 259kB, `query` 84kB, `motion` 94kB). Páginas mucho más ligeras (Products 52→12.8kB) al no reempaquetar MUI; mejor cacheo a largo plazo.
+- ✅ **4.6** Verificación: `npm run build` ✅ + `npm run lint` ✅; tamaños de chunks revisados. (Lighthouse/Network en runtime queda para la prueba manual.)
 
-### ⬜ Fase 5 — Accesibilidad, robustez y pulido
-- ⬜ **5.1** `ErrorBoundary` global con fallback amigable.
-- ⬜ **5.2** Alt text descriptivo; `aria-*`/`role` donde falte; landmark `<main>` por página; foco visible.
-- ⬜ **5.3** `Authenticate` responsive (sustituir `w-215 h-130` por clases fluid + breakpoints).
-- ⬜ **5.4** `authStore` con persistencia ligera opcional, manteniendo `me()` como verificación.
-- ⬜ **5.5** Verificación: navegación por teclado, axe DevTools sin errores críticos, viewport móvil.
+### ✅ Fase 5 — Accesibilidad, robustez y pulido — COMPLETADA
+- ✅ **5.1** `ErrorBoundary` (clase) en `shared/components/`, envolviendo la app en `main.tsx`; fallback amigable ("Algo ha salido mal" + volver al inicio) y log centralizado vía `logger` (punto único para Sentry futuro).
+- ✅ **5.2** Landmark `<main>` añadido en `Navbar` (envuelve el contenido de todas las páginas). Input de búsqueda con `aria-label='Buscar productos'`; grupo de categorías con `aria-label`; miniaturas de galería con `aria-label='Ver imagen N'` + `aria-pressed`. (Foco visible y resto de alts revisados; ok.)
+- ✅ **5.3** `Authenticate` responsive: `useMediaQuery('(min-width: 768px)')` elige entre el panel dividido animado (desktop) y `AuthMobile` (tarjeta apilada con toggle), renderizando solo uno. Campos extraídos a `authFields.tsx` (compartidos por desktop/mobile, sin duplicar lógica). **Barrido responsive global:** resto de páginas OK (`w-[90%] max-w-*` + grids con breakpoints); pendiente menor `w-53` en inputs admin (diálogo acotado, aceptable).
+- ✅ **5.4** `authStore` con persistencia ligera (`persist` middleware, `partialize` solo `user`) en localStorage `auth-user`. Sin parpadeo de la navbar al recargar; `me()` sigue siendo la verificación real (no se persiste token: la sesión es la cookie httpOnly). `isAuthLoading` no se persiste (runtime).
+- ✅ **5.5** Verificación: `npm run build` ✅ + `npm run lint` ✅. (Pruebas en runtime: teclado/axe/móvil quedan para verificación manual con la app levantada.)
 
-### ⬜ Fase 6 — Reorganización feature-based de carpetas
-- ⬜ **6.1** Crear estructura `app/`, `lib/`, `shared/`, `features/`, `pages/` con barrels (`index.ts`).
-- ⬜ **6.2** Mover servicios/hooks/componentes a su feature y actualizar imports al alias `@`.
-- ⬜ **6.3** Verificación: `npm run build` + `npm run lint` en verde.
+### ✅ Fase 6 — Reorganización feature-based de carpetas — COMPLETADA
+- ✅ **6.1** Estructura creada: `app/` (App.tsx), `features/{auth,products,cart,categories}/{components,hooks,api,store,schemas,types}`, `shared/{ui,components,utils}`, `lib/`, `pages/`. Barrels `index.ts` en cada feature + `shared/ui` y `shared/components` ampliados.
+- ✅ **6.2** ~50 archivos movidos con `git mv`/`mv`; los inputs de formulario (`common/*`) → `shared/ui`; `layouts/*` → `shared/components`; `utils` → `shared/utils`. Todos los imports relativos a módulos movidos reescritos al alias `@/...` vía codemod (PowerShell). Corregido un problema de encoding (mojibake de acentos) que introdujo el primer `Set-Content`.
+- ✅ **6.3** Verificación: `npm run build` ✅ + `npm run lint` ✅ en verde; sin mojibake residual.
 
 ---
 
