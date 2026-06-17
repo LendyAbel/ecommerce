@@ -5,12 +5,14 @@ import authService from '@/features/auth/api/auth.service';
 import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { logger } from '@/lib/logger';
+import { notify } from '@/shared/store/alertStore';
 
 export const useAuth = () => {
     const queryClient = useQueryClient();
     const setUser = useAuthStore(state => state.setUser);
     const setAuthLoading = useAuthStore(state => state.setAuthLoading);
-    const { syncWithBackendAsync, fetchFromBackendAsync, replaceCartAsync } = useSyncCart();
+    const { syncWithBackendAsync, fetchFromBackendAsync, replaceCartAsync } =
+        useSyncCart();
     const meQuery = useQuery({
         queryKey: ['user'],
         queryFn: authService.me,
@@ -30,7 +32,13 @@ export const useAuth = () => {
         if (meQuery.isError) {
             setUser(null);
         }
-    }, [meQuery.isSuccess, meQuery.isError, meQuery.data, setUser, fetchFromBackendAsync]);
+    }, [
+        meQuery.isSuccess,
+        meQuery.isError,
+        meQuery.data,
+        setUser,
+        fetchFromBackendAsync,
+    ]);
 
     const loginMutation = useMutation({
         mutationFn: authService.login,
@@ -38,6 +46,9 @@ export const useAuth = () => {
             setUser(user);
             await syncWithBackendAsync();
             logger.debug('Sync Cart on LOGIN');
+            notify.info('Sesion iniciada corractamente', {
+                title: 'Notificación:',
+            });
         },
     });
 
@@ -47,10 +58,16 @@ export const useAuth = () => {
             setUser(user);
             await syncWithBackendAsync();
             logger.debug('Sync Cart on REGISTER');
+            notify.success('Registro realizado', {
+                title: 'Notificación:',
+            });
         },
     });
 
     const logoutMutation = useMutation({
+        // Clave para poder observar el estado del logout globalmente
+        // (p. ej. mostrar un loader a pantalla completa con useIsMutating).
+        mutationKey: ['logout'],
         mutationFn: async () => {
             await replaceCartAsync();
             logger.debug('Sync Cart on LOGOUT');
@@ -60,6 +77,9 @@ export const useAuth = () => {
             setUser(null);
             useCartStore.getState().clearCart();
             queryClient.resetQueries({ queryKey: ['user'] });
+            notify.info('Sesion cerrada correctamente', {
+                title: 'Notificación:',
+            });
         },
     });
 
@@ -70,5 +90,6 @@ export const useAuth = () => {
         logout: logoutMutation.mutateAsync,
         isLoginPending: loginMutation.isPending,
         isRegisterPending: registerMutation.isPending,
+        isLogoutPending: logoutMutation.isPending,
     };
 };

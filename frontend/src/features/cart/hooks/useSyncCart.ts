@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import cartService from '@/features/cart/api/cart.service';
 import { logger } from '@/lib/logger';
+import { notify } from '@/shared/store/alertStore';
 
 export const useSyncCart = () => {
     const { cart } = useCartStore();
@@ -10,8 +11,6 @@ export const useSyncCart = () => {
     const syncMutation = useMutation({
         mutationKey: ['cart', 'sync'],
         mutationFn: async () => {
-            // Items en paralelo: cada producto es una fila distinta y el backend
-            // hace upsert atómico por (cartId, productId), así que no hay carrera.
             await Promise.all(
                 cart.cartItems.map(item =>
                     cartService.addItem(item.product.id, item.quantity),
@@ -40,11 +39,10 @@ export const useSyncCart = () => {
         },
     });
 
-    // Used on logout: clears backend cart first, then re-adds all local items (replace, not accumulate)
+
     const replaceMutation = useMutation({
         mutationKey: ['cart', 'replace'],
         mutationFn: async () => {
-            // clearCart primero (dependencia), luego los items en paralelo.
             await cartService.clearCart();
             await Promise.all(
                 cart.cartItems.map(item =>
@@ -58,6 +56,7 @@ export const useSyncCart = () => {
             setCartItems(data.cartItems);
         },
         onError: error => {
+            notify.error('Error saving cart')
             logger.error('Cart replace failed:', error);
         },
     });

@@ -1,8 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router';
+import { useIsMutating } from '@tanstack/react-query';
 
 import Navbar from '@/shared/components/Navbar';
 import ProtectedRoute from '@/shared/components/ProtectedRoute';
+import GeneralLoader from '@/shared/components/GeneralLoader';
+import Alerts from '@/shared/components/Alerts';
 import { Spinner } from '@/shared/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -24,8 +27,15 @@ const PageFallback = () => (
 function App() {
     useAuth();
 
+    
+    const isLoggingOut = useIsMutating({ mutationKey: ['logout'] }) > 0;
+
     return (
         <Navbar>
+            <Alerts />
+
+            {isLoggingOut && <GeneralLoader label='Cerrando sesión' />}
+            
             <Suspense fallback={<PageFallback />}>
                 <Routes>
                     <Route path='/' element={<Home />} />

@@ -35,6 +35,7 @@ const Navbar = ({ children }: Props) => {
 
     const closeMenu = () => setMenuOpen(false);
 
+
     return (
         <>
             <nav
