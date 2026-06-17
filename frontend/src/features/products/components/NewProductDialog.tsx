@@ -6,7 +6,6 @@ import type { ProductForm } from '@/features/products/types/productTypes';
 import MultipleSelectInput from '@/shared/ui/MultipleSelectInput';
 import ImagesInput from '@/shared/ui/ImagesInput';
 import { productFormSchema, productStatus } from '@/features/products/schemas/productZodSchema';
-import z from 'zod';
 import useAddNewProduct from '@/features/products/hooks/useAddNewProduct';
 import useCategory from '@/features/categories/hooks/useCategory';
 import { Button, Modal } from '@/shared/ui';
@@ -38,7 +37,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
 
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
-        validators: { onSubmit: productFormSchema },
+        validators: { onBlur: productFormSchema, onSubmit: productFormSchema },
         onSubmit: async ({ value }) => {
             await addNewProduct(value);
             onClose();
@@ -69,7 +68,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                     <Field name='sku'>
                         {field => <TextFieldInput autofocus field={field} label='SKU' />}
                     </Field>
-                    <Field name='name' validators={{ onBlur: z.string().min(3, 'Mínimo 3 caracteres') }}>
+                    <Field name='name'>
                         {field => <TextFieldInput field={field} label='Nombre' />}
                     </Field>
                     <Field name='brand'>
@@ -86,7 +85,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                             <SingleSelectInput
                                 field={field}
                                 label='Estado'
-                                options={productStatus}
+                                options={[...productStatus]}
                                 addOption={false}
                             />
                         )}

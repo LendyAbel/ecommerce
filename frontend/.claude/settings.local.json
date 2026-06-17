@@ -21,7 +21,9 @@
       "Bash(mv src/store/cartStore.ts src/features/cart/store/)",
       "Bash(mv src/types/cartTypes.ts src/features/cart/types/)",
       "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/frontend\" && \\\\ *)",
-      "PowerShell(npx tsc -b 2>&1)"
+      "PowerShell(npx tsc -b 2>&1)",
+      "Bash(node -p \"require\\('./node_modules/zod/package.json'\\).version\")",
+      "Bash(node -p \"require\\('./node_modules/@tanstack/react-form/package.json'\\).version\")"
     ]
   },
   "agents": [
