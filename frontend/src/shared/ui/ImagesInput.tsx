@@ -19,7 +19,7 @@ type ImagesInputProps = {
 };
 
 const getUrlError = (url: string): string | null => {
-    if (!url.trim()) return 'URL requerida';
+    if (!url.trim()) return 'Obligatorio';
     if (!z.url().safeParse(url).success) return 'URL no válida';
     return null;
 };

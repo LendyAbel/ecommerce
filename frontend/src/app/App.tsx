@@ -29,12 +29,14 @@ function App() {
 
     
     const isLoggingOut = useIsMutating({ mutationKey: ['logout'] }) > 0;
+    const isDeletingProduct = useIsMutating({mutationKey: ['deleteProduct']}) > 0
 
     return (
         <Navbar>
             <Alerts />
 
             {isLoggingOut && <GeneralLoader label='Cerrando sesión' />}
+            {isDeletingProduct && <GeneralLoader label='Eliminando producto' />}
             
             <Suspense fallback={<PageFallback />}>
                 <Routes>

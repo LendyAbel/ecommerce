@@ -12,6 +12,22 @@ type TextFieldInputProps = {
     startIcon?: JSX.Element;
 };
 
+// Convierte el texto del input a número (admite coma o punto). Vacío => undefined.
+const parseNumber = (raw: string): number | undefined => {
+    const normalized = raw.replace(',', '.');
+    if (normalized === '' || normalized === '.') return undefined;
+    const num = Number(normalized);
+    return Number.isNaN(num) ? undefined : num;
+};
+
+// Deja solo dígitos y un único separador decimal.
+const sanitizeNumber = (raw: string): string => {
+    const cleaned = raw.replace(/[^\d.,]/g, '').replace(/,/g, '.');
+    const firstDot = cleaned.indexOf('.');
+    if (firstDot === -1) return cleaned;
+    return cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
+};
+
 const TextFieldInput = ({
     field,
     label,
@@ -19,9 +35,33 @@ const TextFieldInput = ({
     autofocus = false,
     startIcon,
 }: TextFieldInputProps) => {
-    const { errors, isValid, isTouched } = field.state.meta;
+    const { errors, isValid, isBlurred } = field.state.meta;
+    const isSubmitted = field.form.state.submissionAttempts > 0;
+    const isNumber = type === 'number';
 
     const [showPassword, setShowPassword] = useState(false);
+
+    // Para inputs numéricos guardamos el texto en crudo y así permitir escribir
+    // decimales ("12." mientras se teclea). Reconciliamos durante el render cuando
+    // el valor del form cambia desde fuera (p. ej. al resetear el formulario).
+    const valueAsText =
+        field.state.value === undefined || field.state.value === null
+            ? ''
+            : String(field.state.value);
+
+    const [rawValue, setRawValue] = useState(valueAsText);
+    const [syncedValue, setSyncedValue] = useState(field.state.value);
+
+    if (isNumber && field.state.value !== syncedValue) {
+        setSyncedValue(field.state.value);
+        if (parseNumber(rawValue) !== field.state.value) setRawValue(valueAsText);
+    }
+
+    const handleNumberChange = (raw: string) => {
+        const sanitized = sanitizeNumber(raw);
+        setRawValue(sanitized);
+        field.handleChange(parseNumber(sanitized));
+    };
 
     const inputSlotProps = {
         ...(startIcon && {
@@ -54,7 +94,7 @@ const TextFieldInput = ({
         },
     };
 
-    const hasError = !isValid && isTouched;
+    const hasError = !isValid && (isBlurred || isSubmitted);
     const errorId = `${field.name}-error`;
 
     return (
@@ -68,27 +108,28 @@ const TextFieldInput = ({
                 multiline={type === 'text'}
                 maxRows={3}
                 type={
-                    type === 'password'
-                        ? showPassword
-                            ? 'text'
-                            : 'password'
-                        : type
+                    isNumber
+                        ? 'text'
+                        : type === 'password'
+                          ? showPassword
+                              ? 'text'
+                              : 'password'
+                          : type
                 }
                 id={field.name}
                 name={field.name}
-                value={field.state.value}
+                value={isNumber ? rawValue : field.state.value}
                 onChange={e =>
-                    field.handleChange(
-                        type === 'number'
-                            ? Number(e.target.value)
-                            : e.target.value,
-                    )
+                    isNumber
+                        ? handleNumberChange(e.target.value)
+                        : field.handleChange(e.target.value)
                 }
                 onBlur={field.handleBlur}
                 onFocus={e => e.target.select()}
                 slotProps={{
                     ...(startIcon && { input: inputSlotProps }),
                     htmlInput: {
+                        ...(isNumber && { inputMode: 'decimal' }),
                         'aria-invalid': hasError || undefined,
                         'aria-describedby': hasError ? errorId : undefined,
                     },

@@ -29,7 +29,9 @@ const SingleSelectInput = ({
     const [newCategoryText, setNewCategoryText] = useState('');
     const [localOptions, setLocalOptions] = useState<string[]>(options);
 
-    const { errors, isValid, isTouched } = field.state.meta;
+    const { errors, isValid, isBlurred } = field.state.meta;
+    const isSubmitted = field.form.state.submissionAttempts > 0;
+    const hasError = !isValid && (isBlurred || isSubmitted);
 
     const handleSelectChange = (e: SelectChangeEvent) => {
         const value = e.target.value || '';
@@ -84,7 +86,7 @@ const SingleSelectInput = ({
                             </MenuItem>
                         ))}
                     </Select>
-                    {!isValid && isTouched && (
+                    {hasError && (
                         <small className='absolute top-4 right-10 text-error'>
                             {errors[0]?.message}
                         </small>

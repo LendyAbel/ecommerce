@@ -14,7 +14,8 @@ const formDefaultValues: ProductForm = {
     name: '',
     brand: '',
     sku: '',
-    price: 0,
+    // Arranca vacío (no 0) para que el campo no muestre un precio por defecto.
+    price: undefined as unknown as number,
     tax: 21,
     stock: undefined,
     mainCategory: '',
