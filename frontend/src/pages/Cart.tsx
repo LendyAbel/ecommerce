@@ -50,94 +50,107 @@ const Cart = () => {
                             const mainImage =
                                 product.images?.find(img => img.isMain)?.url ??
                                 product.images?.[0]?.url;
+                            const deleteButton = (
+                                <Tooltip title='Eliminar'>
+                                    <IconButton
+                                        size='small'
+                                        sx={{
+                                            color: 'var(--color-error)',
+                                            opacity: 0.6,
+                                            '&:hover': { opacity: 1 },
+                                        }}
+                                        onClick={() => removeItem(product.id)}
+                                    >
+                                        <DeleteOutlineIcon fontSize='small' />
+                                    </IconButton>
+                                </Tooltip>
+                            );
                             return (
                                 <Card
                                     key={product.id}
-                                    className='flex items-center gap-4 p-4'
+                                    className='flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4'
                                 >
-                                    {mainImage ? (
-                                        <img
-                                            src={mainImage}
-                                            alt={product.name}
-                                            loading='lazy'
-                                            decoding='async'
-                                            className='size-20 rounded-xl object-cover'
-                                        />
-                                    ) : (
-                                        <div className='bg-panel text-text-38 flex size-20 items-center justify-center rounded-xl'>
-                                            <ShoppingCartOutlinedIcon />
+                                    {/* Imagen + info (+ eliminar en móvil) */}
+                                    <div className='flex items-center gap-4 sm:flex-1'>
+                                        {mainImage ? (
+                                            <img
+                                                src={mainImage}
+                                                alt={product.name}
+                                                loading='lazy'
+                                                decoding='async'
+                                                className='size-20 shrink-0 rounded-xl object-cover'
+                                            />
+                                        ) : (
+                                            <div className='bg-panel text-text-38 flex size-20 shrink-0 items-center justify-center rounded-xl'>
+                                                <ShoppingCartOutlinedIcon />
+                                            </div>
+                                        )}
+
+                                        <div className='flex min-w-0 flex-1 flex-col gap-1'>
+                                            <p className='text-text leading-tight font-semibold'>
+                                                {product.name}
+                                            </p>
+                                            <p className='text-text-60 text-sm'>
+                                                {product.brand}
+                                            </p>
+                                            <p className='text-primary text-sm font-medium'>
+                                                {formatPrice(product.price)} / ud.
+                                            </p>
                                         </div>
-                                    )}
 
-                                    <div className='flex flex-1 flex-col gap-1'>
-                                        <p className='text-text leading-tight font-semibold'>
-                                            {product.name}
-                                        </p>
-                                        <p className='text-text-60 text-sm'>
-                                            {product.brand}
-                                        </p>
-                                        <p className='text-primary text-sm font-medium'>
-                                            {formatPrice(product.price)} / ud.
-                                        </p>
+                                        <div className='shrink-0 sm:hidden'>
+                                            {deleteButton}
+                                        </div>
                                     </div>
 
-                                    <div className='flex items-center gap-1'>
-                                        <Tooltip title='Quitar uno'>
-                                            <IconButton
-                                                size='small'
-                                                sx={{
-                                                    color: 'var(--color-text-60)',
-                                                }}
-                                                onClick={() =>
-                                                    updateItem(
-                                                        product.id,
-                                                        quantity - 1,
-                                                    )
-                                                }
-                                            >
-                                                <RemoveIcon fontSize='small' />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <span className='text-text w-6 text-center text-sm font-bold'>
-                                            {quantity}
-                                        </span>
-                                        <Tooltip title='Añadir uno'>
-                                            <IconButton
-                                                size='small'
-                                                sx={{
-                                                    color: 'var(--color-text-60)',
-                                                }}
-                                                onClick={() =>
-                                                    updateItem(
-                                                        product.id,
-                                                        quantity + 1,
-                                                    )
-                                                }
-                                            >
-                                                <AddIcon fontSize='small' />
-                                            </IconButton>
-                                        </Tooltip>
+                                    {/* Controles + total (+ eliminar en desktop) */}
+                                    <div className='flex items-center justify-between gap-2 sm:justify-end sm:gap-4'>
+                                        <div className='flex items-center gap-1'>
+                                            <Tooltip title='Quitar uno'>
+                                                <IconButton
+                                                    size='small'
+                                                    sx={{
+                                                        color: 'var(--color-text-60)',
+                                                    }}
+                                                    onClick={() =>
+                                                        updateItem(
+                                                            product.id,
+                                                            quantity - 1,
+                                                        )
+                                                    }
+                                                >
+                                                    <RemoveIcon fontSize='small' />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <span className='text-text w-6 text-center text-sm font-bold'>
+                                                {quantity}
+                                            </span>
+                                            <Tooltip title='Añadir uno'>
+                                                <IconButton
+                                                    size='small'
+                                                    sx={{
+                                                        color: 'var(--color-text-60)',
+                                                    }}
+                                                    onClick={() =>
+                                                        updateItem(
+                                                            product.id,
+                                                            quantity + 1,
+                                                        )
+                                                    }
+                                                >
+                                                    <AddIcon fontSize='small' />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </div>
+
+                                        <p className='text-text text-right text-sm font-bold sm:w-20'>
+                                            {formatPrice(product.price * quantity)}
+                                        </p>
+
+                                        <div className='hidden sm:block'>
+                                            {deleteButton}
+                                        </div>
                                     </div>
-
-                                    <p className='text-text w-20 text-right text-sm font-bold'>
-                                        {formatPrice(product.price * quantity)}
-                                    </p>
-
-                                    <Tooltip title='Eliminar'>
-                                        <IconButton
-                                            size='small'
-                                            sx={{
-                                                color: 'var(--color-error)',
-                                                opacity: 0.6,
-                                                '&:hover': { opacity: 1 },
-                                            }}
-                                            onClick={() =>
-                                                removeItem(product.id)
-                                            }
-                                        >
-                                            <DeleteOutlineIcon fontSize='small' />
-                                        </IconButton>
-                                    </Tooltip>
                                 </Card>
                             );
                         })}

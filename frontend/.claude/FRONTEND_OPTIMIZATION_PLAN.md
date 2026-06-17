@@ -133,6 +133,13 @@ Reglas: cada feature exporta vía `index.ts` (barrel); `pages/` solo compone; na
 - ✅ **6.2** ~50 archivos movidos con `git mv`/`mv`; los inputs de formulario (`common/*`) → `shared/ui`; `layouts/*` → `shared/components`; `utils` → `shared/utils`. Todos los imports relativos a módulos movidos reescritos al alias `@/...` vía codemod (PowerShell). Corregido un problema de encoding (mojibake de acentos) que introdujo el primer `Set-Content`.
 - ✅ **6.3** Verificación: `npm run build` ✅ + `npm run lint` ✅ en verde; sin mojibake residual.
 
+### ✅ Fase 7 — Verificación visual y pulido móvil (app levantada) — COMPLETADA
+Verificación con capturas reales (Chrome headless + emulación de dispositivo CDP a 390×844, DPR 2) midiendo `scrollWidth` para detectar overflow real (las primeras capturas a "390" eran un artefacto del escalado de Windows = 476px CSS).
+- ✅ **7.1** **Navbar móvil**: rediseñada con menú hamburguesa. Desktop intacto (`hidden md:flex`); móvil muestra carrito + botón menú que despliega un panel con enlaces + acción de sesión (cierra al navegar). Nav ahora `sticky top-0 z-50`.
+- ✅ **7.2** **Bug z-index del menú**: el `backdrop-blur` de la nav creaba un stacking context y el panel quedaba bajo `<main>` (el hero se transparentaba). Resuelto con `z-50` en la nav.
+- ✅ **7.3** **Carrito con items en móvil** (desbordaba a 453px): tarjeta de item rediseñada a 2 filas en móvil (imagen+info+eliminar / cantidad+total) y 1 fila en desktop (`sm:flex-row`). `scrollW` vuelve a 390.
+- ✅ **7.4** Verificadas sin overflow (`scrollW==vw==390`): Home, /auth (AuthMobile), /products, /cart (vacío y con items), detalle de producto. Desktop (1280px) confirmado intacto. Build + lint en verde.
+
 ---
 
 ## Archivos críticos a tocar (representativos)
