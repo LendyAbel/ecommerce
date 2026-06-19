@@ -9,10 +9,12 @@ import { notify } from '@/shared/store/alertStore';
 
 export const useAuth = () => {
     const queryClient = useQueryClient();
+
     const setUser = useAuthStore(state => state.setUser);
     const setAuthLoading = useAuthStore(state => state.setAuthLoading);
     const { syncWithBackendAsync, fetchFromBackendAsync, replaceCartAsync } =
         useSyncCart();
+
     const meQuery = useQuery({
         queryKey: ['user'],
         queryFn: authService.me,
@@ -65,8 +67,6 @@ export const useAuth = () => {
     });
 
     const logoutMutation = useMutation({
-        // Clave para poder observar el estado del logout globalmente
-        // (p. ej. mostrar un loader a pantalla completa con useIsMutating).
         mutationKey: ['logout'],
         mutationFn: async () => {
             await replaceCartAsync();

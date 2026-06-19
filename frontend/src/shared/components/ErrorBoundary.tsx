@@ -4,11 +4,7 @@ import { logger } from '@/lib/logger';
 type Props = { children: ReactNode };
 type State = { hasError: boolean };
 
-/**
- * Captura errores de render de su árbol de hijos y muestra un fallback amigable
- * en vez de una pantalla en blanco. Los Error Boundaries deben ser componentes
- * de clase (no hay equivalente en hooks para `getDerivedStateFromError`).
- */
+
 class ErrorBoundary extends Component<Props, State> {
     state: State = { hasError: false };
 

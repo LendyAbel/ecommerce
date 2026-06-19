@@ -9,13 +9,13 @@ import Alerts from '@/shared/components/Alerts';
 import { Spinner } from '@/shared/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
-// Páginas con carga diferida: cada una se empaqueta en su propio chunk y se
-// descarga solo al visitar su ruta (code-splitting → bundle inicial más pequeño).
 const Home = lazy(() => import('@/pages/Home'));
 const Products = lazy(() => import('@/pages/Products'));
 const Cart = lazy(() => import('@/pages/Cart'));
 const About = lazy(() => import('@/pages/About'));
-const ProductDetails = lazy(() => import('@/features/products/components/ProductDetails'));
+const ProductDetails = lazy(
+    () => import('@/features/products/components/ProductDetails'),
+);
 const Authenticate = lazy(() => import('@/pages/Authenticate'));
 
 const PageFallback = () => (
@@ -27,9 +27,9 @@ const PageFallback = () => (
 function App() {
     useAuth();
 
-    
     const isLoggingOut = useIsMutating({ mutationKey: ['logout'] }) > 0;
-    const isDeletingProduct = useIsMutating({mutationKey: ['deleteProduct']}) > 0
+    const isDeletingProduct =
+        useIsMutating({ mutationKey: ['deleteProduct'] }) > 0;
 
     return (
         <Navbar>
@@ -37,7 +37,7 @@ function App() {
 
             {isLoggingOut && <GeneralLoader label='Cerrando sesión' />}
             {isDeletingProduct && <GeneralLoader label='Eliminando producto' />}
-            
+
             <Suspense fallback={<PageFallback />}>
                 <Routes>
                     <Route path='/' element={<Home />} />
@@ -47,11 +47,12 @@ function App() {
                     <Route path='/auth' element={<Authenticate />} />
                     <Route path='/cart' element={<Cart />} />
 
-                    {/* Rutas PRIVADAS (requieren sesión). Si no hay usuario,
-                        ProtectedRoute redirige a /auth. Aquí irán /checkout,
-                        /account, /orders:
-                        <Route path='/checkout' element={<Checkout />} /> */}
-                    <Route element={<ProtectedRoute />}></Route>
+                    <Route element={<ProtectedRoute />}>
+                        {/* Rutas PRIVADAS (requieren sesión). Si no hay usuario,
+                            ProtectedRoute redirige a /auth. Aquí irán /checkout,
+                            /account, /orders:
+                            <Route path='/checkout' element={<Checkout />} /> */}
+                    </Route>
                 </Routes>
             </Suspense>
         </Navbar>

@@ -3,6 +3,7 @@ import { NavLink } from 'react-router';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import CartBadge from '@/features/cart/components/CartBadge';
+import { ThemeToggle } from '@/shared/ui';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -53,6 +54,7 @@ const Navbar = ({ children }: Props) => {
 
                 {/* Acciones derecha — escritorio */}
                 <div className='hidden items-center gap-3 md:flex'>
+                    <ThemeToggle />
                     {user ? (
                         <button
                             type='button'
@@ -71,6 +73,7 @@ const Navbar = ({ children }: Props) => {
 
                 {/* Acciones derecha — móvil: carrito + hamburguesa */}
                 <div className='flex items-center gap-4 md:hidden'>
+                    <ThemeToggle />
                     <CartBadge />
                     <button
                         type='button'
