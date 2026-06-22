@@ -1,9 +1,10 @@
 import pino from 'pino';
+import { config } from './config';
 
-const isTest = process.env.NODE_ENV === 'test';
-const isProduction = process.env.NODE_ENV === 'production';
+const isTest = config.NODE_ENV === 'test';
+const isProduction = config.NODE_ENV === 'production';
 
-const level = isTest ? 'silent' : process.env.LOG_LEVEL ?? 'info';
+const level = isTest ? 'silent' : config.LOG_LEVEL;
 
 // JSON logs in production, pretty-printed in development, silent under tests so
 // the suite output stays clean. Level overridable via LOG_LEVEL.

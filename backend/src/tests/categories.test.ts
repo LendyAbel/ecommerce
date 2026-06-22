@@ -126,8 +126,10 @@ describe('Categories', () => {
                 .delete('/api/categories/%20')
                 .set('Cookie', `token=${adminToken()}`);
 
+            // The :name param is now validated with Zod, so an empty/whitespace
+            // name surfaces as the standard validation-error shape.
             expect(res.status).toBe(400);
-            expect(res.body).toHaveProperty('error', 'category name is required');
+            expect(res.body).toHaveProperty('error', 'Validation error');
         });
 
         it('should return 401 when not authenticated', async () => {

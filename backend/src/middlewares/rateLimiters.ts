@@ -1,6 +1,7 @@
 import rateLimit from 'express-rate-limit';
+import { config } from '../lib/config';
 
-const skipInTest = () => process.env.NODE_ENV === 'test';
+const skipInTest = () => config.NODE_ENV === 'test';
 
 // Límite general suave para toda la API.
 export const generalLimiter = rateLimit({

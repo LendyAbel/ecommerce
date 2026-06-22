@@ -1,0 +1,26 @@
+{
+    "$schema": "https://cdn.statically.io/gh/nguyenngoclongdev/cdn/main/schema/v11/terminal-keeper.json",
+    "theme": "tribe",
+    "active": "saved-session",
+    "activateOnStartup": true,
+    "keepExistingTerminals": false,
+    "sessions": {
+        "default": [
+            {
+                "name": "db prisma",
+                "icon": "database",
+                "commands": ["npx prisma migrate dev", "npx prisma generate"]
+            },
+            {
+                "name": "run dev",
+                "icon": "run",
+                "commands": ["npm run dev"]
+            },
+            {
+                "name": "bash",
+                "icon": "terminal-bash",
+                "commands": []
+            }
+        ]
+    }
+}

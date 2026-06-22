@@ -1,11 +1,11 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
+// Imported first so env vars are validated (and the process fails fast on bad
+// config) before anything else wires up routes or the DB.
+import { config } from './lib/config';
 import app from './app';
 import { logger } from './lib/logger';
 import { prisma } from './lib/prisma';
 
-const PORT = process.env.PORT ?? 3001;
+const PORT = config.PORT;
 
 const server = app.listen(PORT, () => {
     logger.info(`Server running on http://localhost:${PORT}`);

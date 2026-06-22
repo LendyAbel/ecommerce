@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../lib/AppError';
+import { config } from '../lib/config';
 
 declare module 'express-serve-static-core' {
     interface Request {
@@ -17,7 +18,7 @@ export const authenticate = (
     if (!token) throw new AppError('Authentication required', 401);
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+        const decoded = jwt.verify(token, config.JWT_SECRET) as {
             userId: string;
             role: string;
         };

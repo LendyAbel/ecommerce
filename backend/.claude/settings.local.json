@@ -10,7 +10,9 @@
       "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend\" && rm -f _shutdown_check.js && echo \"removed temp check\")",
       "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -match 'ecommerce' -and $_.CommandLine -match 'index|_shutdown' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue; \"killed $\\($_.ProcessId\\)\" }; Write-Output \"cleanup done\")",
       "Bash(npx jest *)",
-      "Bash(grep -E '\\\\.\\(js|d\\\\.ts\\)\\(\\\\.map\\)?$')"
+      "Bash(grep -E '\\\\.\\(js|d\\\\.ts\\)\\(\\\\.map\\)?$')",
+      "Bash(cat tsconfig.test.json)",
+      "Bash(ls eslint.config.* .eslintrc*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\lendysan\\Documents\\MI CARPETA\\++mio\\+++CURSO HTML\\Apps\\ecommerce\\backend"

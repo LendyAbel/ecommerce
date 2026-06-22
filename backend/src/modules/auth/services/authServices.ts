@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { LoginInput, RegisterInput } from '../schemas/authZodSchema';
 import { prisma } from '../../../lib/prisma';
 import { AppError } from '../../../lib/AppError';
+import { config } from '../../../lib/config';
 
 const SALT_ROUNDS = 10;
 
@@ -39,25 +40,18 @@ const login = async (data: LoginInput) => {
 
     const token = jwt.sign(
         { userId: user.id, role: user.role },
-        process.env.JWT_SECRET!,
+        config.JWT_SECRET,
         { expiresIn: '7d' },
     );
     const { password: _, ...userWithoutPassword } = user;
     return { token, user: userWithoutPassword };
 };
 
-const getLoggedUser = async (token: string) => {
-    let payload: { userId: string };
-    try {
-        payload = jwt.verify(token, process.env.JWT_SECRET!) as {
-            userId: string;
-        };
-    } catch {
-        throw new AppError('Invalid or expired token', 401);
-    }
-
+// The JWT is already verified by the `authenticate` middleware, which puts the
+// userId on req.user. This just loads the current user record by id.
+const getUserById = async (userId: string) => {
     const user = await prisma.user.findUnique({
-        where: { id: payload.userId },
+        where: { id: userId },
         select: {
             id: true,
             name: true,
@@ -73,4 +67,4 @@ const getLoggedUser = async (token: string) => {
     return { user };
 };
 
-export default { register, login, getLoggedUser };
+export default { register, login, getUserById };

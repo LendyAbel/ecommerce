@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import { LoginSchema, RegisterSchema } from '../schemas/authZodSchema';
 import authServices from '../services/authServices';
 import { AppError } from '../../../lib/AppError';
+import { config } from '../../../lib/config';
 
 const COOKIE_OPTIONS = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: config.NODE_ENV === 'production',
     sameSite: 'lax' as const,
     maxAge: 7 * 24 * 60 * 60 * 1000,
 };
@@ -30,9 +31,9 @@ export const logout = (_req: Request, res: Response) => {
 };
 
 export const me = async (req: Request, res: Response) => {
-    const token = req.cookies?.token;
-    if (!token) throw new AppError('No authenticated', 401);
+    // The `authenticate` middleware verifies the JWT and sets req.user.
+    if (!req.user) throw new AppError('Authentication required', 401);
 
-    const data = await authServices.getLoggedUser(token);
+    const data = await authServices.getUserById(req.user.userId);
     res.json(data);
 };

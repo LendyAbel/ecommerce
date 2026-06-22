@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 
+import { config } from './lib/config';
 import { prisma } from './lib/prisma';
 import productsRouter from './modules/products/routers/productRouter';
 import categoriesRouter from './modules/categories/routers/categoriesRouter';
@@ -15,7 +16,7 @@ import { httpLogger } from './middlewares/httpLogger';
 
 const app = express();
 
-const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:5173';
+const FRONTEND_URL = config.FRONTEND_URL;
 
 app.use(httpLogger);
 app.use(helmet());

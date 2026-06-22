@@ -1,5 +1,6 @@
-/node_modules
+node_modules/
+dist/
+coverage/
 .env
-/generated/prisma
-/dist
-/.vscode
+generated/        # cliente de Prisma generado
+*.lo
