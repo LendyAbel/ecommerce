@@ -1,4 +1,4 @@
-import { Add } from '@mui/icons-material';
+import Add from '@mui/icons-material/Add';
 
 interface AddProductButtonProps {
     onClick: () => void;

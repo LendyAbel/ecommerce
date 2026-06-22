@@ -6,6 +6,7 @@ import CartBadge from '@/features/cart/components/CartBadge';
 import { ThemeToggle } from '@/shared/ui';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { preloadRoute } from '@/app/routePreload';
 
 type Props = {
     children: ReactNode;
@@ -24,7 +25,14 @@ const NAV_LINKS = [
 
 const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) =>
     NAV_LINKS.map(({ to, label }) => (
-        <NavLink key={to} to={to} className={navLinkClass} onClick={onNavigate}>
+        <NavLink
+            key={to}
+            to={to}
+            className={navLinkClass}
+            onClick={onNavigate}
+            onMouseEnter={() => preloadRoute(to)}
+            onFocus={() => preloadRoute(to)}
+        >
             {label}
         </NavLink>
     ));

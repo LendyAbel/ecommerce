@@ -1,9 +1,12 @@
-﻿import { memo } from 'react';
+﻿import { memo, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router';
 import type { Product } from '@/features/products/types/productTypes';
 import ProductStockBadge from '@/features/products/components/details/ProductStockBadge';
 import ProductPrice from '@/features/products/components/details/ProductPrice';
+import { preloadProductDetails } from '@/app/routePreload';
+import { queryClient } from '@/lib/queryClient';
+import productsService from '@/features/products/api/products.service';
 
 interface ProductCardProps {
     product: Product;
@@ -14,9 +17,22 @@ const ProductCard = ({ product }: ProductCardProps) => {
     const mainImage =
         product.images?.find(i => i.isMain)?.url ?? product.images?.[0]?.url;
 
+    // Al mostrar intención (hover/focus) precargamos el chunk del detalle y
+    // sus datos, reutilizando la misma key/fetcher que `useProductById`. Así la
+    // navegación al detalle es instantánea (staleTime global evita refetch).
+    const prefetchDetails = useCallback(() => {
+        preloadProductDetails();
+        queryClient.prefetchQuery({
+            queryKey: ['product', product.id],
+            queryFn: () => productsService.getProductById(product.id),
+        });
+    }, [product.id]);
+
     return (
         <motion.div
             onClick={() => navigate(`/products/${product.id}`)}
+            onMouseEnter={prefetchDetails}
+            onFocus={prefetchDetails}
             className='flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-surface'
             whileHover={{ y: -4, boxShadow: 'var(--shadow-lg)', borderColor: 'var(--color-primary-20)' }}
             transition={{ duration: 0.2, ease: 'easeOut' }}

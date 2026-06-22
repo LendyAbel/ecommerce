@@ -41,6 +41,9 @@ export const useThemeStore = create<ThemeStore>()(
         }),
         {
             name: STORAGE_KEY,
+            version: 1,
+            // Pass-through: conserva el tema ya guardado (sin versión = v0).
+            migrate: persisted => persisted as ThemeStore,
             storage: createJSONStorage(() => localStorage),
             // Al rehidratar desde localStorage, aplica la clase `.dark` en <html>.
             onRehydrateStorage: () => state => {

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Dialog } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import Close from '@mui/icons-material/Close';
 
 type ModalProps = {
     open: boolean;

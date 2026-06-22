@@ -8,15 +8,14 @@ import GeneralLoader from '@/shared/components/GeneralLoader';
 import Alerts from '@/shared/components/Alerts';
 import { Spinner } from '@/shared/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { routeImports, importProductDetails } from '@/app/routePreload';
 
-const Home = lazy(() => import('@/pages/Home'));
-const Products = lazy(() => import('@/pages/Products'));
-const Cart = lazy(() => import('@/pages/Cart'));
-const About = lazy(() => import('@/pages/About'));
-const ProductDetails = lazy(
-    () => import('@/features/products/components/ProductDetails'),
-);
-const Authenticate = lazy(() => import('@/pages/Authenticate'));
+const Home = lazy(routeImports['/']);
+const Products = lazy(routeImports['/products']);
+const Cart = lazy(routeImports['/cart']);
+const About = lazy(routeImports['/about']);
+const ProductDetails = lazy(importProductDetails);
+const Authenticate = lazy(routeImports['/auth']);
 
 const PageFallback = () => (
     <div className='flex min-h-[calc(100vh-48px)] items-center justify-center'>

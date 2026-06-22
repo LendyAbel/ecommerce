@@ -195,3 +195,16 @@ Tras cada fase y al final:
 7. axe DevTools: 0 errores críticos de accesibilidad.
 
 > Estrategia de bajo riesgo: ejecutar por fases en commits separados; la reorganización de carpetas (con alias) en su propio commit para que los diffs sean revisables.
+
+---
+
+## Pasada Vercel React Best Practices (guía `.agents/skills/vercel-react-best-practices`)
+
+Revisión del repo contra la guía. La mayoría de reglas ya estaban cubiertas por las Fases 0–7 o no aplican (Waterfalls/RSC/Next.js son N/A en esta SPA Vite). Huecos reales cerrados:
+
+- ✅ **Iconos MUI: barrel → deep imports** (Regla 2.1). `CartBadge`, `AddProductButton`, `Modal` pasan de `@mui/icons-material` (barrel) a rutas directas (`@mui/icons-material/ShoppingCart`…), igual que el resto del repo.
+- ✅ **Preload por intención del usuario** (Regla 2.6). Nuevo `app/routePreload.ts` con thunks reutilizables; `App` los usa en `lazy()`, `Navbar` precarga el chunk de la ruta en `onMouseEnter`/`onFocus` y `ProductCard` precarga el chunk de `ProductDetails` **+** prefetch de datos React Query (key `['product', id]`) al hacer hover.
+- ✅ **Spinner: animar wrapper, no `<svg>`** (Regla 6.1). `Spinner` envuelve el SVG en un `<div className="animate-spin">` (aceleración GPU).
+- ✅ **localStorage versionado** (Regla 4.4). `themeStore` y `cartStore` con `version: 1` + `migrate` pass-through.
+
+Verificación: `npm run lint` ✅ + `npm run build` ✅; chunks por ruta siguen separados.

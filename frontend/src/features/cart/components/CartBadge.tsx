@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { ShoppingCart } from '@mui/icons-material';
+import ShoppingCart from '@mui/icons-material/ShoppingCart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 
 const CartBadge = () => {

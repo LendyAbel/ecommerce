@@ -96,6 +96,9 @@ export const useCartStore = create<CartStore>()(
         }),
         {
             name: 'shopping-cart',
+            version: 1,
+            // Pass-through: conserva el carrito ya guardado (sin versión = v0).
+            migrate: persisted => persisted as Pick<CartStore, 'cart'>,
             storage: createJSONStorage(() => localStorage),
             partialize: state => ({ cart: state.cart }),
         },
