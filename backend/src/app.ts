@@ -9,6 +9,7 @@ import { prisma } from './lib/prisma';
 import productsRouter from './modules/products/routers/productRouter';
 import categoriesRouter from './modules/categories/routers/categoriesRouter';
 import authRouter from './modules/auth/routers/authRouter';
+import usersRouter from './modules/users/routers/usersRouter';
 import cartRouter from './modules/cart/routers/cartRouter';
 import { errorHandler } from './middlewares/errorHandler';
 import { authLimiter, generalLimiter } from './middlewares/rateLimiters';
@@ -45,6 +46,7 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
 app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/cart', cartRouter);

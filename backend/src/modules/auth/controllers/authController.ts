@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { LoginSchema, RegisterSchema } from '../schemas/authZodSchema';
 import authServices from '../services/authServices';
+import usersServices from '../../users/services/usersServices';
 import { AppError } from '../../../lib/AppError';
 import { config } from '../../../lib/config';
 
@@ -36,4 +37,13 @@ export const me = async (req: Request, res: Response) => {
 
     const data = await authServices.getUserById(req.user.userId);
     res.json(data);
+};
+
+// Authenticated user soft-deletes their own account, then we clear the auth cookie.
+export const deleteMe = async (req: Request, res: Response) => {
+    if (!req.user) throw new AppError('Authentication required', 401);
+
+    await usersServices.softDeleteUser(req.user.userId);
+    res.clearCookie('token', COOKIE_OPTIONS);
+    res.status(204).send();
 };

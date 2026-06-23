@@ -10,6 +10,7 @@ const PORT = config.PORT;
 const server = app.listen(PORT, () => {
     logger.info(`Server running on http://localhost:${PORT}`);
     logger.info(`API Auth:         http://localhost:${PORT}/api/auth`);
+    logger.info(`API Users:        http://localhost:${PORT}/api/users`);
     logger.info(`API Products:     http://localhost:${PORT}/api/products`);
     logger.info(`API Categories:   http://localhost:${PORT}/api/categories`);
     logger.info(`API Cart:         http://localhost:${PORT}/api/cart`);

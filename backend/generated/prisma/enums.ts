@@ -18,6 +18,17 @@ export const ProductStatus = {
 export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
 
 
+export const OrderStatus = {
+  pending: 'pending',
+  paid: 'paid',
+  shipped: 'shipped',
+  delivered: 'delivered',
+  cancelled: 'cancelled'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
 export const UserRole = {
   admin: 'admin',
   customer: 'customer'

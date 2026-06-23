@@ -33,7 +33,9 @@ const login = async (data: LoginInput) => {
             email: data.email,
         },
     });
-    if (!user) throw new AppError('Invalid credentials', 401);
+    // A soft-deleted user has its email rewritten, so findUnique won't match it.
+    // The deletedAt guard is a defensive backstop in case any delete path skips that.
+    if (!user || user.deletedAt) throw new AppError('Invalid credentials', 401);
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) throw new AppError('Invalid credentials', 401);
@@ -50,7 +52,8 @@ const login = async (data: LoginInput) => {
 // The JWT is already verified by the `authenticate` middleware, which puts the
 // userId on req.user. This just loads the current user record by id.
 const getUserById = async (userId: string) => {
-    const user = await prisma.user.findUnique({
+    // findFirst (not findUnique) so the soft-delete extension injects deletedAt: null.
+    const user = await prisma.user.findFirst({
         where: { id: userId },
         select: {
             id: true,

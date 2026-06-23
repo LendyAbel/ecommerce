@@ -13,6 +13,14 @@ enum ProductStatus {
   draft
 }
 
+enum OrderStatus {
+  pending
+  paid
+  shipped
+  delivered
+  cancelled
+}
+
 enum UserRole {
   admin
   customer
@@ -32,8 +40,9 @@ model Product {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  images   Image[]
-  cartItem CartItem[]
+  images    Image[]
+  cartItem  CartItem[]
+  orderItem OrderItem[]
 
   categories Category[] @relation("ProductCategories")
 
@@ -71,14 +80,23 @@ model Category {
 }
 
 model User {
-  id        String   @id @unique @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      UserRole @default(customer)
+  id       String   @id @unique @default(uuid())
+  email    String   @unique
+  password String
+  name     String
+  role     UserRole @default(customer)
+
   cart      Cart?
+  orders    Order[]
+  addresses Address[]
+
+  // Soft delete: null = activo, con fecha = "borrado". Filtrar en todas las lecturas.
+  deletedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([deletedAt])
 }
 
 model Cart {
@@ -105,4 +123,71 @@ model CartItem {
 
   @@unique([cartId, productId])
   @@index([productId])
+}
+
+model Order {
+  id          String      @id @unique @default(uuid())
+  orderNumber Int @default(autoincrement()) @unique
+  status      OrderStatus @default(pending)
+  totalAmount Decimal     @db.Decimal(10, 2)
+
+  orderItems OrderItem[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  userId String
+
+  shippingAddress   Address? @relation("ShippingAddress", fields: [shippingAddressId], references: [id], onDelete: Restrict)
+  shippingAddressId String?
+  
+  billingAddress   Address? @relation("BillingAddress", fields: [billingAddressId], references: [id], onDelete: Restrict)
+  billingAddressId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id              String  @id @unique @default(uuid())
+  skuAtPurchase   String
+  nameAtPurchase  String
+  priceAtPurchase Decimal @db.Decimal(10, 2)
+  quantity        Int
+
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId String?
+
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Address {
+  id String @id @default(uuid())
+
+  fullName   String
+  phone      String?
+  line1      String
+  line2      String?
+  city       String
+  state      String?
+  postalCode String
+  country    String
+
+  // Libreta de direcciones del usuario. Null = es una copia congelada usada por una orden.
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  // Órdenes que apuntan a esta dirección (copias congeladas).
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

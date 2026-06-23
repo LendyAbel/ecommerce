@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient, ProductStatus, UserRole } from '../generated/prisma/client';
+import { PrismaClient, ProductStatus, UserRole, OrderStatus } from '../generated/prisma/client';
 
 const SALT_ROUNDS = 10;
 
@@ -135,7 +135,8 @@ const users = [
 ];
 
 async function main() {
-    // Crea los usuarios
+    // Crea los usuarios y los guarda por email para reutilizarlos más abajo
+    const usersByEmail: Record<string, { id: string }> = {};
     for (const u of users) {
         const hashedPassword = await bcrypt.hash(u.password, SALT_ROUNDS);
         const user = await prisma.user.upsert({
@@ -148,10 +149,15 @@ async function main() {
                 role: u.role as UserRole,
             },
         });
+        usersByEmail[u.email] = user;
         console.log(`✅ Usuario creado: ${user.email}`);
     }
 
-    // Crea los productos
+    // Crea los productos y los guarda por sku para reutilizarlos en carrito/órdenes
+    const productsBySku: Record<
+        string,
+        { id: string; sku: string; name: string; price: number }
+    > = {};
     for (const p of products) {
         // Busca o crea la categoría principal
         const mainCat = await prisma.category.upsert({
@@ -195,7 +201,125 @@ async function main() {
             },
         });
 
+        productsBySku[p.sku] = {
+            id: product.id,
+            sku: p.sku,
+            name: p.name,
+            price: p.price,
+        };
         console.log(`✅ Producto creado: ${product.name}`);
+    }
+
+    // ── Datos del cliente: libreta de direcciones, carrito y órdenes ──────────
+    const customer = usersByEmail['user@test.com'];
+    if (!customer) throw new Error('Seed: usuario user@test.com no encontrado');
+
+    // Acceso seguro a un producto sembrado por sku
+    const product = (sku: string) => {
+        const p = productsBySku[sku];
+        if (!p) throw new Error(`Seed: producto ${sku} no encontrado`);
+        return p;
+    };
+
+    // Libreta de direcciones del usuario (userId set → direcciones reutilizables)
+    const homeAddress = await prisma.address.create({
+        data: {
+            userId: customer.id,
+            fullName: 'User Cliente',
+            phone: '+34 600 123 456',
+            line1: 'Calle Mayor 10',
+            line2: '3º B',
+            city: 'Madrid',
+            state: 'Madrid',
+            postalCode: '28013',
+            country: 'España',
+        },
+    });
+    console.log(`✅ Dirección creada: ${homeAddress.line1}`);
+
+    // Carrito del usuario con un par de líneas
+    const cart = await prisma.cart.create({
+        data: {
+            userId: customer.id,
+            cartItems: {
+                create: [
+                    {
+                        productId: product('MONITOR-27-144HZ-IPS').id,
+                        quantity: 1,
+                    },
+                    {
+                        productId: product('MOUSE-LOGI-G502-BLK').id,
+                        quantity: 2,
+                    },
+                ],
+            },
+        },
+    });
+    console.log(`✅ Carrito creado para: ${customer.id} (id ${cart.id})`);
+
+    // Datos de la dirección que se "congelarán" como copia en cada orden
+    const frozenAddress = {
+        fullName: 'User Cliente',
+        phone: '+34 600 123 456',
+        line1: 'Calle Mayor 10',
+        line2: '3º B',
+        city: 'Madrid',
+        state: 'Madrid',
+        postalCode: '28013',
+        country: 'España',
+    };
+
+    // Construye una línea de orden congelando sku/nombre/precio del producto
+    const lineFor = (sku: string, quantity: number) => {
+        const p = product(sku);
+        return {
+            productId: p.id,
+            skuAtPurchase: p.sku,
+            nameAtPurchase: p.name,
+            priceAtPurchase: p.price,
+            quantity,
+        };
+    };
+
+    // Órdenes de ejemplo (la dirección se crea como copia congelada: userId null)
+    const orderSeeds: {
+        status: OrderStatus;
+        items: { sku: string; quantity: number }[];
+    }[] = [
+        {
+            status: 'delivered',
+            items: [
+                { sku: 'MOUSE-LOGI-G502-BLK', quantity: 1 },
+                { sku: 'KEYB-MECH-RGB-TKL', quantity: 1 },
+            ],
+        },
+        {
+            status: 'pending',
+            items: [{ sku: 'HEADPH-BT-ANC-BLK', quantity: 1 }],
+        },
+    ];
+
+    for (const o of orderSeeds) {
+        const lines = o.items.map(it => lineFor(it.sku, it.quantity));
+        const totalAmount = lines.reduce(
+            (sum, l) => sum + l.priceAtPurchase * l.quantity,
+            0,
+        );
+
+        const order = await prisma.order.create({
+            data: {
+                status: o.status,
+                totalAmount,
+                user: { connect: { id: customer.id } },
+                // Copias congeladas e independientes para envío y facturación
+                shippingAddress: { create: { ...frozenAddress } },
+                billingAddress: { create: { ...frozenAddress } },
+                orderItems: { create: lines },
+            },
+        });
+        console.log(
+            `✅ Orden #${order.orderNumber} creada (${o.status}) — total ${totalAmount}`,
+        );
     }
 }
 
