@@ -5,11 +5,21 @@ e-commerce, blog, etc.), cómo montar un backend profesional con el mismo stack 
 mismas decisiones de arquitectura que este proyecto. Sirve como plantilla reutilizable
 para arrancar cualquier API REST.
 
+> **Sistema de módulos: ESM.** Esta guía usa **ECMAScript Modules** (`import`/`export`),
+> que es el estándar para proyectos nuevos: mejor tree-shaking, carga asíncrona de
+> módulos, `await` a nivel de archivo y la misma sintaxis que ya usas en el frontend.
+> Las dos consecuencias prácticas que verás repetidas a lo largo de la guía son:
+> 1. `package.json` lleva `"type": "module"`.
+> 2. **Los imports de archivos locales llevan extensión `.js`** (aunque el archivo sea
+>    `.ts`, porque te refieres al resultado compilado): `import { config } from
+>    './lib/config.js'`. Los imports de paquetes de `node_modules` (express, zod...) no
+>    cambian.
+
 ## Stack que vamos a montar
 
 | Pieza | Tecnología | Para qué |
 |-------|-----------|----------|
-| Lenguaje | **TypeScript** | Tipado estático, menos bugs en runtime |
+| Lenguaje | **TypeScript** (ESM) | Tipado estático, menos bugs en runtime |
 | Framework HTTP | **Express 5** | Enrutado y middlewares (maneja errores async nativamente) |
 | ORM / DB | **Prisma 7** + **PostgreSQL** | Modelado de datos y acceso tipado a la BD |
 | Validación | **Zod** | Validar input de usuario **y** variables de entorno |
@@ -17,7 +27,7 @@ para arrancar cualquier API REST.
 | Logging | **Pino** + **pino-http** | Logs estructurados y por-request |
 | Seguridad | **helmet**, **cors**, **express-rate-limit** | Cabeceras seguras, CORS y anti fuerza bruta |
 | Tests | **Jest** + **ts-jest** + **Supertest** | Tests de integración sobre la app Express |
-| Dev tooling | **ts-node**, **nodemon**, **ESLint** | Recarga en caliente y linting |
+| Dev tooling | **tsx**, **ESLint** | Ejecuta TS/ESM con recarga en caliente y linting |
 
 > **Por qué Express (y no otro framework):** elegir framework es una decisión de
 > *contexto*, no un default. Aquí usamos **Express 5** por la madurez de su ecosistema,
@@ -30,6 +40,12 @@ para arrancar cualquier API REST.
 > Pregúntate siempre: ¿cuál es el destino de despliegue?, ¿importa el arranque en frío?,
 > ¿qué conoce ya el equipo?
 
+> **Por qué `tsx` y no `ts-node`:** para ejecutar TypeScript en ESM, `ts-node` exige el
+> *loader* `node --loader ts-node/esm`, que en Node moderno está deprecado y es frágil.
+> **`tsx`** ejecuta TypeScript en modo ESM sin configuración y trae `--watch` integrado
+> (sustituye a `ts-node` **y** a `nodemon`). Para el *build* de producción seguimos
+> usando `tsc`.
+
 ---
 
 ## Paso 1 — Inicializar el proyecto
@@ -38,6 +54,17 @@ para arrancar cualquier API REST.
 mkdir mi-backend && cd mi-backend
 npm init -y
 git init
+```
+
+Marca el proyecto como **ESM** añadiendo `"type": "module"` a `package.json` (lo demás
+lo rellenamos en el Paso 13):
+
+```jsonc
+// package.json
+{
+  "name": "mi-backend",
+  "type": "module"
+}
 ```
 
 Crea un `.gitignore` desde el principio:
@@ -58,18 +85,21 @@ generated/        # cliente de Prisma generado
 ## Paso 2 — TypeScript
 
 ```bash
-npm install -D typescript ts-node @types/node nodemon
+npm install -D typescript tsx @types/node
 npx tsc --init
 ```
 
-`tsconfig.json` recomendado (modo estricto + outputs útiles):
+`tsconfig.json` recomendado (ESM + modo estricto + outputs útiles):
 
 ```jsonc
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "module": "commonjs",
-    "target": "es2016",
+
+    // --- Clave para ESM ---
+    "module": "nodenext",            // emite ESM y respeta "type": "module"
+    "moduleResolution": "nodenext",  // exige extensión .js en imports locales
+    "target": "es2022",              // habilita top-level await y sintaxis moderna
     "types": ["node"],
 
     "sourceMap": true,
@@ -93,11 +123,9 @@ npx tsc --init
 }
 ```
 
-> **Nota sobre el sistema de módulos:** este proyecto usa **CommonJS** (`"module":
-> "commonjs"`) por compatibilidad con `ts-node` y el ecosistema existente. Para un
-> proyecto nuevo desde cero, el estándar moderno es **ESM** (`import`/`export`), que
-> mejora el tree-shaking y la carga asíncrona de módulos. No es obligatorio cambiarlo,
-> pero es una decisión consciente, no un accidente.
+> **Nota sobre `nodenext`:** al elegir `module`/`moduleResolution` en `nodenext`, el
+> compilador **te obliga** a poner la extensión `.js` en los imports relativos. Es
+> intencional: así el código emitido es ESM 100 % válido para Node sin pasos extra.
 
 ---
 
@@ -200,7 +228,7 @@ Crea un `.env.example` (este **sí** se sube al repo, como documentación):
 PORT=3001
 DATABASE_URL=""
 # Genera un secreto fuerte:
-#   node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+#   node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"
 JWT_SECRET=""
 FRONTEND_URL="http://localhost:5173"
 LOG_LEVEL="info"
@@ -221,7 +249,7 @@ npm install -D pino-pretty
 ```typescript
 // src/lib/logger.ts
 import pino from 'pino';
-import { config } from './config';
+import { config } from './config.js';
 
 const isTest = config.NODE_ENV === 'test';
 const isProduction = config.NODE_ENV === 'production';
@@ -246,7 +274,7 @@ Y el middleware que añade un log y un `request-id` por cada petición:
 ```typescript
 // src/middlewares/httpLogger.ts
 import pinoHttp from 'pino-http';
-import { logger } from '../lib/logger';
+import { logger } from '../lib/logger.js';
 
 export const httpLogger = pinoHttp({
   logger,
@@ -299,12 +327,15 @@ Crea el cliente como **singleton** para no abrir conexiones de más:
 ```typescript
 // src/lib/prisma.ts
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../../generated/prisma/client';
-import { config } from './config';
+import { PrismaClient } from '../../generated/prisma/client.js';
+import { config } from './config.js';
 
 const adapter = new PrismaPg({ connectionString: config.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
 ```
+
+> El generador `prisma-client` (Prisma 7) emite ESM, así que el import del cliente
+> también lleva extensión: `'../../generated/prisma/client.js'`.
 
 Aplica la primera migración y genera el cliente:
 
@@ -340,9 +371,9 @@ los `AppError` (status personalizado) y cae a 500 para lo desconocido:
 // src/middlewares/errorHandler.ts
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { Prisma } from '../../generated/prisma/client';
-import { AppError } from '../lib/AppError';
-import { logger } from '../lib/logger';
+import { Prisma } from '../../generated/prisma/client.js';
+import { AppError } from '../lib/AppError.js';
+import { logger } from '../lib/logger.js';
 
 export const errorHandler = (
   error: unknown,
@@ -408,7 +439,7 @@ Rate limiting (límite suave general + límite estricto para login):
 ```typescript
 // src/middlewares/rateLimiters.ts
 import rateLimit from 'express-rate-limit';
-import { config } from '../lib/config';
+import { config } from '../lib/config.js';
 
 const skipInTest = () => config.NODE_ENV === 'test';
 
@@ -440,8 +471,8 @@ Middleware que verifica el token y expone `req.user`, más un guard de rol:
 // src/middlewares/authMiddleware.ts
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { AppError } from '../lib/AppError';
-import { config } from '../lib/config';
+import { AppError } from '../lib/AppError.js';
+import { config } from '../lib/config.js';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -513,9 +544,9 @@ export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 
 ```typescript
 // src/modules/users/services/userService.ts  (lógica + BD)
-import { prisma } from '../../../lib/prisma';
-import { AppError } from '../../../lib/AppError';
-import { CreateUserInput } from '../schemas/userSchema';
+import { prisma } from '../../../lib/prisma.js';
+import { AppError } from '../../../lib/AppError.js';
+import { CreateUserInput } from '../schemas/userSchema.js';
 
 const create = async (data: CreateUserInput) => {
   const user = await prisma.user.create({
@@ -537,8 +568,8 @@ export default { create, getById };
 ```typescript
 // src/modules/users/controllers/userController.ts  (capa HTTP)
 import { Request, Response } from 'express';
-import { CreateUserSchema } from '../schemas/userSchema';
-import userService from '../services/userService';
+import { CreateUserSchema } from '../schemas/userSchema.js';
+import userService from '../services/userService.js';
 
 export const create = async (req: Request, res: Response) => {
   const data = CreateUserSchema.parse(req.body);   // valida (lanza ZodError → 400)
@@ -550,14 +581,18 @@ export const create = async (req: Request, res: Response) => {
 ```typescript
 // src/modules/users/routers/userRouter.ts
 import express from 'express';
-import * as userController from '../controllers/userController';
-import { authenticate } from '../../../middlewares/authMiddleware';
+import * as userController from '../controllers/userController.js';
+import { authenticate } from '../../../middlewares/authMiddleware.js';
 
 const router = express.Router();
 router.post('/', userController.create);
 router.get('/me', authenticate, userController.getById);   // ruta protegida
 export default router;
 ```
+
+> Fíjate en que **todos los imports relativos llevan `.js`** (`userSchema.js`,
+> `userService.js`, `authMiddleware.js`), aunque los archivos sean `.ts`. Los imports de
+> paquetes (`express`, `zod`) se quedan igual.
 
 ---
 
@@ -574,12 +609,12 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 
-import { config } from './lib/config';
-import { prisma } from './lib/prisma';
-import { errorHandler } from './middlewares/errorHandler';
-import { authLimiter, generalLimiter } from './middlewares/rateLimiters';
-import { httpLogger } from './middlewares/httpLogger';
-import userRouter from './modules/users/routers/userRouter';
+import { config } from './lib/config.js';
+import { prisma } from './lib/prisma.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { authLimiter, generalLimiter } from './middlewares/rateLimiters.js';
+import { httpLogger } from './middlewares/httpLogger.js';
+import userRouter from './modules/users/routers/userRouter.js';
 // ...otros routers
 
 const app = express();
@@ -624,10 +659,10 @@ export default app;
 
 ```typescript
 // src/index.ts
-import { config } from './lib/config';   // primero: valida env y falla rápido
-import app from './app';
-import { logger } from './lib/logger';
-import { prisma } from './lib/prisma';
+import { config } from './lib/config.js';   // primero: valida env y falla rápido
+import app from './app.js';
+import { logger } from './lib/logger.js';
+import { prisma } from './lib/prisma.js';
 
 const server = app.listen(config.PORT, () => {
   logger.info(`Server running on http://localhost:${config.PORT}`);
@@ -673,24 +708,38 @@ process.on('uncaughtException', err => {
 > al desplegar. Un apagado limpio termina las peticiones en vuelo y cierra la BD sin
 > dejar conexiones colgadas.
 
+> **Bonus ESM:** como ahora puedes usar `await` a nivel de archivo, si necesitaras
+> esperar a algo antes de levantar el servidor (p. ej. `await prisma.$connect()`)
+> podrías hacerlo directamente, sin envolverlo en una función `async` autoinvocada.
+
 ---
 
 ## Paso 13 — Scripts de npm
 
+Recuerda que `package.json` ya tiene `"type": "module"` (Paso 1). Los scripts usan
+`tsx` para dev y `tsc` para el build:
+
 ```jsonc
 // package.json
 {
+  "type": "module",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/src/index.js",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "seed": "npx prisma migrate reset && ts-node prisma/seed.ts"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "npm run test -- --watch",
+    "test:coverage": "npm run test -- --coverage",
+    "seed": "npx prisma migrate reset && tsx prisma/seed.ts"
   }
 }
 ```
+
+> - `tsx watch` reemplaza a `ts-node` + `nodemon`: ejecuta TS/ESM y recarga al guardar.
+> - `start` corre el build ya compilado (`dist/src/index.js`), que es ESM porque
+>   `package.json` declara `"type": "module"`.
+> - Jest necesita el flag `--experimental-vm-modules` para cargar módulos ESM; por eso
+>   lo invocamos vía `node ... jest.js` (funciona igual en Windows, Linux y macOS).
 
 ---
 
@@ -700,16 +749,24 @@ process.on('uncaughtException', err => {
 npm install -D jest ts-jest @types/jest supertest @types/supertest
 ```
 
-`jest.config.js`:
+Como el proyecto es ESM, el config va en **`jest.config.js`** con `export default` (no
+`module.exports`) y usa el preset ESM de ts-jest:
 
 ```javascript
-module.exports = {
-  preset: 'ts-jest',
+// jest.config.js
+export default {
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
   testMatch: ['**/*.test.ts'],
+  extensionsToTreatAsEsm: ['.ts'],
   setupFiles: ['<rootDir>/src/tests/setup.ts'],
   resetMocks: true,
+  // En ESM los imports relativos llevan ".js"; este mapeo permite a Jest
+  // resolverlos hacia los archivos ".ts" reales durante los tests.
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
   collectCoverageFrom: [
     'src/modules/**/*.ts',
     'src/lib/**/*.ts',
@@ -732,16 +789,21 @@ process.env.NODE_ENV = 'test';
 ```
 
 Patrón de test de integración: se **mockea Prisma** y se prueba la app entera con
-Supertest (sin BD real):
+Supertest (sin BD real). En ESM, el mock se declara con **`jest.unstable_mockModule`**
+y el módulo bajo prueba se carga con **`import()` dinámico** *después* del mock:
 
 ```typescript
+import { jest } from '@jest/globals';
 import request from 'supertest';
-import app from '../app';
 
-jest.mock('../lib/prisma', () => ({
+// En ESM hay que registrar el mock ANTES de importar el módulo que usa la dependencia.
+jest.unstable_mockModule('../lib/prisma.js', () => ({
   prisma: { user: { create: jest.fn(), findUnique: jest.fn() } },
 }));
-import { prisma } from '../lib/prisma';
+
+// Imports dinámicos: se resuelven cuando el mock ya está activo.
+const { prisma } = await import('../lib/prisma.js');
+const { default: app } = await import('../app.js');
 
 describe('POST /api/users', () => {
   it('crea un usuario y devuelve 201', async () => {
@@ -767,6 +829,15 @@ describe('POST /api/users', () => {
 > **Ventaja de mockear Prisma:** tests rápidos y deterministas que no necesitan una BD
 > levantada. Se prueba toda la cadena (router → controller → service → errorHandler).
 
+> **Diferencia clave CJS → ESM en los tests:** en CommonJS, `jest.mock(...)` se "iza"
+> (hoisting) por encima de los `import`. En ESM eso no ocurre, así que se usa
+> `jest.unstable_mockModule(...)` + `await import(...)` para garantizar que el mock esté
+> activo antes de cargar el módulo real.
+>
+> **Alternativa más simple:** si la fricción de Jest con ESM te molesta, **Vitest** es
+> un runner ESM-nativo con API casi idéntica a Jest (`vi.mock` *sí* se iza) y sin flags
+> ni presets extra. Es la opción que muchos proyectos ESM eligen hoy.
+
 ---
 
 ## Paso 15 — Linting (opcional pero recomendado)
@@ -775,9 +846,10 @@ describe('POST /api/users', () => {
 npm install -D eslint @eslint/js typescript-eslint
 ```
 
-`eslint.config.mjs`:
+`eslint.config.js` (al ser ESM el proyecto, ya no hace falta la extensión `.mjs`):
 
 ```javascript
+// eslint.config.js
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
@@ -795,20 +867,21 @@ export default tseslint.config(
 ```bash
 # 1. Crear proyecto e instalar todo
 npm init -y && git init
+npm pkg set type=module          # marca el proyecto como ESM
 npm install express zod dotenv pino pino-http helmet cors compression \
   cookie-parser express-rate-limit jsonwebtoken bcrypt \
   @prisma/client @prisma/adapter-pg pg
-npm install -D typescript ts-node nodemon @types/node @types/express \
+npm install -D typescript tsx @types/node @types/express \
   @types/cors @types/compression @types/cookie-parser @types/jsonwebtoken \
   @types/bcrypt @types/pg prisma jest ts-jest @types/jest supertest \
   @types/supertest pino-pretty eslint @eslint/js typescript-eslint
 
-# 2. Configurar TS, Prisma y .env
+# 2. Configurar TS (nodenext), Prisma y .env
 npx tsc --init
 npx prisma init --datasource-provider postgresql
 cp .env.example .env   # y rellenar DATABASE_URL y JWT_SECRET
 
-# 3. Crear la estructura src/ (Pasos 3–12)
+# 3. Crear la estructura src/ (Pasos 3–12) — imports locales con extensión .js
 
 # 4. Migrar la BD y arrancar
 npx prisma migrate dev --name init
@@ -832,7 +905,130 @@ npm run dev
    orquestadores.
 7. **Apagado elegante**: maneja señales del SO para no perder peticiones en despliegues.
 8. **Testeable**: `app` separada del `listen`, Prisma mockeable, umbrales de cobertura.
+9. **ESM estándar**: módulos modernos (`import`/`export`), misma sintaxis que el
+   frontend, `await` a nivel de archivo y mejor tree-shaking.
 
 > Este esqueleto es independiente del dominio: para construir cualquier API solo añades
 > módulos nuevos en `src/modules/` siguiendo el patrón router → controller → service →
 > schema. La infraestructura (`lib/`, `middlewares/`, `app.ts`, `index.ts`) no cambia.
+
+---
+
+## Apéndice A — Tests con Vitest (alternativa ESM-nativa a Jest)
+
+Jest funciona en ESM, pero a costa del flag `--experimental-vm-modules`, el preset de
+ts-jest y `jest.unstable_mockModule` + `import()` dinámico (Paso 14). **Vitest** es un
+runner pensado para ESM desde el día uno: ejecuta TypeScript sin configuración, su API es
+casi idéntica a la de Jest (`describe`, `it`, `expect`) y —lo más importante— `vi.mock`
+**sí se iza** (hoisting), así que los tests vuelven a leerse como en CommonJS.
+
+Úsalo si la fricción de Jest con ESM te molesta. **Es un reemplazo de Jest, no un añadido:
+no instales ambos.**
+
+### A.1 — Instalación
+
+```bash
+# Quita las dependencias de Jest si venías de allí:
+npm uninstall jest ts-jest @types/jest
+
+# Instala Vitest y supertest (este se mantiene igual):
+npm install -D vitest supertest @types/supertest
+```
+
+> No necesitas `ts-jest` ni `@types/jest`: Vitest entiende TypeScript de fábrica e
+> inyecta sus propios tipos.
+
+### A.2 — Scripts de npm
+
+```jsonc
+// package.json
+{
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  }
+}
+```
+
+> Sin flags raros ni `node ... jest.js`: `vitest run` basta (en Windows, Linux y macOS).
+> Para la cobertura instala además el provider: `npm install -D @vitest/coverage-v8`.
+
+### A.3 — Configuración (`vitest.config.ts`)
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    setupFiles: ['./src/tests/setup.ts'],   // mismo archivo del Paso 14
+    include: ['src/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/modules/**', 'src/lib/**', 'src/middlewares/**'],
+      exclude: ['src/**/*.test.ts'],
+      thresholds: { statements: 85, branches: 55, functions: 85, lines: 85 },
+    },
+  },
+});
+```
+
+> Ya **no** hace falta el `moduleNameMapper` para los `.js`: Vitest resuelve los imports
+> con extensión hacia los `.ts` reales sin ayuda.
+
+El `src/tests/setup.ts` del Paso 14 sirve tal cual (inyecta el env de test).
+
+### A.4 — El mismo test, en Vitest
+
+Compara con la versión de Jest del Paso 14: el `vi.mock` va arriba (se iza) y los
+imports vuelven a ser **estáticos**, no dinámicos.
+
+```typescript
+import { describe, it, expect, vi, type Mock } from 'vitest';
+import request from 'supertest';
+import app from '../app.js';
+import { prisma } from '../lib/prisma.js';
+
+// vi.mock SÍ se iza por encima de los imports, igual que jest.mock en CommonJS.
+vi.mock('../lib/prisma.js', () => ({
+  prisma: { user: { create: vi.fn(), findUnique: vi.fn() } },
+}));
+
+describe('POST /api/users', () => {
+  it('crea un usuario y devuelve 201', async () => {
+    (prisma.user.create as Mock).mockResolvedValue({ id: '1', email: 'a@b.com' });
+
+    const res = await request(app)
+      .post('/api/users')
+      .send({ name: 'Test', email: 'a@b.com', password: 'password123' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.user).not.toHaveProperty('password');
+  });
+
+  it('devuelve 400 con email inválido', async () => {
+    const res = await request(app)
+      .post('/api/users')
+      .send({ name: 'Test', email: 'no-email', password: 'password123' });
+    expect(res.status).toBe(400);
+  });
+});
+```
+
+### A.5 — Jest vs Vitest (resumen de la decisión)
+
+| | Jest (Paso 14) | Vitest (este apéndice) |
+|---|---|---|
+| Soporte ESM | con flag + preset | nativo |
+| TypeScript | vía `ts-jest` | de fábrica |
+| Mock de módulos | `jest.unstable_mockModule` + `import()` dinámico | `vi.mock` (se iza) + imports estáticos |
+| Config | `jest.config.js` + `moduleNameMapper` | `vitest.config.ts`, mínima |
+| API | `describe/it/expect/jest.fn` | `describe/it/expect/vi.fn` (casi idéntica) |
+| Cuándo elegirlo | el equipo ya domina Jest / ecosistema existente | proyecto ESM nuevo, menos fricción |
+
+> Ambos son opciones válidas; es una decisión de *contexto*. Para un backend ESM nuevo,
+> Vitest suele dar el camino más corto. Si ya tienes una suite grande en Jest o el equipo
+> lo conoce a fondo, mantener Jest también es razonable.
