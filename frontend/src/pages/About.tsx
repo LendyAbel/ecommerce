@@ -93,16 +93,17 @@ const About = () => {
                 <p className='animate-slide-up text-primary relative mb-2 text-xs font-semibold tracking-[0.3em] uppercase'>
                     Sobre Voltora
                 </p>
-                <h1 className='animate-slide-up delay-100 text-text font-display relative max-w-3xl text-4xl leading-tight font-bold md:text-5xl'>
+                <h1 className='animate-slide-up text-text font-display relative max-w-3xl text-4xl leading-tight font-bold delay-100 md:text-5xl'>
                     Componentes que dan vida a tus ideas
                 </h1>
-                <p className='animate-slide-up delay-200 text-text-60 relative mt-4 max-w-xl text-base'>
-                    Somos una tienda de componentes electrónicos y tecnología nacida entre
-                    protoboards y soldadores. Abastecemos a makers, estudiantes y empresas con
-                    piezas de confianza y soporte de quienes saben de lo que hablan.
+                <p className='animate-slide-up text-text-60 relative mt-4 max-w-xl text-base delay-200'>
+                    Somos una tienda de componentes electrónicos y tecnología
+                    nacida entre protoboards y soldadores. Abastecemos a makers,
+                    estudiantes y empresas con piezas de confianza y soporte de
+                    quienes saben de lo que hablan.
                 </p>
 
-                <div className='animate-slide-up delay-300 relative mt-8 flex flex-wrap items-center justify-center gap-4'>
+                <div className='animate-slide-up relative mt-8 flex flex-wrap items-center justify-center gap-4 delay-300'>
                     <NavLink to='/products' className='btn btn-primary btn-lg'>
                         Ver catálogo
                     </NavLink>
@@ -138,15 +139,18 @@ const About = () => {
                         Hacer accesible la electrónica
                     </h2>
                     <p className='text-text-60 mt-4 leading-relaxed'>
-                        Empezamos en 2014 porque conseguir un sensor concreto en España podía tardar
-                        semanas. Hoy mantenemos más de 25.000 referencias en stock —desde una
-                        resistencia de 10&nbsp;Ω hasta una FPGA de última generación— listas para
-                        salir el mismo día.
+                        Empezamos en 2014 porque conseguir un sensor concreto en
+                        España podía tardar semanas. Hoy mantenemos más de
+                        25.000 referencias en stock —desde una resistencia de
+                        10&nbsp;Ω hasta una FPGA de última generación— listas
+                        para salir el mismo día.
                     </p>
                     <p className='text-text-60 mt-4 leading-relaxed'>
-                        Creemos que un buen proyecto no debería detenerse esperando una pieza. Por
-                        eso combinamos un catálogo profundo con asesoría técnica real: si dudas entre
-                        un ESP32 y un STM32, hablas con alguien que ha trabajado con ambos.
+                        Creemos que un buen proyecto no debería detenerse
+                        esperando una pieza. Por eso combinamos un catálogo
+                        profundo con asesoría técnica real: si dudas entre un
+                        ESP32 y un STM32, hablas con alguien que ha trabajado
+                        con ambos.
                     </p>
                 </div>
 
@@ -164,21 +168,28 @@ const About = () => {
                         style={{ fontSize: '2.5rem' }}
                     />
                     <p className='text-text font-display relative mt-4 text-xl font-bold'>
-                        «Si lo puedes imaginar, probablemente lo tengamos en stock.»
+                        «Si lo puedes imaginar, probablemente lo tengamos en
+                        stock.»
                     </p>
                     <p className='text-text-60 relative mt-3 text-sm leading-relaxed'>
-                        Microcontroladores, sensores, módulos RF, herramientas de soldadura, fuentes
-                        de alimentación, impresión 3D y robótica. Todo lo que necesita un banco de
-                        trabajo, bajo un mismo techo.
+                        Microcontroladores, sensores, módulos RF, herramientas
+                        de soldadura, fuentes de alimentación, impresión 3D y
+                        robótica. Todo lo que necesita un banco de trabajo, bajo
+                        un mismo techo.
                     </p>
                     <div className='relative mt-5 flex flex-wrap gap-2'>
-                        {['Arduino', 'Raspberry Pi', 'ESP32', 'STM32', 'Sensores', 'Robótica'].map(
-                            tag => (
-                                <span key={tag} className='badge badge-primary'>
-                                    {tag}
-                                </span>
-                            ),
-                        )}
+                        {[
+                            'Arduino',
+                            'Raspberry Pi',
+                            'ESP32',
+                            'STM32',
+                            'Sensores',
+                            'Robótica',
+                        ].map(tag => (
+                            <span key={tag} className='badge badge-primary'>
+                                {tag}
+                            </span>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -207,7 +218,9 @@ const About = () => {
                                 <h3 className='text-text font-display mt-4 text-lg font-bold'>
                                     {title}
                                 </h3>
-                                <p className='text-text-60 mt-2 text-sm leading-relaxed'>{text}</p>
+                                <p className='text-text-60 mt-2 text-sm leading-relaxed'>
+                                    {text}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -227,8 +240,11 @@ const About = () => {
 
                 <ol className='border-border relative ml-3 border-l'>
                     {MILESTONES.map(milestone => (
-                        <li key={milestone.year} className='relative pb-10 pl-8 last:pb-0'>
-                            <span className='bg-primary border-bg absolute top-1 -left-[7px] h-3.5 w-3.5 rounded-full border-4' />
+                        <li
+                            key={milestone.year}
+                            className='relative pb-10 pl-8 last:pb-0'
+                        >
+                            <span className='bg-primary border-bg absolute top-1 -left-1.75 h-3.5 w-3.5 rounded-full border-4' />
                             <p className='text-primary font-display text-sm font-bold tracking-widest'>
                                 {milestone.year}
                             </p>
@@ -244,7 +260,10 @@ const About = () => {
             </section>
 
             {/* ── Equipo ── */}
-            <section id='equipo' className='border-border bg-panel border-t py-16 md:py-20'>
+            <section
+                id='equipo'
+                className='border-border bg-panel border-t py-16 md:py-20'
+            >
                 <div className='mx-auto w-[90%] max-w-5xl'>
                     <div className='mb-10 text-center'>
                         <p className='text-primary mb-2 text-xs font-semibold tracking-[0.3em] uppercase'>
@@ -286,10 +305,14 @@ const About = () => {
                         ¿Listo para tu próximo proyecto?
                     </h2>
                     <p className='text-text-60 mt-3'>
-                        Explora nuestro catálogo de componentes y recibe tu pedido en 24/48h.
+                        Explora nuestro catálogo de componentes y recibe tu
+                        pedido en 24/48h.
                     </p>
                     <div className='mt-6'>
-                        <NavLink to='/products' className='btn btn-primary btn-lg'>
+                        <NavLink
+                            to='/products'
+                            className='btn btn-primary btn-lg'
+                        >
                             Ver productos
                         </NavLink>
                     </div>
