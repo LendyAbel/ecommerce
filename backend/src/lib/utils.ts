@@ -1,3 +1,4 @@
+import { Address } from '../../generated/prisma/client';
 import { AppError } from './AppError';
 
 export const normalizeName = (value: string): string => {
@@ -13,3 +14,14 @@ export const getParam = (param: string | string[] | undefined): string => {
         throw new AppError('Invalid parameter', 400);
     return param;
 };
+
+export const freezeAddress = (a: Address) => ({
+    fullName: a.fullName,
+    phone: a.phone,
+    line1: a.line1,
+    line2: a.line2,
+    city: a.city,
+    state: a.state,
+    postalCode: a.postalCode,
+    country: a.country,
+});
