@@ -16,6 +16,7 @@ const Cart = lazy(routeImports['/cart']);
 const About = lazy(routeImports['/about']);
 const ProductDetails = lazy(importProductDetails);
 const Authenticate = lazy(routeImports['/auth']);
+const Orders = lazy(routeImports['/orders']);
 
 const PageFallback = () => (
     <div className='flex min-h-[calc(100vh-48px)] items-center justify-center'>
@@ -51,6 +52,7 @@ function App() {
                             ProtectedRoute redirige a /auth. Aquí irán /checkout,
                             /account, /orders:
                             <Route path='/checkout' element={<Checkout />} /> */}
+                        <Route path='/orders' element={<Orders />} />
                     </Route>
                 </Routes>
             </Suspense>

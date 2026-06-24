@@ -7,14 +7,17 @@ import { ThemeToggle } from '@/shared/ui';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { preloadRoute } from '@/app/routePreload';
+import UserMenu, { ACCOUNT_LINKS } from '@/features/auth/components/UserMenu';
 
 type Props = {
     children: ReactNode;
 };
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
-        isActive ? 'text-primary' : 'text-text-60 hover:text-text'
+    `relative text-xs font-semibold uppercase tracking-widest transition-colors duration-200 hover:text-primary after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:bg-primary after:transition-all after:duration-200 ${
+        isActive
+            ? 'text-primary after:w-full'
+            : 'text-text-60 after:w-0 hover:after:w-full'
     }`;
 
 const NAV_LINKS = [
@@ -64,13 +67,7 @@ const Navbar = ({ children }: Props) => {
                 <div className='hidden items-center gap-3 md:flex'>
                     <ThemeToggle />
                     {user ? (
-                        <button
-                            type='button'
-                            onClick={() => logout()}
-                            className='text-text-60 hover:text-error cursor-pointer text-xs font-semibold tracking-widest uppercase transition-colors duration-200'
-                        >
-                            Salir
-                        </button>
+                        <UserMenu />
                     ) : (
                         <NavLink to='/auth' className={navLinkClass}>
                             Iniciar sesión
@@ -88,7 +85,7 @@ const Navbar = ({ children }: Props) => {
                         onClick={() => setMenuOpen(o => !o)}
                         aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
                         aria-expanded={menuOpen}
-                        className='text-text-60 hover:text-text flex items-center transition-colors duration-200'
+                        className='text-text-60 hover:text-primary flex items-center transition-all duration-200 hover:scale-110'
                     >
                         {menuOpen ? <CloseIcon /> : <MenuIcon />}
                     </button>
@@ -100,16 +97,30 @@ const Navbar = ({ children }: Props) => {
                         <NavLinks onNavigate={closeMenu} />
                         <hr className='border-border' />
                         {user ? (
-                            <button
-                                type='button'
-                                onClick={() => {
-                                    logout();
-                                    closeMenu();
-                                }}
-                                className='text-text-60 hover:text-error cursor-pointer text-left text-xs font-semibold tracking-widest uppercase transition-colors duration-200'
-                            >
-                                Salir
-                            </button>
+                            <>
+                                {ACCOUNT_LINKS.map(({ to, label }) => (
+                                    <NavLink
+                                        key={to}
+                                        to={to}
+                                        className={navLinkClass}
+                                        onClick={closeMenu}
+                                        onMouseEnter={() => preloadRoute(to)}
+                                        onFocus={() => preloadRoute(to)}
+                                    >
+                                        {label}
+                                    </NavLink>
+                                ))}
+                                <button
+                                    type='button'
+                                    onClick={() => {
+                                        logout();
+                                        closeMenu();
+                                    }}
+                                    className='text-text-60 hover:text-error cursor-pointer text-left text-xs font-semibold tracking-widest uppercase transition-colors duration-200'
+                                >
+                                    Salir
+                                </button>
+                            </>
                         ) : (
                             <NavLink
                                 to='/auth'

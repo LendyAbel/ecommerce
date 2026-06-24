@@ -11,7 +11,7 @@ const CartBadge = () => {
             type='button'
             onClick={() => navigate('/cart')}
             aria-label={`Carrito, ${totalItems} artículos`}
-            className='text-text-60 hover:text-primary relative cursor-pointer transition-colors duration-200'
+            className='text-text-60 hover:text-primary relative cursor-pointer transition-all duration-200 hover:scale-110'
         >
             <ShoppingCart fontSize='small' />
             {totalItems > 0 && (

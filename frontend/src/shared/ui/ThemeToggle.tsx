@@ -17,7 +17,7 @@ const ThemeToggle = ({ className = '' }: Props) => {
             onClick={toggleTheme}
             aria-label={isDark ? 'Activar modo claro' : 'Activar modo oscuro'}
             title={isDark ? 'Modo claro' : 'Modo oscuro'}
-            className={`text-text-60 hover:text-text flex cursor-pointer items-center transition-colors duration-200 ${className}`}
+            className={`text-text-60 hover:text-primary flex cursor-pointer items-center transition-all duration-200 hover:scale-110 ${className}`}
         >
             {isDark ? (
                 <LightModeIcon fontSize='small' />
