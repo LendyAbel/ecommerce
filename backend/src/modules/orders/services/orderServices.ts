@@ -7,14 +7,26 @@ import { CreateOrderInput } from '../schemas/ordersZodSchema';
 const listOrders = async (userId: string) => {
     return await prisma.order.findMany({
         where: { userId },
+        orderBy: { createdAt: 'desc' },
+    });
+};
+
+const listAllOrders = async () => {
+    return await prisma.order.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: {
+            user: { select: { id: true, name: true, email: true } },
+        },
     });
 };
 
 const getOrderbyId = async (orderId: string, userId: string) => {
-    return await prisma.order.findFirst({
+    const order = await prisma.order.findUnique({
         where: { id: orderId, userId },
         include: { orderItems: true },
     });
+    if (!order) throw new AppError('Order not found', 404);
+    return order;
 };
 
 const createOrder = async (userId: string, data: CreateOrderInput) => {
@@ -98,7 +110,10 @@ const createOrder = async (userId: string, data: CreateOrderInput) => {
     });
 };
 
-const updateOrder = async (orderId: string, statusUpdate: OrderStatus) => {
+const updateStatusOrder = async (
+    orderId: string,
+    statusUpdate: OrderStatus,
+) => {
     const order = await prisma.order.findUnique({
         where: { id: orderId },
         include: { orderItems: true },
@@ -136,4 +151,10 @@ const updateOrder = async (orderId: string, statusUpdate: OrderStatus) => {
     });
 };
 
-export default { listOrders, getOrderbyId, createOrder, updateOrder };
+export default {
+    listOrders,
+    listAllOrders,
+    getOrderbyId,
+    createOrder,
+    updateStatusOrder,
+};
