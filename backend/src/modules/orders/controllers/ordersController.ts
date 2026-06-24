@@ -3,7 +3,7 @@ import orderServices from '../services/orderServices';
 import {
     CreateOrderSchema,
     OrderIdParamSchema,
-    UpdateOrderStatusSchema,
+    OrderStatusSchema,
 } from '../schemas/ordersZodSchema';
 
 export const listOrders = async (req: Request, res: Response) => {
@@ -35,7 +35,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
 export const updateStatusOrder = async (req: Request, res: Response) => {
     const { orderId } = OrderIdParamSchema.parse(req.params);
-    const { status } = UpdateOrderStatusSchema.parse(req.body);
+    const { status } = OrderStatusSchema.parse(req.body);
 
     const orderUpdated = await orderServices.updateStatusOrder(
         orderId,

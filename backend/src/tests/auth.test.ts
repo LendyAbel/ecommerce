@@ -8,6 +8,7 @@ jest.mock('../lib/prisma', () => ({
         user: {
             create: jest.fn(),
             findUnique: jest.fn(),
+            findFirst: jest.fn(),
         },
     },
 }));
@@ -169,7 +170,8 @@ describe('Auth', () => {
 
     describe('GET /api/auth/me', () => {
         it('should return logged user when token is valid', async () => {
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            // /me loads the user via findFirst (soft-delete extension injects deletedAt: null).
+            (prisma.user.findFirst as jest.Mock).mockResolvedValue(mockUser);
             const token = validToken();
 
             const res = await request(app)
@@ -196,7 +198,7 @@ describe('Auth', () => {
         });
 
         it('should return 404 when token is valid but user no longer exists', async () => {
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+            (prisma.user.findFirst as jest.Mock).mockResolvedValue(null);
             const token = validToken();
 
             const res = await request(app)

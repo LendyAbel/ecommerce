@@ -1,8 +1,8 @@
-import { OrderStatus, Prisma } from '../../../../generated/prisma/client';
+import { Prisma } from '../../../../generated/prisma/client';
 import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
 import { freezeAddress } from '../../../lib/utils';
-import { CreateOrderInput } from '../schemas/ordersZodSchema';
+import { CreateOrderInput, OrderStatus } from '../schemas/ordersZodSchema';
 
 const listOrders = async (userId: string) => {
     return await prisma.order.findMany({
