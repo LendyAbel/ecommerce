@@ -23,7 +23,8 @@
       "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/frontend\" && \\\\ *)",
       "PowerShell(npx tsc -b 2>&1)",
       "Bash(node -p \"require\\('./node_modules/zod/package.json'\\).version\")",
-      "Bash(node -p \"require\\('./node_modules/@tanstack/react-form/package.json'\\).version\")"
+      "Bash(node -p \"require\\('./node_modules/@tanstack/react-form/package.json'\\).version\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,State,OwningProcess | Format-Table -AutoSize; Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Get-Process -Id $_ -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,Path })"
     ]
   },
   "agents": [

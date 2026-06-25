@@ -7,6 +7,7 @@ import ProductActions from '@/features/products/components/details/ProductAction
 import useDeleteProductById from '@/features/products/hooks/useDeleteProductById';
 import ProductListSkeleton from '@/features/products/components/skeletons/ProductListSkeleton';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import BackLink from '@/shared/components/BackLink';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -50,6 +51,7 @@ const ProductDetails = () => {
     return (
         <div className='bg-bg min-h-[calc(100vh-48px)]'>
             <div className='mx-auto w-[90%] max-w-5xl py-10'>
+                <BackLink backLink='/products' backPageName='Productos'/>
                 <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
                     <ProductImageGallery
                         images={images}

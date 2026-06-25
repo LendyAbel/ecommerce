@@ -1,0 +1,97 @@
+import { useParams } from 'react-router';
+import { useGetOrderDetails } from '../hooks/useGetOrderDetail';
+import {
+    formatCurrency,
+    formatOrderDateTime,
+    ORDER_STATUS_CONFIG,
+} from '../utils/orderStatus';
+import OrderStatusBadge from './OrderStatusBadge';
+import OrderStatusTimeline from './OrderStatusTimeline';
+import OrderItemsCard from './OrderItemsCard';
+import OrderAddressCard from './OrderAddressCard';
+import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
+import BackLink from '@/shared/components/BackLink';
+
+const OrderDetails = () => {
+    const { id } = useParams();
+    const { order, isLoading, isError } = useGetOrderDetails(id!);
+
+    return (
+        <div className='bg-bg min-h-[calc(100vh-48px)]'>
+            <div className='animate-fade-in m-auto w-[90%] max-w-3xl py-6'>
+                <BackLink backLink='/orders' backPageName='Pedidos' />
+
+                {isLoading ? (
+                    <OrderDetailsSkeleton />
+                ) : isError || !order ? (
+                    <div className='border-error-20 bg-e    rror-20/40 text-error rounded-2xl border p-6 text-center'>
+                        No encontramos este pedido o no pudimos cargarlo.
+                    </div>
+                ) : (
+                    <div className='flex flex-col gap-6'>
+                        {/* Cabecera */}
+                        <header className='border-border bg-surface flex flex-col gap-4 rounded-2xl border p-6'>
+                            <div className='flex items-start justify-between gap-4'>
+                                <div>
+                                    <span className='text-text-38 text-xs font-semibold tracking-wide uppercase'>
+                                        Pedido
+                                    </span>
+                                    <h1 className='text-text font-display text-2xl font-extrabold'>
+                                        #{order.orderNumber}
+                                    </h1>
+                                </div>
+                                <OrderStatusBadge status={order.status} />
+                            </div>
+
+                            <p className='text-text-60 text-sm'>
+                                Realizado el{' '}
+                                {formatOrderDateTime(order.createdAt)}
+                                {order.status !== 'pending' && (
+                                    <>
+                                        {' · '}
+                                        {
+                                            ORDER_STATUS_CONFIG[order.status]
+                                                .label
+                                        }{' '}
+                                        el{' '}
+                                        {formatOrderDateTime(order.updatedAt)}
+                                    </>
+                                )}
+                            </p>
+
+                            <p className='text-text font-display text-3xl font-extrabold'>
+                                {formatCurrency(order.totalAmount)}
+                            </p>
+                        </header>
+
+                        <OrderStatusTimeline status={order.status} />
+
+                        <OrderItemsCard
+                            items={order.orderItems}
+                            total={order.totalAmount}
+                        />
+
+                        {(order.shippingAddress || order.billingAddress) && (
+                            <section className='grid gap-4 sm:grid-cols-2'>
+                                {order.shippingAddress && (
+                                    <OrderAddressCard
+                                        title='Dirección de envío'
+                                        address={order.shippingAddress}
+                                    />
+                                )}
+                                {order.billingAddress && (
+                                    <OrderAddressCard
+                                        title='Dirección de facturación'
+                                        address={order.billingAddress}
+                                    />
+                                )}
+                            </section>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default OrderDetails;

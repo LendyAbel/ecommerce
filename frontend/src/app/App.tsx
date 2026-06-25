@@ -9,6 +9,7 @@ import Alerts from '@/shared/components/Alerts';
 import { Spinner } from '@/shared/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { routeImports, importProductDetails } from '@/app/routePreload';
+import OrderDetails from '@/features/orders/components/OrderDetails';
 
 const Home = lazy(routeImports['/']);
 const Products = lazy(routeImports['/products']);
@@ -53,6 +54,7 @@ function App() {
                             /account, /orders:
                             <Route path='/checkout' element={<Checkout />} /> */}
                         <Route path='/orders' element={<Orders />} />
+                        <Route path='/orders/:id' element={<OrderDetails />} />
                     </Route>
                 </Routes>
             </Suspense>

@@ -18,9 +18,9 @@ export const listAllOrders = async (_req: Request, res: Response) => {
 
 export const getOrder = async (req: Request, res: Response) => {
     const { orderId } = OrderIdParamSchema.parse(req.params);
-    const userId = req.user!.userId;
+    const { userId, role } = req.user!;
 
-    const order = await orderServices.getOrderbyId(orderId, userId);
+    const order = await orderServices.getOrderbyId(orderId, userId, role);
 
     res.status(200).json(order);
 };
@@ -30,7 +30,7 @@ export const createOrder = async (req: Request, res: Response) => {
     const data = CreateOrderSchema.parse(req.body);
 
     const order = await orderServices.createOrder(userId, data);
-    res.status(200).json(order);
+    res.status(201).json(order);
 };
 
 export const updateStatusOrder = async (req: Request, res: Response) => {

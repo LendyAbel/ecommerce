@@ -20,9 +20,10 @@ const listAllOrders = async () => {
     });
 };
 
-const getOrderbyId = async (orderId: string, userId: string) => {
-    const order = await prisma.order.findUnique({
-        where: { id: orderId, userId },
+const getOrderbyId = async (orderId: string, userId: string, role: string) => {
+    const order = await prisma.order.findFirst({
+        // El admin puede ver cualquier orden; el usuario solo las suyas.
+        where: { id: orderId, ...(role === 'admin' ? {} : { userId }) },
         include: { orderItems: true },
     });
     if (!order) throw new AppError('Order not found', 404);
@@ -103,7 +104,7 @@ const createOrder = async (userId: string, data: CreateOrderInput) => {
             ),
         );
 
-        // 7. Vaciar el carrito.
+        // 6. Vaciar el carrito.
         await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
 
         return order;
@@ -118,7 +119,7 @@ const updateStatusOrder = async (
         where: { id: orderId },
         include: { orderItems: true },
     });
-    if (!order) throw new AppError('Orden no encontrada', 404);
+    if (!order) throw new AppError('Order not found', 404);
 
     // Si se cancela una orden se repone el stock antes reservado
     if (statusUpdate === 'cancelled' && order.status !== 'cancelled') {

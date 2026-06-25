@@ -8,6 +8,7 @@ jest.mock('../lib/prisma', () => {
     const prismaMock = {
         order: {
             findMany: jest.fn(),
+            findFirst: jest.fn(),
             findUnique: jest.fn(),
             create: jest.fn(),
             update: jest.fn(),
@@ -162,7 +163,7 @@ describe('Orders', () => {
 
     describe('GET /api/orders/:orderId', () => {
         it('should return the order with its items with status 200', async () => {
-            (prisma.order.findUnique as jest.Mock).mockResolvedValue({
+            (prisma.order.findFirst as jest.Mock).mockResolvedValue({
                 ...mockOrder,
                 orderItems: [],
             });
@@ -173,15 +174,32 @@ describe('Orders', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject({ id: ORDER_ID });
-            expect(prisma.order.findUnique).toHaveBeenCalledWith(
+            // A customer can only read their own orders.
+            expect(prisma.order.findFirst).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: { id: ORDER_ID, userId: USER_ID },
                 }),
             );
         });
 
+        it('should let an admin read any order without the userId filter', async () => {
+            (prisma.order.findFirst as jest.Mock).mockResolvedValue({
+                ...mockOrder,
+                orderItems: [],
+            });
+
+            const res = await request(app)
+                .get(`/api/orders/${ORDER_ID}`)
+                .set('Cookie', `token=${adminToken()}`);
+
+            expect(res.status).toBe(200);
+            expect(prisma.order.findFirst).toHaveBeenCalledWith(
+                expect.objectContaining({ where: { id: ORDER_ID } }),
+            );
+        });
+
         it('should return 404 when the order does not exist', async () => {
-            (prisma.order.findUnique as jest.Mock).mockResolvedValue(null);
+            (prisma.order.findFirst as jest.Mock).mockResolvedValue(null);
 
             const res = await request(app)
                 .get(`/api/orders/${ORDER_ID}`)
@@ -197,7 +215,7 @@ describe('Orders', () => {
                 .set('Cookie', `token=${customerToken()}`);
 
             expect(res.status).toBe(400);
-            expect(prisma.order.findUnique).not.toHaveBeenCalled();
+            expect(prisma.order.findFirst).not.toHaveBeenCalled();
         });
 
         it('should return 401 when not authenticated', async () => {
@@ -226,7 +244,7 @@ describe('Orders', () => {
                 .set('Cookie', `token=${customerToken()}`)
                 .send(validBody);
 
-            expect(res.status).toBe(200);
+            expect(res.status).toBe(201);
             expect(res.body).toMatchObject({ id: ORDER_ID });
             // Stock decremented for the purchased item.
             expect(prisma.product.update).toHaveBeenCalledWith(
@@ -479,7 +497,7 @@ describe('Orders', () => {
                 .send({ status: 'shipped' });
 
             expect(res.status).toBe(404);
-            expect(res.body).toHaveProperty('error', 'Orden no encontrada');
+            expect(res.body).toHaveProperty('error', 'Order not found');
         });
 
         it('should return 400 when the status is not a valid enum value', async () => {
