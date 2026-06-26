@@ -3,16 +3,19 @@ import orderServices from '../services/orderServices';
 import {
     CreateOrderSchema,
     OrderIdParamSchema,
+    OrdersQuerySchema,
     OrderStatusSchema,
 } from '../schemas/ordersZodSchema';
 
 export const listOrders = async (req: Request, res: Response) => {
-    const orders = await orderServices.listOrders(req.user!.userId);
+    const filters = OrdersQuerySchema.parse(req.query);
+    const orders = await orderServices.listOrders(req.user!.userId, filters);
     res.status(200).json(orders);
 };
 
-export const listAllOrders = async (_req: Request, res: Response) => {
-    const orders = await orderServices.listAllOrders();
+export const listAllOrders = async (req: Request, res: Response) => {
+    const filters = OrdersQuerySchema.parse(req.query);
+    const orders = await orderServices.listAllOrders(filters);
     res.status(200).json(orders);
 };
 
@@ -37,10 +40,7 @@ export const updateStatusOrder = async (req: Request, res: Response) => {
     const { orderId } = OrderIdParamSchema.parse(req.params);
     const { status } = OrderStatusSchema.parse(req.body);
 
-    const orderUpdated = await orderServices.updateStatusOrder(
-        orderId,
-        status,
-    );
+    const orderUpdated = await orderServices.updateStatusOrder(orderId, status);
 
     res.status(200).json(orderUpdated);
 };

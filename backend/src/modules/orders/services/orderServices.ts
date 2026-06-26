@@ -2,22 +2,42 @@ import { Prisma } from '../../../../generated/prisma/client';
 import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
 import { freezeAddress } from '../../../lib/utils';
-import { CreateOrderInput, OrderStatus } from '../schemas/ordersZodSchema';
+import {
+    CreateOrderInput,
+    OrdersQuery,
+    OrderStatus,
+} from '../schemas/ordersZodSchema';
 
-const listOrders = async (userId: string) => {
-    return await prisma.order.findMany({
-        where: { userId },
-        orderBy: { createdAt: 'desc' },
-    });
+const listOrders = async (userId: string, filters: Partial<OrdersQuery>) => {
+    const { page = 1, limit = 20 } = filters;
+    const offset = (page - 1) * limit;
+    const [data, total] = await prisma.$transaction([
+        prisma.order.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            skip: offset,
+            take: limit,
+        }),
+        prisma.order.count({ where: { userId } }),
+    ]);
+    return {data, total, page, limit}
 };
 
-const listAllOrders = async () => {
-    return await prisma.order.findMany({
-        orderBy: { createdAt: 'desc' },
-        include: {
-            user: { select: { id: true, name: true, email: true } },
-        },
-    });
+const listAllOrders = async (filters: Partial<OrdersQuery>) => {
+    const { page = 1, limit = 10 } = filters;
+    const offset = (page - 1) * limit;
+    const [data, total] = await prisma.$transaction([
+        prisma.order.findMany({
+            orderBy: { createdAt: 'desc' },
+            include: {
+                user: { select: { id: true, name: true, email: true } },
+            },
+            skip: offset,
+            take: limit,
+        }),
+        prisma.order.count(),
+    ]);
+    return { data, total, page, limit };
 };
 
 const getOrderbyId = async (orderId: string, userId: string, role: string) => {

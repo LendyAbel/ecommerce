@@ -6,7 +6,15 @@ import OrdersListSkeleton from './skeletons/OrdersListSkeleton';
 
 const OrdersList = () => {
     const navigate = useNavigate();
-    const { orders, isAdmin, isLoading, isError } = useGetOrdersList();
+    const {
+        orders,
+        isAdmin,
+        isLoading,
+        isError,
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage,
+    } = useGetOrdersList({});
 
     if (isLoading) return <OrdersListSkeleton />;
 
@@ -45,19 +53,32 @@ const OrdersList = () => {
     }
 
     return (
-        <ul className='flex flex-col gap-3'>
-            {orders.map((order, i) => (
-                <li
-                    key={order.id}
-                    className='animate-slide-up'
-                    // Escalonado suave de entrada, limitado para que las filas
-                    // de más abajo no tarden demasiado en aparecer.
-                    style={{ animationDelay: `${Math.min(i, 6) * 60}ms` }}
-                >
-                    <OrderRow order={order} />
-                </li>
-            ))}
-        </ul>
+        <>
+            <ul className='flex flex-col gap-3'>
+                {orders.map((order, i) => (
+                    <li
+                        key={order.id}
+                        className='animate-slide-up'
+                        // Escalonado suave de entrada, limitado para que las filas
+                        // de más abajo no tarden demasiado en aparecer.
+                        style={{ animationDelay: `${Math.min(i, 6) * 60}ms` }}
+                    >
+                        <OrderRow order={order} />
+                    </li>
+                ))}
+            </ul>
+            {hasNextPage && (
+                <div className='mt-8 flex justify-center'>
+                    <Button
+                        variant='outline'
+                        loading={isFetchingNextPage}
+                        onClick={() => fetchNextPage()}
+                    >
+                        Cargar más
+                    </Button>
+                </div>
+            )}
+        </>
     );
 };
 
