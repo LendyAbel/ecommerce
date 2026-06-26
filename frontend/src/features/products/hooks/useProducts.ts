@@ -1,5 +1,7 @@
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
-import productsService, { type ProductFilters } from '@/features/products/api/products.service';
+import productsService, {
+    type ProductFilters,
+} from '@/features/products/api/products.service';
 
 const PAGE_SIZE = 6;
 

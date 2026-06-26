@@ -16,7 +16,7 @@ const useDeleteProductById = () => {
                 queryClient.invalidateQueries({ queryKey: ['products'] }),
                 queryClient.invalidateQueries({ queryKey: ['categories'] }),
             ]);
-            notify.info('Producto eliminado')
+            notify.info('Producto eliminado');
         },
     });
     return { deleteProductById, isPending, isSuccess };

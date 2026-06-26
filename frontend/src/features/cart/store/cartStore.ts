@@ -50,7 +50,7 @@ export const useCartStore = create<CartStore>()(
                     }
                     return { cart: { cartItems: newItems } };
                 });
-                notify.success('Producto añadido al carrito')
+                notify.success('Producto añadido al carrito');
             },
             removeItem: productId => {
                 set(state => ({
@@ -60,7 +60,7 @@ export const useCartStore = create<CartStore>()(
                         ),
                     },
                 }));
-                notify.warning('Prducto eliminado del carrito')
+                notify.warning('Prducto eliminado del carrito');
             },
             updateItem: (productId, quantity) => {
                 if (quantity <= 0) {
@@ -78,8 +78,8 @@ export const useCartStore = create<CartStore>()(
                 }));
             },
             clearCart: () => {
-                set({ cart: EMPTY_CART })
-                notify.warning('Carrito vaciado')
+                set({ cart: EMPTY_CART });
+                notify.warning('Carrito vaciado');
             },
             setCartItems: cartItems => set({ cart: { cartItems } }),
 

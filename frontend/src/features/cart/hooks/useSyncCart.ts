@@ -39,7 +39,6 @@ export const useSyncCart = () => {
         },
     });
 
-
     const replaceMutation = useMutation({
         mutationKey: ['cart', 'replace'],
         mutationFn: async () => {
@@ -56,7 +55,7 @@ export const useSyncCart = () => {
             setCartItems(data.cartItems);
         },
         onError: error => {
-            notify.error('Error saving cart')
+            notify.error('Error saving cart');
             logger.error('Cart replace failed:', error);
         },
     });

@@ -18,7 +18,6 @@ type SingleSelectInputProps = {
     addOption?: boolean;
 };
 
-
 const SingleSelectInput = ({
     field,
     label,
@@ -65,7 +64,12 @@ const SingleSelectInput = ({
     return (
         <div className='flex items-center gap-0.5'>
             {!isNewCategory ? (
-                <FormControl sx={sxInputStyle} fullWidth className='relative'>
+                <FormControl
+                    size='small'
+                    sx={sxInputStyle}
+                    fullWidth
+                    className='relative'
+                >
                     <InputLabel id='select-label'>{label}</InputLabel>
                     <Select
                         labelId='select-label'
@@ -78,7 +82,7 @@ const SingleSelectInput = ({
                         onBlur={field.handleBlur}
                     >
                         <MenuItem value=''>
-                            <em>None</em>
+                            <em>Ninguna</em>
                         </MenuItem>
                         {localOptions.map(cat => (
                             <MenuItem key={cat} value={cat}>
@@ -87,7 +91,7 @@ const SingleSelectInput = ({
                         ))}
                     </Select>
                     {hasError && (
-                        <small className='absolute top-4 right-10 text-error'>
+                        <small className='text-error absolute top-2.5 right-10 font-bold'>
                             {errors[0]?.message}
                         </small>
                     )}
@@ -95,8 +99,8 @@ const SingleSelectInput = ({
             ) : (
                 <TextField
                     fullWidth
-                    
-                    label={`New ${label}`}
+                    size='small'
+                    label={`Nueva ${label}`}
                     variant='outlined'
                     value={newCategoryText}
                     onChange={handleInputChange}
@@ -107,21 +111,22 @@ const SingleSelectInput = ({
             {addOption && (
                 <div className='flex w-53 flex-row'>
                     <Button
-                        className='h-14 w-full min-w-max'
+                        className='h-10 w-full min-w-max'
                         variant={'outlined'}
                         onClick={() => setIsNewCategory(!isNewCategory)}
                         sx={sxButtonStyle}
                     >
-                        {isNewCategory ? 'Cancel' : 'New'}
+                        {isNewCategory ? 'Cancelar' : 'Nuevo'}
                     </Button>
                     {isNewCategory && (
                         <Button
+                            className='h-10'
                             variant={'outlined'}
                             onClick={handleAdd}
                             disabled={!newCategoryText.trim()}
                             sx={sxButtonStyle}
                         >
-                            Add
+                            Añadir
                         </Button>
                     )}
                 </div>

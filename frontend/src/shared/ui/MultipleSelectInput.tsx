@@ -58,7 +58,7 @@ const MultipleSelectInput = ({
     return (
         <div className='flex items-center gap-0.5'>
             {!isNewCategory ? (
-                <FormControl fullWidth sx={sxInputStyle}>
+                <FormControl size='small' fullWidth sx={sxInputStyle}>
                     <InputLabel id='select-label'>{label}</InputLabel>
                     <Select
                         multiple
@@ -80,7 +80,8 @@ const MultipleSelectInput = ({
             ) : (
                 <TextField
                     fullWidth
-                    label={`New ${label}`}
+                    size='small'
+                    label={`Nueva ${label}`}
                     variant='outlined'
                     value={newCategoryText}
                     onChange={e => setNewCategoryText(e.target.value)}
@@ -90,21 +91,22 @@ const MultipleSelectInput = ({
             )}
             <div className='flex w-53 flex-row'>
                 <Button
-                    className='h-14 w-full min-w-max'
+                    className='h-10 w-full min-w-max'
                     variant={'outlined'}
                     onClick={() => setIsNewCategory(!isNewCategory)}
                     sx={sxButtonStyle}
                 >
-                    {isNewCategory ? 'Cancel' : 'New'}
+                    {isNewCategory ? 'Cancelar' : 'Nuevo'}
                 </Button>
                 {isNewCategory && (
                     <Button
+                        className='h-10'
                         variant={'outlined'}
                         onClick={handleAdd}
                         disabled={!newCategoryText.trim()}
                         sx={sxButtonStyle}
                     >
-                        Add
+                        Añadir
                     </Button>
                 )}
             </div>

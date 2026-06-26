@@ -22,14 +22,15 @@ const Home = () => {
                     }}
                 />
 
-                <p className='relative mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary'>
+                <p className='text-primary relative mb-2 text-xs font-semibold tracking-[0.3em] uppercase'>
                     Bienvenido a nuestra tienda
                 </p>
-                <h1 className='relative max-w-2xl font-display text-4xl font-bold leading-tight text-text md:text-5xl'>
+                <h1 className='font-display text-text relative max-w-2xl text-4xl leading-tight font-bold md:text-5xl'>
                     Descubre nuestros productos
                 </h1>
-                <p className='relative mt-4 max-w-xl text-base text-text-60'>
-                    Encuentra todo lo que necesitas en un solo lugar. Calidad y variedad para ti.
+                <p className='text-text-60 relative mt-4 max-w-xl text-base'>
+                    Encuentra todo lo que necesitas en un solo lugar. Calidad y
+                    variedad para ti.
                 </p>
 
                 <div className='relative mt-8 flex flex-wrap items-center justify-center gap-4'>
@@ -46,13 +47,15 @@ const Home = () => {
 
             {/* Productos destacados */}
             <section className='mx-auto w-[90%] max-w-5xl py-14'>
-                <h2 className='mb-6 font-display text-2xl font-bold text-text'>
+                <h2 className='font-display text-text mb-6 text-2xl font-bold'>
                     Productos destacados
                 </h2>
 
                 <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4'>
                     {isFeaturedLoading
-                        ? Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)
+                        ? Array.from({ length: 4 }).map((_, i) => (
+                              <ProductCardSkeleton key={i} />
+                          ))
                         : featured.map(product => (
                               <ProductCard key={product.id} product={product} />
                           ))}
@@ -62,7 +65,7 @@ const Home = () => {
                     <div className='mt-8 text-center'>
                         <NavLink
                             to='/products'
-                            className='btn btn-ghost border border-border px-6 py-2.5 text-sm'
+                            className='btn btn-ghost border-border border px-6 py-2.5 text-sm'
                         >
                             Ver todos los productos
                         </NavLink>
@@ -71,16 +74,18 @@ const Home = () => {
             </section>
 
             {/* CTA inferior */}
-            <section className='border-t border-border bg-panel py-14 text-center'>
+            <section className='border-border bg-panel border-t py-14 text-center'>
                 {user ? (
-                    <p className='text-lg font-medium text-text-60'>
+                    <p className='text-text-60 text-lg font-medium'>
                         Hola de nuevo,{' '}
-                        <span className='font-bold text-primary'>{user.name}</span>. ¡Que tengas
-                        una buena compra!
+                        <span className='text-primary font-bold'>
+                            {user.name}
+                        </span>
+                        . ¡Que tengas una buena compra!
                     </p>
                 ) : (
                     <div className='flex flex-col items-center gap-4'>
-                        <p className='text-lg font-medium text-text-60'>
+                        <p className='text-text-60 text-lg font-medium'>
                             ¿Tienes una cuenta? Inicia sesión para comprar.
                         </p>
                         <NavLink to='/auth' className='btn btn-primary btn-lg'>

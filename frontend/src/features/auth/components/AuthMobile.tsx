@@ -1,8 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { LoginFormSchema, RegisterFormSchema } from '@/features/auth/schemas/userSchema';
+import {
+    LoginFormSchema,
+    RegisterFormSchema,
+} from '@/features/auth/schemas/userSchema';
 import AuthForm from '@/features/auth/components/AuthForm';
-import { loginFields, registerFields } from '@/features/auth/components/authFields';
+import {
+    loginFields,
+    registerFields,
+} from '@/features/auth/components/authFields';
 
 /**
  * Variante apilada del formulario de autenticación para móvil: una sola tarjeta

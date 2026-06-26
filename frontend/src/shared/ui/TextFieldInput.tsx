@@ -10,6 +10,10 @@ type TextFieldInputProps = {
     type?: 'text' | 'number' | 'email' | 'password';
     autofocus?: boolean;
     startIcon?: JSX.Element;
+    /** Permite que el campo crezca en varias líneas (ej. descripciones). */
+    multiline?: boolean;
+    /** Máximo de filas visibles cuando `multiline` está activo. */
+    maxRows?: number;
 };
 
 // Convierte el texto del input a número (admite coma o punto). Vacío => undefined.
@@ -25,7 +29,10 @@ const sanitizeNumber = (raw: string): string => {
     const cleaned = raw.replace(/[^\d.,]/g, '').replace(/,/g, '.');
     const firstDot = cleaned.indexOf('.');
     if (firstDot === -1) return cleaned;
-    return cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
+    return (
+        cleaned.slice(0, firstDot + 1) +
+        cleaned.slice(firstDot + 1).replace(/\./g, '')
+    );
 };
 
 const TextFieldInput = ({
@@ -34,6 +41,8 @@ const TextFieldInput = ({
     type = 'text',
     autofocus = false,
     startIcon,
+    multiline = false,
+    maxRows = 3,
 }: TextFieldInputProps) => {
     const { errors, isValid, isBlurred } = field.state.meta;
     const isSubmitted = field.form.state.submissionAttempts > 0;
@@ -54,7 +63,8 @@ const TextFieldInput = ({
 
     if (isNumber && field.state.value !== syncedValue) {
         setSyncedValue(field.state.value);
-        if (parseNumber(rawValue) !== field.state.value) setRawValue(valueAsText);
+        if (parseNumber(rawValue) !== field.state.value)
+            setRawValue(valueAsText);
     }
 
     const handleNumberChange = (raw: string) => {
@@ -80,11 +90,17 @@ const TextFieldInput = ({
                         >
                             {showPassword ? (
                                 <VisibilityOffOutlinedIcon
-                                    sx={{ color: 'var(--color-text-38)', fontSize: 18 }}
+                                    sx={{
+                                        color: 'var(--color-text-38)',
+                                        fontSize: 18,
+                                    }}
                                 />
                             ) : (
                                 <VisibilityOutlinedIcon
-                                    sx={{ color: 'var(--color-text-38)', fontSize: 18 }}
+                                    sx={{
+                                        color: 'var(--color-text-38)',
+                                        fontSize: 18,
+                                    }}
                                 />
                             )}
                         </IconButton>
@@ -105,8 +121,8 @@ const TextFieldInput = ({
                 variant='outlined'
                 size='small'
                 autoFocus={autofocus}
-                multiline={type === 'text'}
-                maxRows={3}
+                multiline={multiline}
+                maxRows={maxRows}
                 type={
                     isNumber
                         ? 'text'
@@ -127,7 +143,9 @@ const TextFieldInput = ({
                 onBlur={field.handleBlur}
                 onFocus={e => e.target.select()}
                 slotProps={{
-                    ...(startIcon && { input: inputSlotProps }),
+                    ...((startIcon || type === 'password') && {
+                        input: inputSlotProps,
+                    }),
                     htmlInput: {
                         ...(isNumber && { inputMode: 'decimal' }),
                         'aria-invalid': hasError || undefined,
@@ -137,7 +155,10 @@ const TextFieldInput = ({
                 sx={sxInputStyle}
             />
             {hasError && (
-                <small id={errorId} className='text-error absolute top-2.5 right-4 font-bold'>
+                <small
+                    id={errorId}
+                    className='text-error absolute top-2.5 right-4 font-bold'
+                >
                     {errors[0]?.message}
                 </small>
             )}

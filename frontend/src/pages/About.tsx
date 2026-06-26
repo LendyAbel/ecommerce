@@ -70,10 +70,30 @@ const MILESTONES = [
 ] as const;
 
 const TEAM = [
-    { name: 'Lucía Marén', role: 'Cofundadora · CEO', initials: 'LM', accent: 'var(--color-primary)' },
-    { name: 'Diego Ferrán', role: 'Cofundador · CTO', initials: 'DF', accent: 'var(--color-secondary)' },
-    { name: 'Aisha Benali', role: 'Lead de soporte técnico', initials: 'AB', accent: 'var(--color-accent)' },
-    { name: 'Marc Oller', role: 'Compras y proveedores', initials: 'MO', accent: 'var(--color-highlight-new)' },
+    {
+        name: 'Lucía Marén',
+        role: 'Cofundadora · CEO',
+        initials: 'LM',
+        accent: 'var(--color-primary)',
+    },
+    {
+        name: 'Diego Ferrán',
+        role: 'Cofundador · CTO',
+        initials: 'DF',
+        accent: 'var(--color-secondary)',
+    },
+    {
+        name: 'Aisha Benali',
+        role: 'Lead de soporte técnico',
+        initials: 'AB',
+        accent: 'var(--color-accent)',
+    },
+    {
+        name: 'Marc Oller',
+        role: 'Compras y proveedores',
+        initials: 'MO',
+        accent: 'var(--color-highlight-new)',
+    },
 ] as const;
 
 const About = () => {

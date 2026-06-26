@@ -12,7 +12,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
     const addItem = useCartStore(state => state.addItem);
 
     const handleAddToCart = () => {
-        addItem({product});
+        addItem({ product });
     };
 
     return (
@@ -30,7 +30,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             <button
                 type='button'
                 title='Guardar en favoritos'
-                className='flex size-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
+                className='border-border text-text-60 hover:border-primary hover:text-primary flex size-11 items-center justify-center rounded-xl border transition-all duration-200'
             >
                 <FavoriteBorderIcon fontSize='small' />
             </button>
@@ -38,7 +38,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             <button
                 type='button'
                 title='Compartir'
-                className='flex size-11 items-center justify-center rounded-xl border border-border text-text-60 transition-all duration-200 hover:border-primary hover:text-primary'
+                className='border-border text-text-60 hover:border-primary hover:text-primary flex size-11 items-center justify-center rounded-xl border transition-all duration-200'
             >
                 <ShareOutlinedIcon fontSize='small' />
             </button>

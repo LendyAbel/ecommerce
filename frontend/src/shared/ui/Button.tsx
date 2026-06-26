@@ -1,7 +1,13 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import Spinner from './Spinner';
 
-type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost';
+type ButtonVariant =
+    | 'primary'
+    | 'secondary'
+    | 'accent'
+    | 'outline'
+    | 'ghost'
+    | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -20,6 +26,7 @@ const variantClass: Record<ButtonVariant, string> = {
     accent: 'btn-accent',
     outline: 'btn-outline',
     ghost: 'btn-ghost',
+    danger: 'btn-danger',
 };
 
 const sizeClass: Record<ButtonSize, string> = {

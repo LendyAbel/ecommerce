@@ -73,7 +73,7 @@ function AuthForm<TValues extends Record<string, string>>({
 
     return (
         <form onSubmit={onSubmit} className='w-full max-w-xs'>
-            <p className='text-primary text-xs font-semibold uppercase tracking-[0.25em]'>
+            <p className='text-primary text-xs font-semibold tracking-[0.25em] uppercase'>
                 {eyebrow}
             </p>
             <h2 className='font-display text-text mt-1 text-2xl font-bold'>

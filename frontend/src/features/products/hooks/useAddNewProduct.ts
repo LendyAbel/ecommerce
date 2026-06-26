@@ -18,11 +18,11 @@ const useAddNewProduct = () => {
                 queryClient.invalidateQueries({ queryKey: ['products'] }),
                 queryClient.invalidateQueries({ queryKey: ['categories'] }),
             ]);
-            notify.success('Producto añadido correctamente')
+            notify.success('Producto añadido correctamente');
         },
         onError: error => {
             logger.error('Error al crear producto:', error);
-            notify.error('Error al añadir producto')
+            notify.error('Error al añadir producto');
         },
     });
     return { addNewProduct, isPending, isError };

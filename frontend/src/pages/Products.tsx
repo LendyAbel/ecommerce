@@ -12,6 +12,7 @@ import useCategory from '@/features/categories/hooks/useCategory';
 import type { SortBy } from '@/features/products/api/products.service';
 import { useDebounce } from '@/shared/utils/utils';
 import { Button } from '@/shared/ui';
+import { EmptyState, ErrorState, PageContainer } from '@/shared/components';
 
 const Products = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -45,67 +46,62 @@ const Products = () => {
 
     if (isProductsLoading) {
         return (
-            <div className='bg-bg relative min-h-[calc(100vh-48px)]'>
-                <div className='m-auto w-[90%] max-w-6xl pt-4'>
-                    <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-                        {Array.from({ length: 6 }).map((_, i) => (
-                            <ProductCardSkeleton key={i} />
-                        ))}
-                    </div>
+            <PageContainer maxWidth='6xl'>
+                <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <ProductCardSkeleton key={i} />
+                    ))}
                 </div>
-            </div>
+            </PageContainer>
         );
     }
 
     if (isProductsError) {
         return (
-            <div className='bg-bg flex min-h-[calc(100vh-48px)] items-start'>
-                <p className='text-error m-auto mt-20 text-center'>
-                    Error al cargar los productos
-                </p>
-            </div>
+            <PageContainer maxWidth='6xl'>
+                <ErrorState message='No pudimos cargar los productos. Inténtalo de nuevo en unos instantes.' />
+            </PageContainer>
         );
     }
 
     return (
-        <div className='bg-bg relative min-h-[calc(100vh-48px)]'>
-            <div className='m-auto mt-4 w-[90%] max-w-6xl'>
-                <ProductFilters
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                    categories={categoriesList}
-                    sortBy={sortBy}
-                    onSortChange={setSortBy}
+        <PageContainer maxWidth='6xl'>
+            <ProductFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                categories={categoriesList}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+            />
+
+            {products.length === 0 ? (
+                <EmptyState
+                    title='Sin resultados'
+                    message='No hay productos que coincidan con tu búsqueda.'
                 />
+            ) : (
+                <>
+                    <section className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+                        {products.map((product: Product) => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </section>
 
-                {products.length === 0 ? (
-                    <p className='text-text-38 py-12 text-center'>
-                        No hay productos que coincidan con tu búsqueda.
-                    </p>
-                ) : (
-                    <>
-                        <section className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-                            {products.map((product: Product) => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
-                        </section>
-
-                        {hasNextPage && (
-                            <div className='mt-8 flex justify-center'>
-                                <Button
-                                    variant='outline'
-                                    loading={isFetchingNextPage}
-                                    onClick={() => fetchNextPage()}
-                                >
-                                    Cargar más
-                                </Button>
-                            </div>
-                        )}
-                    </>
-                )}
-            </div>
+                    {hasNextPage && (
+                        <div className='mt-8 flex justify-center'>
+                            <Button
+                                variant='outline'
+                                loading={isFetchingNextPage}
+                                onClick={() => fetchNextPage()}
+                            >
+                                Cargar más
+                            </Button>
+                        </div>
+                    )}
+                </>
+            )}
 
             {userRole === 'admin' && (
                 <AddProductButton onClick={newProductDialog.open} />
@@ -114,7 +110,7 @@ const Products = () => {
                 isOpen={newProductDialog.isOpen}
                 onClose={newProductDialog.close}
             />
-        </div>
+        </PageContainer>
     );
 };
 

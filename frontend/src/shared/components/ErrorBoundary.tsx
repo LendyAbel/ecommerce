@@ -4,7 +4,6 @@ import { logger } from '@/lib/logger';
 type Props = { children: ReactNode };
 type State = { hasError: boolean };
 
-
 class ErrorBoundary extends Component<Props, State> {
     state: State = { hasError: false };
 

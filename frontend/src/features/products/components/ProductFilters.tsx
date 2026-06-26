@@ -50,7 +50,10 @@ const ProductFilters = ({
                         input: {
                             startAdornment: (
                                 <InputAdornment position='start'>
-                                    <SearchIcon fontSize='small' sx={{ color: 'var(--color-text-38)' }} />
+                                    <SearchIcon
+                                        fontSize='small'
+                                        sx={{ color: 'var(--color-text-38)' }}
+                                    />
                                 </InputAdornment>
                             ),
                         },
@@ -59,7 +62,10 @@ const ProductFilters = ({
                     sx={{ ...sxInputStyle, flex: '1 1 200px', maxWidth: 360 }}
                 />
 
-                <FormControl size='small' sx={{ ...sxInputStyle, minWidth: 200 }}>
+                <FormControl
+                    size='small'
+                    sx={{ ...sxInputStyle, minWidth: 200 }}
+                >
                     <InputLabel>Ordenar por</InputLabel>
                     <Select
                         value={sortBy}

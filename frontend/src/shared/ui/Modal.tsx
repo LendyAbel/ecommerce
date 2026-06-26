@@ -43,9 +43,9 @@ const Modal = ({
             }}
         >
             {(title || eyebrow) && (
-                <div className='relative px-6 pb-0 pt-6'>
+                <div className='relative px-6 pt-6 pb-0'>
                     {eyebrow && (
-                        <p className='text-primary text-xs font-semibold uppercase tracking-[0.25em]'>
+                        <p className='text-primary text-xs font-semibold tracking-[0.25em] uppercase'>
                             {eyebrow}
                         </p>
                     )}
@@ -58,7 +58,7 @@ const Modal = ({
                         type='button'
                         onClick={onClose}
                         aria-label='Cerrar'
-                        className='text-text-60 hover:bg-panel hover:text-text absolute right-5 top-5 flex size-8 items-center justify-center rounded-full transition-colors duration-200'
+                        className='text-text-60 hover:bg-panel hover:text-text absolute top-5 right-5 flex size-8 items-center justify-center rounded-full transition-colors duration-200'
                     >
                         <Close fontSize='small' />
                     </button>

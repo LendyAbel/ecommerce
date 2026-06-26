@@ -1,5 +1,8 @@
 ﻿import { useState } from 'react';
-import type { Image, ProductStatus } from '@/features/products/types/productTypes';
+import type {
+    Image,
+    ProductStatus,
+} from '@/features/products/types/productTypes';
 
 const statusConfig: Record<string, { label: string; className: string }> = {
     published: { label: 'Disponible', className: 'bg-success-20 text-success' },
@@ -47,7 +50,7 @@ const ProductImageGallery = ({
                 ) : (
                     <div className='text-text-38 flex h-105 items-center justify-center'>
                         <svg
-                            className=' size-16'
+                            className='size-16'
                             fill='none'
                             viewBox='0 0 24 24'
                             stroke='currentColor'

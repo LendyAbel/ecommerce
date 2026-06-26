@@ -7,7 +7,8 @@ import { ThemeToggle } from '@/shared/ui';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { preloadRoute } from '@/app/routePreload';
-import UserMenu, { ACCOUNT_LINKS } from '@/features/auth/components/UserMenu';
+import UserMenu from '@/features/auth/components/UserMenu';
+import { ACCOUNT_LINKS } from '@/features/auth';
 
 type Props = {
     children: ReactNode;
@@ -46,7 +47,6 @@ const Navbar = ({ children }: Props) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const closeMenu = () => setMenuOpen(false);
-
 
     return (
         <>

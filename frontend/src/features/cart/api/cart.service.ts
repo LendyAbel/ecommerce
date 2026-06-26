@@ -6,7 +6,10 @@ const getCart = async (): Promise<Cart> => {
     return res.data;
 };
 
-const addItem = async (productId: string, quantity: number = 1): Promise<Cart> => {
+const addItem = async (
+    productId: string,
+    quantity: number = 1,
+): Promise<Cart> => {
     const res = await apiClient.post('/cart/items', { productId, quantity });
     return res.data;
 };

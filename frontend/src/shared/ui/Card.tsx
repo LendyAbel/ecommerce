@@ -11,7 +11,12 @@ type CardProps = HTMLAttributes<HTMLDivElement> & {
  * repetido por la app. Acepta cualquier prop de `div` y fusiona `className` para
  * añadir layout puntual (flex, padding distinto, etc.).
  */
-const Card = ({ padded = false, className = '', children, ...rest }: CardProps) => {
+const Card = ({
+    padded = false,
+    className = '',
+    children,
+    ...rest
+}: CardProps) => {
     const classes = [
         'border-border bg-surface rounded-2xl border shadow-sm',
         padded ? 'p-6' : '',

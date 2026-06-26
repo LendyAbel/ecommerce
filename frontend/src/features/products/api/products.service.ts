@@ -1,5 +1,8 @@
 ﻿import { apiClient } from '@/lib/api/client';
-import type { Product, ProductForm } from '@/features/products/types/productTypes';
+import type {
+    Product,
+    ProductForm,
+} from '@/features/products/types/productTypes';
 
 export type SortBy = 'price_asc' | 'price_desc' | 'newest' | 'oldest';
 

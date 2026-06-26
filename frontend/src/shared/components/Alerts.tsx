@@ -80,7 +80,6 @@ const AlertItem = ({ alert }: { alert: Alert }) => {
     );
 };
 
-
 const Alerts = () => {
     const alerts = useAlertStore(state => state.alerts);
 

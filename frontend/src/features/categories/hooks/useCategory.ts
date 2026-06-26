@@ -12,7 +12,7 @@ const useCategory = () => {
     });
 
     const categories = data ?? [];
-    
+
     return { categories, isCategoriesLoading, isCategoriesError };
 };
 export default useCategory;

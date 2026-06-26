@@ -2,29 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { preloadRoute } from '@/app/routePreload';
-
-type MenuLink = {
-    to: string;
-    label: string;
-    Icon: typeof ReceiptLongIcon;
-};
-
-export const ACCOUNT_LINKS: MenuLink[] = [
-    { to: '/orders', label: 'Pedidos', Icon: ReceiptLongIcon },
-    { to: '/account', label: 'Mis datos', Icon: PersonOutlineIcon },
-    {
-        to: '/account/addresses',
-        label: 'Mis direcciones',
-        Icon: LocationOnOutlinedIcon,
-    },
-];
+import { ACCOUNT_LINKS } from '@/features/auth/components/accountLinks';
 
 const itemClass =
     'flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold tracking-widest uppercase transition-colors duration-200';

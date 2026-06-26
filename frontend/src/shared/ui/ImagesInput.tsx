@@ -73,7 +73,7 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                 <FormControl fullWidth sx={sxInputStyle}>
                     <FormLabel id='radio-label'>Images</FormLabel>
                     {images.length === 0 && (
-                        <p className='py-2 text-sm text-text-38'>
+                        <p className='text-text-38 py-2 text-sm'>
                             No images. Add one
                         </p>
                     )}
@@ -86,7 +86,10 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                         {images?.map((image, index) => {
                             const urlError = getUrlError(image.url);
                             return (
-                                <div key={index} className='flex w-full flex-row items-center gap-0.5'>
+                                <div
+                                    key={index}
+                                    className='flex w-full flex-row items-center gap-0.5'
+                                >
                                     <TextField
                                         fullWidth
                                         sx={sxInputStyle}
@@ -122,7 +125,9 @@ const ImagesInput = ({ field }: ImagesInputProps) => {
                         })}
                     </RadioGroup>
                     {fieldError && (
-                        <small className='text-error font-bold'>{fieldError}</small>
+                        <small className='text-error font-bold'>
+                            {fieldError}
+                        </small>
                     )}
                 </FormControl>
             )}
