@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import type { Order } from '../schemas/orderSchemas';
+import type { Order, OrderSummary } from '../schemas/orderSchemas';
 
 export type OrdersFilters = {
     page?: number;
@@ -7,7 +7,7 @@ export type OrdersFilters = {
 };
 
 export type PaginatedOrders = {
-    data: Order[];
+    data: OrderSummary[];
     total: number;
     page: number;
     limit: number;

@@ -41,14 +41,16 @@ const OrderRow = ({ order }: OrderRowProps) => {
                     {formatOrderDate(order.createdAt)}
                 </span>
             </div>
-            <div className='flex min-w-0 flex-col'>
-                <span className='font-display text-text text-base font-bold'>
-                    Usuario
-                </span>
-                <span className='text-text-60 text-sm'>
-                    {order.userId}
-                </span>
-            </div>
+            {order.user && (
+                <div className='flex min-w-0 flex-col'>
+                    <span className='font-display text-text truncate text-base font-bold'>
+                        {order.user.name}
+                    </span>
+                    <span className='text-text-60 truncate text-sm'>
+                        {order.user.email}
+                    </span>
+                </div>
+            )}
 
             <div className='ml-auto flex items-center gap-3 sm:gap-5'>
                 <span className='text-text font-display hidden text-lg font-bold sm:inline'>

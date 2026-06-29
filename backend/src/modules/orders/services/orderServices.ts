@@ -41,10 +41,17 @@ const listAllOrders = async (filters: Partial<OrdersQuery>) => {
 };
 
 const getOrderbyId = async (orderId: string, userId: string, role: string) => {
+    const isAdmin = role === 'admin';
     const order = await prisma.order.findFirst({
         // El admin puede ver cualquier orden; el usuario solo las suyas.
-        where: { id: orderId, ...(role === 'admin' ? {} : { userId }) },
-        include: { orderItems: true },
+        where: { id: orderId, ...(isAdmin ? {} : { userId }) },
+        include: {
+            orderItems: true,
+            // Solo el admin necesita saber a qué cliente pertenece la orden.
+            ...(isAdmin
+                ? { user: { select: { id: true, name: true, email: true } } }
+                : {}),
+        },
     });
     if (!order) throw new AppError('Order not found', 404);
     return order;

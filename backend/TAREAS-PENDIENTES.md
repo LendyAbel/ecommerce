@@ -7,6 +7,7 @@ Notas rápidas de cosas por hacer que surgen mientras trabajo en otra parte del 
 ## Pendientes
 
 - [ ] _(ejemplo)_ Revisar algo en otro módulo
+- [ ] (products/getAllProducts) Simplificar el search a una implementación 100% Prisma (sin `$queryRaw`/SQL puro), aunque se pierda el full-text search. Que quede lo más parecido al filtro de `listOrders`/`listAllOrders` (`findMany` + `count` con `where`), aceptando p. ej. una búsqueda básica con `contains`.
 
 ## Completadas
 

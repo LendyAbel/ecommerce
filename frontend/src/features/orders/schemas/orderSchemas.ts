@@ -37,6 +37,14 @@ export const OrderItemSchema = z.object({
 });
 export type OrderItem = z.infer<typeof OrderItemSchema>;
 
+// --- Usuario dueño de la orden (solo presente en el listado de admin) ---
+export const OrderUserSchema = z.object({
+    id: z.uuid(),
+    name: z.string(),
+    email: z.email(),
+});
+export type OrderUser = z.infer<typeof OrderUserSchema>;
+
 // --- Orden: campos base comunes a todas las respuestas ---
 const orderBaseShape = {
     id: z.uuid(),
@@ -51,7 +59,11 @@ const orderBaseShape = {
 };
 
 // Resumen: lo que devuelve el listado (sin items ni direcciones).
-export const OrderSummarySchema = z.object(orderBaseShape);
+// `user` solo viene en el listado de admin (`/orders/all`).
+export const OrderSummarySchema = z.object({
+    ...orderBaseShape,
+    user: OrderUserSchema.optional(),
+});
 export type OrderSummary = z.infer<typeof OrderSummarySchema>;
 
 // Detalle: incluye los items y (al crear) las direcciones congeladas.
@@ -60,6 +72,8 @@ export const OrderSchema = z.object({
     orderItems: z.array(OrderItemSchema),
     shippingAddress: AddressSchema.nullable().optional(),
     billingAddress: AddressSchema.nullable().optional(),
+    // Solo presente cuando un admin consulta el detalle.
+    user: OrderUserSchema.optional(),
 });
 export type Order = z.infer<typeof OrderSchema>;
 

@@ -55,6 +55,24 @@ const OrderDetails = () => {
                         <p className='text-text font-display text-3xl font-extrabold'>
                             {formatCurrency(order.totalAmount)}
                         </p>
+
+                        {/* Cliente: solo lo recibe el admin desde el backend. */}
+                        {order.user && (
+                            <div className='border-border flex flex-col gap-0.5 border-t pt-4'>
+                                <span className='text-text-38 text-xs font-semibold tracking-wide uppercase'>
+                                    Cliente
+                                </span>
+                                <span className='text-text font-display text-base font-bold'>
+                                    {order.user.name}
+                                </span>
+                                <a
+                                    href={`mailto:${order.user.email}`}
+                                    className='text-text-60 hover:text-primary text-sm transition-colors'
+                                >
+                                    {order.user.email}
+                                </a>
+                            </div>
+                        )}
                     </header>
 
                     <OrderStatusTimeline status={order.status} />
