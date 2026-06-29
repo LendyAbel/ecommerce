@@ -13,6 +13,7 @@ import authRouter from './modules/auth/routers/authRouter';
 import usersRouter from './modules/users/routers/usersRouter';
 import cartRouter from './modules/cart/routers/cartRouter';
 import ordersRouter from './modules/orders/routers/ordersRouter';
+import addressesRouter from './modules/addresses/routers/addressRouter';
 
 import { errorHandler } from './middlewares/errorHandler';
 import { authLimiter, generalLimiter } from './middlewares/rateLimiters';
@@ -54,6 +55,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/orders', ordersRouter);
+app.use('/api/addresses', addressesRouter);
 
 app.use(errorHandler);
 

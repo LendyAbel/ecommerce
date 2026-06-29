@@ -18,6 +18,7 @@ const About = lazy(routeImports['/about']);
 const ProductDetails = lazy(importProductDetails);
 const Authenticate = lazy(routeImports['/auth']);
 const Orders = lazy(routeImports['/orders']);
+const Address = lazy(routeImports['/account/addresses']);
 
 const PageFallback = () => (
     <div className='flex min-h-[calc(100vh-48px)] items-center justify-center'>
@@ -55,6 +56,10 @@ function App() {
                             <Route path='/checkout' element={<Checkout />} /> */}
                         <Route path='/orders' element={<Orders />} />
                         <Route path='/orders/:id' element={<OrderDetails />} />
+                        <Route
+                            path='/account/addresses'
+                            element={<Address />}
+                        />
                     </Route>
                 </Routes>
             </Suspense>

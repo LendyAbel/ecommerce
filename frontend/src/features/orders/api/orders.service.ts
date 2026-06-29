@@ -1,5 +1,9 @@
 import { apiClient } from '@/lib/api/client';
-import type { Order, OrderSummary } from '../schemas/orderSchemas';
+import type {
+    CreateOrderInput,
+    Order,
+    OrderSummary,
+} from '../schemas/orderSchemas';
 
 export type OrdersFilters = {
     page?: number;
@@ -42,4 +46,9 @@ const fetchOrder = async (orderId: string): Promise<Order> => {
     return res.data;
 };
 
-export default { getMyOrders, getAllOrders, fetchOrder };
+const createOrder = async (data: CreateOrderInput): Promise<Order> => {
+    const res = await apiClient.post('/orders', data);
+    return res.data;
+};
+
+export default { getMyOrders, getAllOrders, fetchOrder, createOrder };

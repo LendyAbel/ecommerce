@@ -39,4 +39,5 @@ const softDeleteUser = async (userId: string) => {
     ]);
 };
 
+
 export default { listUsers, softDeleteUser };

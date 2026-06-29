@@ -26,7 +26,11 @@
       "Bash(node -p \"require\\('./node_modules/@tanstack/react-form/package.json'\\).version\")",
       "PowerShell(Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,State,OwningProcess | Format-Table -AutoSize; Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Get-Process -Id $_ -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,Path })",
       "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend\" && find src -type d | head -50 && echo \"---ORDERS---\" && find src -ipath '*order*')",
-      "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend\" && sed -n '/model User/,/^}/p' prisma/schema.prisma)"
+      "Bash(cd \"c:/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend\" && sed -n '/model User/,/^}/p' prisma/schema.prisma)",
+      "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/**)",
+      "Bash(find frontend/src/features/addresses backend/src/modules/addresses -type f)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)"
     ]
   },
   "agents": [

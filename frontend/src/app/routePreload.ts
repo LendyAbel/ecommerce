@@ -10,6 +10,7 @@ export const routeImports = {
     '/about': () => import('@/pages/About'),
     '/auth': () => import('@/pages/Authenticate'),
     '/orders': () => import('@/pages/Orders'),
+    '/account/addresses': () => import('@/pages/Address'),
 } as const;
 
 /** Precarga el chunk de una ruta conocida (no-op si la ruta no está mapeada). */
