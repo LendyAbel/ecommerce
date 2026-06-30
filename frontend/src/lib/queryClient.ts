@@ -33,3 +33,13 @@ export const queryClient = new QueryClient({
         },
     },
 });
+
+// Este codigo es para usar la extension en Chrome de Tanstack Dev
+// TypeScript only:
+declare global {
+    interface Window {
+        __TANSTACK_QUERY_CLIENT__: import('@tanstack/query-core').QueryClient;
+    }
+}
+
+window.__TANSTACK_QUERY_CLIENT__ = queryClient;

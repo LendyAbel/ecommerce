@@ -1,5 +1,5 @@
 import { useParams } from 'react-router';
-import { useGetOrderDetails } from '../hooks/useGetOrderDetail';
+import { useGetOrderDetails } from '../hooks/useOrder';
 import {
     formatCurrency,
     formatOrderDateTime,
@@ -50,6 +50,12 @@ const OrderDetails = () => {
                                     } el {formatOrderDateTime(order.updatedAt)}
                                 </>
                             )}
+                        </p>
+                        <p>
+                            Direccion de envio: {order.shippingAddress?.line1},{' '}
+                            {order.shippingAddress?.line2},{' '}
+                            {order.shippingAddress?.city},{' '}
+                            {order.shippingAddress?.state}{' '}
                         </p>
 
                         <p className='text-text font-display text-3xl font-extrabold'>
