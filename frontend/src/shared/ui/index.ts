@@ -8,3 +8,4 @@ export { default as SingleSelectInput } from './SingleSelectInput';
 export { default as MultipleSelectInput } from './MultipleSelectInput';
 export { default as ImagesInput } from './ImagesInput';
 export { default as ThemeToggle } from './ThemeToggle';
+export { default as StepProgressLine } from './StepProgressLine';

@@ -178,7 +178,7 @@ const Cart = () => {
                     <hr className='border-border' />
 
                     <div className='mt-4 flex flex-col gap-3'>
-                        <Button fullWidth disabled>
+                        <Button fullWidth onClick={() => navigate('/checkout')}>
                             Proceder al pago
                         </Button>
                         <Button variant='danger' fullWidth onClick={clearCart}>
