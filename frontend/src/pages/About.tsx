@@ -1,10 +1,10 @@
-import { NavLink } from 'react-router';
-import MemoryIcon from '@mui/icons-material/Memory';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import BoltIcon from '@mui/icons-material/Bolt';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import MemoryIcon from '@mui/icons-material/Memory';
 import RecyclingIcon from '@mui/icons-material/Recycling';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import { NavLink } from 'react-router';
 
 const STATS = [
     { value: '+11', label: 'años en el sector' },

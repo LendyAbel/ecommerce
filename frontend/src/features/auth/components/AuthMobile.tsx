@@ -1,19 +1,19 @@
 import { useState } from 'react';
+
+import {
+    loginFields,
+    registerFields,
+} from '@/features/auth/components/authFields';
+import AuthForm from '@/features/auth/components/AuthForm';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import {
     LoginFormSchema,
     RegisterFormSchema,
 } from '@/features/auth/schemas/userSchema';
-import AuthForm from '@/features/auth/components/AuthForm';
-import {
-    loginFields,
-    registerFields,
-} from '@/features/auth/components/authFields';
 
 /**
  * Variante apilada del formulario de autenticación para móvil: una sola tarjeta
- * con un toggle Iniciar sesión / Registrarse. Reutiliza `AuthForm` y los campos
- * compartidos, así que no duplica la lógica de envío.
+ * con un toggle Iniciar sesión / Registrarse.
  */
 const AuthMobile = () => {
     const [showLogin, setShowLogin] = useState(true);
@@ -51,6 +51,7 @@ const AuthMobile = () => {
                     schema={LoginFormSchema}
                     defaultValues={{ email: '', password: '' }}
                     onAuthenticate={login}
+                    successMessage='Sesión iniciada correctamente'
                     fields={loginFields}
                 />
             ) : (
@@ -61,6 +62,7 @@ const AuthMobile = () => {
                     schema={RegisterFormSchema}
                     defaultValues={{ name: '', email: '', password: '' }}
                     onAuthenticate={register}
+                    successMessage='Cuenta creada correctamente'
                     fields={registerFields}
                 />
             )}

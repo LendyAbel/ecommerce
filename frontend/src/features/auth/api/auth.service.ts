@@ -1,9 +1,9 @@
-﻿import { apiClient } from '@/lib/api/client';
-import type {
+﻿import type {
     LoginForm,
     RegisterForm,
     User,
 } from '@/features/auth/types/authTypes';
+import { apiClient } from '@/lib/api/client';
 
 const login = async (data: LoginForm): Promise<User | null> => {
     const res = await apiClient.post('/auth/login', data);

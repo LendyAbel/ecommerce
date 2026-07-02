@@ -1,13 +1,16 @@
-import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
-import TextFieldInput from '@/shared/ui/TextFieldInput';
-import { Button } from '@/shared/ui';
+import { useState } from 'react';
+
 import { ApiError } from '@/lib/api/client';
+import { notify } from '@/shared/store/alertStore';
+import { Button } from '@/shared/ui';
+import TextFieldInput from '@/shared/ui/TextFieldInput';
+
 import { useCreateAddress, useUpdateAddress } from '../hooks/useAddresses';
 import {
-    AddressFormSchema,
     type Address,
     type AddressFormInput,
+    AddressFormSchema,
 } from '../schemas/addressSchemas';
 
 const emptyValues: AddressFormInput = {
@@ -50,7 +53,7 @@ const fields: {
 ];
 
 type AddressFormProps = {
-    /** Dirección a editar. Si se omite, el formulario crea una nueva. */
+    /** Dirección a editar. Se omite cunado se crea una nueva. */
     address?: Address;
     /** Se ejecuta tras guardar con éxito (ej. cerrar el diálogo). */
     onSuccess?: () => void;
@@ -74,9 +77,12 @@ const AddressForm = ({ address, onSuccess, onCancel }: AddressFormProps) => {
                         id: address.id,
                         data: value,
                     });
+                    notify.success('Dirección actualizada');
                 } else {
                     await createAddress.mutateAsync(value);
+                    notify.success('Dirección añadida');
                 }
+
                 onSuccess?.();
             } catch (error) {
                 setServerError(

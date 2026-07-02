@@ -4,4 +4,4 @@ export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as Navbar } from './Navbar';
 export { default as PageContainer } from './PageContainer';
 export { default as ProtectedRoute } from './ProtectedRoute';
-export { ErrorState, EmptyState } from './StateMessage';
+export { EmptyState,ErrorState } from './StateMessage';

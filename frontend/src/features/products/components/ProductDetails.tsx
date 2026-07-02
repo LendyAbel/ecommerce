@@ -1,13 +1,15 @@
 import { useNavigate, useParams } from 'react-router';
-import useProductById from '@/features/products/hooks/useProductById';
+
+import { useAuthStore } from '@/features/auth/store/authStore';
+import ProductActions from '@/features/products/components/details/ProductActions';
 import ProductImageGallery from '@/features/products/components/details/ProductImageGallery';
 import ProductPrice from '@/features/products/components/details/ProductPrice';
 import ProductStockBadge from '@/features/products/components/details/ProductStockBadge';
-import ProductActions from '@/features/products/components/details/ProductActions';
-import useDeleteProductById from '@/features/products/hooks/useDeleteProductById';
 import ProductDetailsSkeleton from '@/features/products/components/skeletons/ProductDetailsSkeleton';
-import { useAuthStore } from '@/features/auth/store/authStore';
+import useDeleteProductById from '@/features/products/hooks/useDeleteProductById';
+import useProductById from '@/features/products/hooks/useProductById';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
+import { notify } from '@/shared/store/alertStore';
 import { Button } from '@/shared/ui';
 
 const ProductDetails = () => {
@@ -21,6 +23,7 @@ const ProductDetails = () => {
     const handleDelete = async () => {
         await deleteProductById(id!);
         navigate('/products');
+        notify.info('Producto eliminado');
     };
 
     if (isProductLoading) {

@@ -1,4 +1,5 @@
 ﻿import { useQuery } from '@tanstack/react-query';
+
 import categoriesService from '@/features/categories/api/categories.service';
 
 const useCategory = () => {

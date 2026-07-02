@@ -1,5 +1,7 @@
 import { memo } from 'react';
+
 import { Badge } from '@/shared/ui';
+
 import type { OrderStatus } from '../schemas/orderSchemas';
 import { ORDER_STATUS_CONFIG } from '../utils/orderStatus';
 

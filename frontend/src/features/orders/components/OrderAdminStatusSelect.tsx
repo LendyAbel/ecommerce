@@ -1,17 +1,20 @@
-import { sxInputStyle } from '@/shared/utils/utils';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import { useState } from 'react';
+
+import { notify } from '@/shared/store/alertStore';
+import { Button, Modal } from '@/shared/ui';
+import { sxInputStyle } from '@/shared/utils/utils';
+
+import { useUpdateStatusOrder } from '../hooks/useOrder';
 import {
-    orderStatusValues,
     type Order,
     type OrderStatus,
+    orderStatusValues,
 } from '../schemas/orderSchemas';
-import { useUpdateStatusOrder } from '../hooks/useOrder';
 import { ORDER_STATUS_CONFIG } from '../utils/orderStatus';
-import { Button, Modal } from '@/shared/ui';
 
 interface OrderAdminStatusSelectProps {
     order: Order;
@@ -26,6 +29,7 @@ const OrderAdminStatusSelect = ({ order }: OrderAdminStatusSelectProps) => {
         if (!order || status === '') return;
         await updateStatus.mutateAsync({ orderId: order.id, status });
         setConfirmStatusChange(false);
+        notify.info('Status modificado');
     };
 
     const handleCancelChange = () => {

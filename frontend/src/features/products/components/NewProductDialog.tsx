@@ -1,17 +1,19 @@
 import { Alert } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
-import TextFieldInput from '@/shared/ui/TextFieldInput';
-import SingleSelectInput from '@/shared/ui/SingleSelectInput';
-import type { ProductForm } from '@/features/products/types/productTypes';
-import MultipleSelectInput from '@/shared/ui/MultipleSelectInput';
-import ImagesInput from '@/shared/ui/ImagesInput';
+
+import useCategory from '@/features/categories/hooks/useCategory';
+import useAddNewProduct from '@/features/products/hooks/useAddNewProduct';
 import {
     productFormSchema,
     productStatus,
 } from '@/features/products/schemas/productZodSchema';
-import useAddNewProduct from '@/features/products/hooks/useAddNewProduct';
-import useCategory from '@/features/categories/hooks/useCategory';
+import type { ProductForm } from '@/features/products/types/productTypes';
+import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
+import ImagesInput from '@/shared/ui/ImagesInput';
+import MultipleSelectInput from '@/shared/ui/MultipleSelectInput';
+import SingleSelectInput from '@/shared/ui/SingleSelectInput';
+import TextFieldInput from '@/shared/ui/TextFieldInput';
 
 const formDefaultValues: ProductForm = {
     name: '',
@@ -46,6 +48,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
             await addNewProduct(value);
             onClose();
             reset();
+            notify.success('Producto añadido correctamente');
         },
     });
 

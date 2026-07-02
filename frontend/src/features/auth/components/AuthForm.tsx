@@ -1,11 +1,13 @@
+import { useForm } from '@tanstack/react-form';
 import type { JSX, ReactNode } from 'react';
 import { useState } from 'react';
-import { useForm } from '@tanstack/react-form';
 import { useNavigate } from 'react-router';
 import type { ZodType } from 'zod';
-import TextFieldInput from '@/shared/ui/TextFieldInput';
-import { Button } from '@/shared/ui';
+
 import { ApiError } from '@/lib/api/client';
+import { notify } from '@/shared/store/alertStore';
+import { Button } from '@/shared/ui';
+import TextFieldInput from '@/shared/ui/TextFieldInput';
 
 export type AuthFieldConfig<TValues> = {
     name: Extract<keyof TValues, string>;
@@ -23,17 +25,14 @@ type AuthFormProps<TValues extends Record<string, string>> = {
     defaultValues: TValues;
     /** Acción de autenticación (login/register). Recibe los valores del form. */
     onAuthenticate: (values: TValues) => Promise<unknown>;
+    /** Mensaje mostrado tras autenticar con éxito (varía entre login/registro). */
+    successMessage: string;
     /** Contenido opcional entre los campos y el botón (ej. enlace de ayuda). */
     footer?: ReactNode;
     /** Margen superior del botón de envío (varía ligeramente entre formularios). */
     submitClassName?: string;
 };
 
-/**
- * Formulario de autenticación reutilizable (login/registro). Encapsula la lógica
- * de envío (validación con Zod, manejo de `ApiError` y redirección a /products) y
- * la maquetación común; los campos se declaran por configuración.
- */
 function AuthForm<TValues extends Record<string, string>>({
     eyebrow,
     title,
@@ -42,6 +41,7 @@ function AuthForm<TValues extends Record<string, string>>({
     schema,
     defaultValues,
     onAuthenticate,
+    successMessage,
     footer,
     submitClassName = 'mt-5',
 }: AuthFormProps<TValues>) {
@@ -55,6 +55,7 @@ function AuthForm<TValues extends Record<string, string>>({
             setServerError(null);
             try {
                 await onAuthenticate(value);
+                notify.info(successMessage);
                 navigate('/products');
             } catch (error) {
                 setServerError(

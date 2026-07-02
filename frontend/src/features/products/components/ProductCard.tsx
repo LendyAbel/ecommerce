@@ -1,12 +1,13 @@
-﻿import { memo, useCallback } from 'react';
-import { motion } from 'motion/react';
+﻿import { motion } from 'motion/react';
+import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import type { Product } from '@/features/products/types/productTypes';
-import ProductStockBadge from '@/features/products/components/details/ProductStockBadge';
-import ProductPrice from '@/features/products/components/details/ProductPrice';
+
 import { preloadProductDetails } from '@/app/routePreload';
-import { queryClient } from '@/lib/queryClient';
 import productsService from '@/features/products/api/products.service';
+import ProductPrice from '@/features/products/components/details/ProductPrice';
+import ProductStockBadge from '@/features/products/components/details/ProductStockBadge';
+import type { Product } from '@/features/products/types/productTypes';
+import { queryClient } from '@/lib/queryClient';
 
 interface ProductCardProps {
     product: Product;

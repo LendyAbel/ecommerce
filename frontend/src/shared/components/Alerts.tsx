@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
-import WarningIcon from '@mui/icons-material/Warning';
-import InfoIcon from '@mui/icons-material/Info';
 import CloseIcon from '@mui/icons-material/Close';
+import ErrorIcon from '@mui/icons-material/Error';
+import InfoIcon from '@mui/icons-material/Info';
+import WarningIcon from '@mui/icons-material/Warning';
+import { AnimatePresence, motion } from 'motion/react';
+import { useEffect } from 'react';
+
 import {
-    useAlertStore,
     type Alert,
     type AlertType,
+    useAlertStore,
 } from '@/shared/store/alertStore';
 
 const ALERT_CONFIG: Record<

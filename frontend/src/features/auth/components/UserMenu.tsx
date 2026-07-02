@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useAuthStore } from '@/features/auth/store/authStore';
-import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useEffect, useRef, useState } from 'react';
+import { NavLink } from 'react-router';
+
 import { preloadRoute } from '@/app/routePreload';
 import { ACCOUNT_LINKS } from '@/features/auth/components/accountLinks';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuthStore } from '@/features/auth/store/authStore';
 
 const itemClass =
     'flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold tracking-widest uppercase transition-colors duration-200';

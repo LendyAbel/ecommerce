@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { useAuthStore } from '@/features/auth';
+
 import addressesService from '../api/addresses.service';
 import type { AddressFormInput } from '../schemas/addressSchemas';
-import { useAuthStore } from '@/features/auth';
-import { notify } from '@/shared/store/alertStore';
 
 const KEY = ['addresses'];
 
@@ -22,7 +23,6 @@ export const useCreateAddress = () => {
             addressesService.createAddress(data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: KEY });
-            notify.success('Dirección añadida');
         },
     });
 };
@@ -39,7 +39,6 @@ export const useUpdateAddress = () => {
         }) => addressesService.updateAddress(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: KEY });
-            notify.success('Dirección actualizada');
         },
     });
 };
@@ -50,7 +49,6 @@ export const useDeleteAddress = () => {
         mutationFn: (id: string) => addressesService.deleteAddress(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: KEY });
-            notify.info('Dirección eliminada');
         },
     });
 };

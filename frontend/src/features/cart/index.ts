@@ -1,6 +1,6 @@
-export { useCartStore } from './store/cartStore';
-export { useSyncCart } from './hooks/useSyncCart';
 export { default as CartBadge } from './components/CartBadge';
+export { useSyncCart } from './hooks/useSyncCart';
+export { useCartStore } from './store/cartStore';
 export type {
     Cart,
     CartItem,

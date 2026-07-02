@@ -1,26 +1,28 @@
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import Step1 from './Step1';
-import Step2 from './Step2';
-import Step3 from './Step3';
-import CheckoutStepperLine from './CheckoutStepperLine';
-import { Button, Spinner } from '@/shared/ui';
-import { EmptyState } from '@/shared/components';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { ApiError } from '@/lib/api/client';
-import { notify } from '@/shared/store/alertStore';
+
 import {
-    useGetAddresses,
     useCreateAddress,
+    useGetAddresses,
 } from '@/features/addresses/hooks/useAddresses';
 import type { AddressFormInput } from '@/features/addresses/schemas/addressSchemas';
+import { useCartStore } from '@/features/cart/store/cartStore';
 import {
     useCreateOrder,
     useGetOrderDetails,
 } from '@/features/orders/hooks/useOrder';
 import type { Order } from '@/features/orders/schemas/orderSchemas';
-import { useCartStore } from '@/features/cart/store/cartStore';
+import { ApiError } from '@/lib/api/client';
+import { EmptyState } from '@/shared/components';
+import { notify } from '@/shared/store/alertStore';
+import { Button, Spinner } from '@/shared/ui';
+
 import type { CheckoutAddress } from '../types/checkoutTypes';
+import CheckoutStepperLine from './CheckoutStepperLine';
+import Step1 from './Step1';
+import Step2 from './Step2';
+import Step3 from './Step3';
 
 const Wizard = () => {
     const navigate = useNavigate();

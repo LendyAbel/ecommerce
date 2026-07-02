@@ -1,3 +1,4 @@
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import {
     Button,
     FormControl,
@@ -8,10 +9,10 @@ import {
     RadioGroup,
     TextField,
 } from '@mui/material';
-import type { ImageForm } from '@/features/products/types/productTypes';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import type { AnyFieldApi } from '@tanstack/react-form';
 import z from 'zod';
+
+import type { ImageForm } from '@/features/products/types/productTypes';
 import { sxButtonStyle, sxInputStyle } from '@/shared/utils/utils';
 
 type ImagesInputProps = {

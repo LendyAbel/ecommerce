@@ -1,6 +1,6 @@
 ﻿import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import productsService from '@/features/products/api/products.service';
-import { notify } from '@/shared/store/alertStore';
 
 const useDeleteProductById = () => {
     const queryClient = useQueryClient();
@@ -16,7 +16,6 @@ const useDeleteProductById = () => {
                 queryClient.invalidateQueries({ queryKey: ['products'] }),
                 queryClient.invalidateQueries({ queryKey: ['categories'] }),
             ]);
-            notify.info('Producto eliminado');
         },
     });
     return { deleteProductById, isPending, isSuccess };

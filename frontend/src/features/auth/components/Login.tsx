@@ -1,8 +1,9 @@
-import { LoginFormSchema } from '@/features/auth/schemas/userSchema';
 import { motion } from 'motion/react';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import AuthForm from '@/features/auth/components/AuthForm';
+
 import { loginFields } from '@/features/auth/components/authFields';
+import AuthForm from '@/features/auth/components/AuthForm';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { LoginFormSchema } from '@/features/auth/schemas/userSchema';
 
 type LoginProps = {
     showLogin: boolean;
@@ -28,6 +29,7 @@ const Login = ({ showLogin }: LoginProps) => {
                 schema={LoginFormSchema}
                 defaultValues={{ email: '', password: '' }}
                 onAuthenticate={login}
+                successMessage='Sesión iniciada correctamente'
                 fields={loginFields}
                 footer={
                     <p className='text-primary hover:text-primary-hover mt-2 cursor-pointer text-right text-xs'>

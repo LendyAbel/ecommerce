@@ -1,8 +1,10 @@
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+
 import { useCartStore } from '@/features/cart/store/cartStore';
 import type { Product } from '@/features/products/types/productTypes';
+import { notify } from '@/shared/store/alertStore';
 
 type ProductActionsProps = {
     product: Product;
@@ -13,6 +15,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
 
     const handleAddToCart = () => {
         addItem({ product });
+        notify.success('Producto añadido al carrito');
     };
 
     return (

@@ -1,11 +1,11 @@
 export { default as Badge } from './Badge';
 export { default as Button } from './Button';
 export { default as Card } from './Card';
-export { default as Modal } from './Modal';
-export { default as Spinner } from './Spinner';
-export { default as TextFieldInput } from './TextFieldInput';
-export { default as SingleSelectInput } from './SingleSelectInput';
-export { default as MultipleSelectInput } from './MultipleSelectInput';
 export { default as ImagesInput } from './ImagesInput';
-export { default as ThemeToggle } from './ThemeToggle';
+export { default as Modal } from './Modal';
+export { default as MultipleSelectInput } from './MultipleSelectInput';
+export { default as SingleSelectInput } from './SingleSelectInput';
+export { default as Spinner } from './Spinner';
 export { default as StepProgressLine } from './StepProgressLine';
+export { default as TextFieldInput } from './TextFieldInput';
+export { default as ThemeToggle } from './ThemeToggle';

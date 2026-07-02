@@ -1,13 +1,15 @@
-import { useNavigate } from 'react-router';
-import { IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { useCartStore } from '@/features/cart/store/cartStore';
-import { Button, Card } from '@/shared/ui';
-import { EmptyState, PageContainer } from '@/shared/components';
+import { IconButton, Tooltip } from '@mui/material';
+import { useNavigate } from 'react-router';
+
 import { useSyncCart } from '@/features/cart';
+import { useCartStore } from '@/features/cart/store/cartStore';
+import { EmptyState, PageContainer } from '@/shared/components';
+import { notify } from '@/shared/store/alertStore';
+import { Button, Card } from '@/shared/ui';
 
 const formatPrice = (value: number) =>
     value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
@@ -27,6 +29,11 @@ const Cart = () => {
     const goToCheckout = async () => {
         await replaceCartAsync();
         navigate('/checkout');
+    };
+
+    const handleClearCart = () => {
+        clearCart();
+        notify.warning('Carrito vaciado');
     };
 
     if (items.length === 0) {
@@ -192,7 +199,11 @@ const Cart = () => {
                         >
                             Proceder al pago
                         </Button>
-                        <Button variant='danger' fullWidth onClick={clearCart}>
+                        <Button
+                            variant='danger'
+                            fullWidth
+                            onClick={handleClearCart}
+                        >
                             Vaciar carrito
                         </Button>
                     </div>

@@ -1,14 +1,15 @@
-import { useState, type ReactNode } from 'react';
-import { NavLink } from 'react-router';
-import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
+import { type ReactNode,useState } from 'react';
+import { NavLink } from 'react-router';
+
+import { preloadRoute } from '@/app/routePreload';
+import { ACCOUNT_LINKS } from '@/features/auth';
+import UserMenu from '@/features/auth/components/UserMenu';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import CartBadge from '@/features/cart/components/CartBadge';
 import { ThemeToggle } from '@/shared/ui';
-import { useAuthStore } from '@/features/auth/store/authStore';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { preloadRoute } from '@/app/routePreload';
-import UserMenu from '@/features/auth/components/UserMenu';
-import { ACCOUNT_LINKS } from '@/features/auth';
 
 type Props = {
     children: ReactNode;

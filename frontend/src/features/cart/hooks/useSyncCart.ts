@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { useCartStore } from '@/features/cart/store/cartStore';
+
 import cartService from '@/features/cart/api/cart.service';
+import { useCartStore } from '@/features/cart/store/cartStore';
 import { logger } from '@/lib/logger';
-import { notify } from '@/shared/store/alertStore';
 
 export const useSyncCart = () => {
     const { cart } = useCartStore();
@@ -55,7 +55,6 @@ export const useSyncCart = () => {
             setCartItems(data.cartItems);
         },
         onError: error => {
-            notify.error('Error saving cart');
             logger.error('Cart replace failed:', error);
         },
     });

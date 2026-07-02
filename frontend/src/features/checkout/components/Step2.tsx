@@ -1,5 +1,6 @@
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { formatCurrency } from '@/features/orders/utils/orderStatus';
+
 import type { CheckoutAddress } from '../types/checkoutTypes';
 import { toDisplayAddress } from '../types/checkoutTypes';
 

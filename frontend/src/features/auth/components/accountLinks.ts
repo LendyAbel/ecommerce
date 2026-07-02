@@ -1,6 +1,6 @@
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
 export type MenuLink = {
     to: string;

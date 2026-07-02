@@ -1,8 +1,11 @@
-import { useState } from 'react';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
-import { Button, Modal } from '@/shared/ui';
+import { useState } from 'react';
+
 import { EmptyState, ErrorState } from '@/shared/components';
+import { notify } from '@/shared/store/alertStore';
+import { Button, Modal } from '@/shared/ui';
+
 import { useDeleteAddress, useGetAddresses } from '../hooks/useAddresses';
 import type { Address } from '../schemas/addressSchemas';
 import AddressCard from './AddressCard';
@@ -23,12 +26,15 @@ const AddressBook = () => {
     // Dirección pendiente de confirmar borrado.
     const [toDelete, setToDelete] = useState<Address | null>(null);
 
-    const closeForm = () => setFormTarget(null);
+    const closeForm = () => {
+        setFormTarget(null);
+    };
 
     const handleConfirmDelete = async () => {
         if (!toDelete) return;
         await deleteAddress.mutateAsync(toDelete.id);
         setToDelete(null);
+        notify.info('Dirección eliminada');
     };
 
     return (

@@ -1,8 +1,10 @@
-import { useState } from 'react';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { Button } from '@/shared/ui';
+import { useState } from 'react';
+
 import type { Address } from '@/features/addresses/schemas/addressSchemas';
+import { Button } from '@/shared/ui';
+
 import type { CheckoutAddress } from '../types/checkoutTypes';
 import { toDisplayAddress } from '../types/checkoutTypes';
 import CheckoutAddressForm from './CheckoutAddressForm';

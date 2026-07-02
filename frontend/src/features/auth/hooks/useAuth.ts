@@ -1,11 +1,11 @@
-﻿import { useEffect } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '@/features/auth/store/authStore';
+﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+
 import authService from '@/features/auth/api/auth.service';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { logger } from '@/lib/logger';
-import { notify } from '@/shared/store/alertStore';
 
 export const useAuth = () => {
     const queryClient = useQueryClient();
@@ -48,9 +48,6 @@ export const useAuth = () => {
             setUser(user);
             await syncWithBackendAsync();
             logger.debug('Sync Cart on LOGIN');
-            notify.info('Sesion iniciada corractamente', {
-                title: 'Notificación:',
-            });
         },
     });
 
@@ -60,9 +57,6 @@ export const useAuth = () => {
             setUser(user);
             await syncWithBackendAsync();
             logger.debug('Sync Cart on REGISTER');
-            notify.success('Registro realizado', {
-                title: 'Notificación:',
-            });
         },
     });
 
@@ -77,9 +71,6 @@ export const useAuth = () => {
             setUser(null);
             useCartStore.getState().clearCart();
             queryClient.resetQueries({ queryKey: ['user'] });
-            notify.info('Sesion cerrada correctamente', {
-                title: 'Notificación:',
-            });
         },
     });
 

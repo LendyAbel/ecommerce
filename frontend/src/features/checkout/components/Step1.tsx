@@ -1,5 +1,6 @@
 import type { Address } from '@/features/addresses/schemas/addressSchemas';
 import { Spinner } from '@/shared/ui';
+
 import type { CheckoutAddress } from '../types/checkoutTypes';
 import AddressPicker from './AddressPicker';
 

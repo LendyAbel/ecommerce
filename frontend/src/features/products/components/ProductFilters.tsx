@@ -1,16 +1,17 @@
+import SearchIcon from '@mui/icons-material/Search';
 import {
-    TextField,
+    FormControl,
     InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
     ToggleButton,
     ToggleButtonGroup,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import { sxInputStyle } from '@/shared/utils/utils';
+
 import type { SortBy } from '@/features/products/api/products.service';
+import { sxInputStyle } from '@/shared/utils/utils';
 
 type ProductFiltersProps = {
     searchQuery: string;

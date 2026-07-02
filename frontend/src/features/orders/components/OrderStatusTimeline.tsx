@@ -1,5 +1,7 @@
 import { memo } from 'react';
+
 import { StepProgressLine } from '@/shared/ui';
+
 import type { OrderStatus } from '../schemas/orderSchemas';
 import { ORDER_FLOW, ORDER_STATUS_CONFIG } from '../utils/orderStatus';
 

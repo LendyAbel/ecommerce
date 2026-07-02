@@ -1,18 +1,20 @@
 import { useParams } from 'react-router';
+
+import { BackLink, ErrorState, PageContainer } from '@/shared/components';
+
 import { useGetOrderDetails } from '../hooks/useOrder';
 import {
     formatCurrency,
     formatOrderDateTime,
     ORDER_STATUS_CONFIG,
 } from '../utils/orderStatus';
+import OrderAddressCard from './OrderAddressCard';
+import OrderAdminStatusSelect from './OrderAdminStatusSelect';
+import OrderItemsCard from './OrderItemsCard';
 import OrderStatusBadge from './OrderStatusBadge';
 import OrderStatusTimeline from './OrderStatusTimeline';
-import OrderItemsCard from './OrderItemsCard';
-import OrderAddressCard from './OrderAddressCard';
-import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
-import { BackLink, ErrorState, PageContainer } from '@/shared/components';
-import OrderAdminStatusSelect from './OrderAdminStatusSelect';
 import OrderUserActions from './OrderUserActions';
+import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
 
 const OrderDetails = () => {
     const { id } = useParams();

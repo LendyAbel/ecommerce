@@ -1,15 +1,15 @@
+import { useIsMutating } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router';
-import { useIsMutating } from '@tanstack/react-query';
 
+import { importProductDetails,routeImports } from '@/app/routePreload';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import OrderDetails from '@/features/orders/components/OrderDetails';
+import Alerts from '@/shared/components/Alerts';
+import GeneralLoader from '@/shared/components/GeneralLoader';
 import Navbar from '@/shared/components/Navbar';
 import ProtectedRoute from '@/shared/components/ProtectedRoute';
-import GeneralLoader from '@/shared/components/GeneralLoader';
-import Alerts from '@/shared/components/Alerts';
 import { Spinner } from '@/shared/ui';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { routeImports, importProductDetails } from '@/app/routePreload';
-import OrderDetails from '@/features/orders/components/OrderDetails';
 
 const Home = lazy(routeImports['/']);
 const Products = lazy(routeImports['/products']);

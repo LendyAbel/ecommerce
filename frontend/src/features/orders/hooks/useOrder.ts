@@ -4,11 +4,12 @@ import {
     useQuery,
     useQueryClient,
 } from '@tanstack/react-query';
-import type { CreateOrderInput, OrderStatus } from '../schemas/orderSchemas';
-import ordersService, { type OrdersFilters } from '../api/orders.service';
+
 import { useAuthStore } from '@/features/auth';
 import { useCartStore } from '@/features/cart/store/cartStore';
-import { notify } from '@/shared/store/alertStore';
+
+import ordersService, { type OrdersFilters } from '../api/orders.service';
+import type { CreateOrderInput, OrderStatus } from '../schemas/orderSchemas';
 
 const ORDER_KEY = ['order'];
 
@@ -82,7 +83,6 @@ export const useCancelOrder = () => {
         mutationFn: (orderId: string) => ordersService.cancelOrder(orderId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ORDER_KEY });
-            notify.info('Pedido cancelado');
         },
     });
 };
@@ -99,7 +99,6 @@ export const useUpdateStatusOrder = () => {
         }) => ordersService.updateOrderStatus({ orderId, status }),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ORDER_KEY });
-            notify.info('Status modificado');
         },
     });
 };

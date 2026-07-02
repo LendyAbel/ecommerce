@@ -1,8 +1,9 @@
-﻿import { RegisterFormSchema } from '@/features/auth/schemas/userSchema';
-import { motion } from 'motion/react';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import AuthForm from '@/features/auth/components/AuthForm';
+﻿import { motion } from 'motion/react';
+
 import { registerFields } from '@/features/auth/components/authFields';
+import AuthForm from '@/features/auth/components/AuthForm';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { RegisterFormSchema } from '@/features/auth/schemas/userSchema';
 
 type RegisterProps = {
     showLogin: boolean;
@@ -33,6 +34,7 @@ const Register = ({ showLogin }: RegisterProps) => {
                 schema={RegisterFormSchema}
                 defaultValues={{ name: '', email: '', password: '' }}
                 onAuthenticate={register}
+                successMessage='Cuenta creada correctamente'
                 fields={registerFields}
             />
         </motion.div>

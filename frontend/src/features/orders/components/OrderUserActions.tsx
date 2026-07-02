@@ -1,8 +1,11 @@
-import { Button, Modal } from '@/shared/ui';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import type { Order } from '../schemas/orderSchemas';
+
+import { notify } from '@/shared/store/alertStore';
+import { Button, Modal } from '@/shared/ui';
+
 import { useCancelOrder } from '../hooks/useOrder';
+import type { Order } from '../schemas/orderSchemas';
 
 interface OrderUserActionsProps {
     order: Order;
@@ -17,6 +20,7 @@ const OrderUserActions = ({ order }: OrderUserActionsProps) => {
         if (!order) return;
         await cancelOrder.mutateAsync(order.id);
         setConfirmCancel(false);
+        notify.info('Pedido cancelado');
     };
 
     return (

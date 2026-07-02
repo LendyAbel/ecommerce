@@ -1,11 +1,12 @@
-import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
-import TextFieldInput from '@/shared/ui/TextFieldInput';
-import { Button } from '@/shared/ui';
+import { useState } from 'react';
+
 import {
-    AddressFormSchema,
     type AddressFormInput,
+    AddressFormSchema,
 } from '@/features/addresses/schemas/addressSchemas';
+import { Button } from '@/shared/ui';
+import TextFieldInput from '@/shared/ui/TextFieldInput';
 
 const emptyValues: AddressFormInput = {
     fullName: '',

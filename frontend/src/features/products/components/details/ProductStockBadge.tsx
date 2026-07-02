@@ -1,5 +1,6 @@
-import { memo } from 'react';
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
+import { memo } from 'react';
+
 import { Badge } from '@/shared/ui';
 
 type ProductStockBadgeProps = {
