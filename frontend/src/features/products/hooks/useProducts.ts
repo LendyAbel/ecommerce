@@ -5,13 +5,15 @@ import productsService, {
 
 const PAGE_SIZE = 6;
 
+export const PRODUCT_KEY = ['products']
+
 /**
  * Listado de productos con scroll infinito. Cada página pide `PAGE_SIZE` items;
  * `getNextPageParam` calcula si quedan más comparando lo ya cargado con `total`.
  */
 const useProducts = (filters: ProductFilters = {}) => {
     const query = useInfiniteQuery({
-        queryKey: ['products', filters],
+        queryKey: [...PRODUCT_KEY, filters],
         queryFn: ({ pageParam }) =>
             productsService.getProducts({
                 ...filters,

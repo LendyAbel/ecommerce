@@ -31,7 +31,8 @@
       "Bash(find frontend/src/features/addresses backend/src/modules/addresses -type f)",
       "Bash(npx tsc *)",
       "Bash(npx eslint *)",
-      "PowerShell(npx tsc --noEmit -p tsconfig.app.json)"
+      "PowerShell(npx tsc --noEmit -p tsconfig.app.json)",
+      "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend/src/modules/orders/**)"
     ]
   },
   "agents": [

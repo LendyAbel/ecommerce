@@ -1,0 +1,50 @@
+enum ProductStatus {
+  published
+  discontinued
+  draft
+}
+
+model Product {
+  id               String        @id @unique @default(uuid())
+  sku              String        @unique
+  name             String
+  shortDescription String
+  longDescription  String?
+  brand            String?
+  price            Decimal       @db.Decimal(10, 2)
+  tax              Int?          @default(21)
+  stock            Int           @default(0)
+  status           ProductStatus @default(draft)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  images    Image[]
+  cartItem  CartItem[]
+  orderItem OrderItem[]
+
+  categories Category[] @relation("ProductCategories")
+
+  mainCategory   Category? @relation("MainCategory", fields: [mainCategoryId], references: [id])
+  mainCategoryId String?
+
+  // Stored, DB-generated full-text search vector (see migration). Managed entirely
+  // in SQL; exposed here only so Prisma is aware of the column and its GIN index.
+  searchVector Unsupported("tsvector")?
+
+  @@index([mainCategoryId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([price])
+  @@index([searchVector], type: Gin)
+}
+
+model Image {
+  id     String  @id @default(uuid())
+  url    String
+  isMain Boolean @default(false)
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  @@index([productId])
+}

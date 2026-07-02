@@ -1,0 +1,25 @@
+model Cart {
+  id String @id @unique @default(uuid())
+
+  cartItems CartItem[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id       String @id @unique @default(uuid())
+  quantity Int
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String
+
+  @@unique([cartId, productId])
+  @@index([productId])
+}

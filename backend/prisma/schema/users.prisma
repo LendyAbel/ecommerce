@@ -1,0 +1,24 @@
+enum UserRole {
+  admin
+  customer
+}
+
+model User {
+  id       String   @id @unique @default(uuid())
+  email    String   @unique
+  password String
+  name     String
+  role     UserRole @default(customer)
+
+  cart      Cart?
+  orders    Order[]
+  addresses Address[]
+
+  // Soft delete: null = activo, con fecha = "borrado". Filtrar en todas las lecturas.
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([deletedAt])
+}

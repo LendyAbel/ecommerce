@@ -14,10 +14,12 @@ router.post('/', orderController.createOrder);
 router.get('/all', requireAdmin, orderController.listAllOrders);
 
 router.get('/:orderId', orderController.getOrder);
+
 router.patch(
     '/:orderId/status',
     requireAdmin,
     orderController.updateStatusOrder,
 );
+router.patch('/:orderId/cancel', orderController.cancelOrder);
 
 export default router;

@@ -4,11 +4,14 @@ import {
     useQuery,
     useQueryClient,
 } from '@tanstack/react-query';
-import type { CreateOrderInput } from '../schemas/orderSchemas';
+import type { CreateOrderInput, OrderStatus } from '../schemas/orderSchemas';
 import ordersService, { type OrdersFilters } from '../api/orders.service';
 import { useAuthStore } from '@/features/auth';
+import { useCartStore } from '@/features/cart/store/cartStore';
+import { notify } from '@/shared/store/alertStore';
 
-const KEY = ['order'];
+const ORDER_KEY = ['order'];
+
 const PAGE_SIZE = 6;
 
 export const useGetOrdersList = (filters: OrdersFilters = {}) => {
@@ -16,19 +19,16 @@ export const useGetOrdersList = (filters: OrdersFilters = {}) => {
     const isAdmin = user?.role === 'admin';
 
     const query = useInfiniteQuery({
-        queryKey: [...KEY, isAdmin ? 'all' : 'mine', filters],
+        queryKey: [...ORDER_KEY, isAdmin ? 'all' : 'mine', filters],
         queryFn: ({ pageParam }) =>
-            isAdmin
-                ? ordersService.getAllOrders({
-                      ...filters,
-                      page: pageParam,
-                      limit: PAGE_SIZE,
-                  })
-                : ordersService.getMyOrders({
-                      ...filters,
-                      page: pageParam,
-                      limit: PAGE_SIZE,
-                  }),
+            ordersService.getOrders(
+                {
+                    ...filters,
+                    page: pageParam,
+                    limit: PAGE_SIZE,
+                },
+                isAdmin,
+            ),
         initialPageParam: 1,
         getNextPageParam: lastPage => {
             const loaded = lastPage.page * lastPage.limit;
@@ -52,8 +52,9 @@ export const useGetOrdersList = (filters: OrdersFilters = {}) => {
 
 export const useGetOrderDetails = (id: string) => {
     const query = useQuery({
-        queryKey: [...KEY, 'detail', id],
+        queryKey: [...ORDER_KEY, 'detail', id],
         queryFn: () => ordersService.fetchOrder(id),
+        enabled: !!id,
     });
 
     return {
@@ -63,12 +64,42 @@ export const useGetOrderDetails = (id: string) => {
     };
 };
 
-export const useCreateOrder = (data: CreateOrderInput) => {
+export const useCreateOrder = () => {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: () => ordersService.createOrder(data),
+        mutationFn: (data: CreateOrderInput) => ordersService.createOrder(data),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: KEY });
+            qc.invalidateQueries({ queryKey: ORDER_KEY });
+            // Vacía el carrito (estado en memoria + localStorage vía persist).
+            useCartStore.getState().clearCart();
+        },
+    });
+};
+
+export const useCancelOrder = () => {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: (orderId: string) => ordersService.cancelOrder(orderId),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ORDER_KEY });
+            notify.info('Pedido cancelado');
+        },
+    });
+};
+
+export const useUpdateStatusOrder = () => {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            orderId,
+            status,
+        }: {
+            orderId: string;
+            status: OrderStatus;
+        }) => ordersService.updateOrderStatus({ orderId, status }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ORDER_KEY });
+            notify.info('Status modificado');
         },
     });
 };

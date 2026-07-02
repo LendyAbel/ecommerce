@@ -11,6 +11,8 @@ import OrderItemsCard from './OrderItemsCard';
 import OrderAddressCard from './OrderAddressCard';
 import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
+import OrderAdminStatusSelect from './OrderAdminStatusSelect';
+import OrderUserActions from './OrderUserActions';
 
 const OrderDetails = () => {
     const { id } = useParams();
@@ -61,6 +63,17 @@ const OrderDetails = () => {
                         <p className='text-text font-display text-3xl font-extrabold'>
                             {formatCurrency(order.totalAmount)}
                         </p>
+
+                        <div className='flex flex-col gap-3 sm:flex-row'>
+                            {/* Orden pendiente vista por su dueño: si no viene user en la orden es porque es el dueño, si viene user es porque es admin */}
+                            {order.status === 'pending' && !order.user && (
+                                <OrderUserActions order={order} />
+                            )}
+                            {/* Modificar orden por el admin de manera manual escogiendo el status */}
+                            {order.user && (
+                                <OrderAdminStatusSelect order={order} />
+                            )}
+                        </div>
 
                         {/* Cliente: solo lo recibe el admin desde el backend. */}
                         {order.user && (

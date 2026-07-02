@@ -9,7 +9,8 @@ import {
 
 export const listOrders = async (req: Request, res: Response) => {
     const filters = OrdersQuerySchema.parse(req.query);
-    const orders = await orderServices.listOrders(req.user!.userId, filters);
+    const { userId } = req.user!;
+    const orders = await orderServices.listUserOrders(userId, filters);
     res.status(200).json(orders);
 };
 
@@ -43,4 +44,13 @@ export const updateStatusOrder = async (req: Request, res: Response) => {
     const orderUpdated = await orderServices.updateStatusOrder(orderId, status);
 
     res.status(200).json(orderUpdated);
+};
+
+export const cancelOrder = async (req: Request, res: Response) => {
+    const { orderId } = OrderIdParamSchema.parse(req.params);
+    const userId = req.user!.userId;
+
+    const orderCancelled = await orderServices.cancelOwnOrder(orderId, userId);
+
+    res.status(200).json(orderCancelled);
 };

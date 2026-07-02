@@ -1,0 +1,7 @@
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
+
+  products     Product[] @relation("ProductCategories")
+  mainProducts Product[] @relation("MainCategory")
+}

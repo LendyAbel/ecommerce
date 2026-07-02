@@ -94,4 +94,8 @@ src/
 
 ### Database Schema (Prisma)
 
-Four models: `User`, `Product`, `Image` (cascade-deleted with product), `Category`. Products and Categories have a many-to-many relation. Products also have a `mainCategory` FK. Prisma client is generated to `generated/prisma/` (not the default location).
+Models: `User`, `Product`, `Image` (cascade-deleted with product), `Category`, `Cart`, `CartItem`, `Order`, `OrderItem`, `Address`. Products and Categories have a many-to-many relation. Products also have a `mainCategory` FK. Prisma client is generated to `generated/prisma/` (not the default location).
+
+**Multi-file schema**: the schema is split by module into `prisma/schema/` (`config.prisma` holds `generator` + `datasource`; then `products`, `categories`, `users`, `cart`, `orders`, `addresses`). Prisma concatenates all `.prisma` files in that folder, so models/enums reference each other across files with no imports. The folder path is set in `prisma.config.ts` (`schema: 'prisma/schema'`). `generator`/`datasource` must appear exactly once.
+
+**`searchVector` drift caveat**: `Product.searchVector` is a Postgres `GENERATED` column (full-text search `tsvector`), created via custom SQL in a migration and mapped as `Unsupported("tsvector")?`. Prisma doesn't understand generated columns, so every `prisma migrate dev` emits a spurious `ALTER TABLE "Product" ALTER COLUMN "searchVector" DROP DEFAULT`, which Postgres rejects (error 42601, "is a generated column"). When creating a *real* migration, generate it with `--create-only`, delete that `searchVector` line from the `migration.sql`, then apply. If a `migrate dev` already failed on it, recover with `prisma migrate resolve --rolled-back "<migration_name>"` and delete the migration folder (the failed ALTER touches nothing, so the DB stays intact).

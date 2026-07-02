@@ -67,5 +67,6 @@ export const useSyncCart = () => {
         fetchFromBackendAsync: fetchMutation.mutateAsync,
         isFetchingCart: fetchMutation.isPending,
         replaceCartAsync: replaceMutation.mutateAsync,
+        isReplacingCart: replaceMutation.isPending
     };
 };

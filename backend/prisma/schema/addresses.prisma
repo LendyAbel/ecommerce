@@ -1,0 +1,25 @@
+model Address {
+  id String @id @default(uuid())
+
+  fullName   String
+  phone      String?
+  line1      String
+  line2      String?
+  city       String
+  state      String?
+  postalCode String
+  country    String
+
+  // Libreta de direcciones del usuario. Null = es una copia congelada usada por una orden.
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  // Órdenes que apuntan a esta dirección (copias congeladas).
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}

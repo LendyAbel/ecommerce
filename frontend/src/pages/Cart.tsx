@@ -7,12 +7,14 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { Button, Card } from '@/shared/ui';
 import { EmptyState, PageContainer } from '@/shared/components';
+import { useSyncCart } from '@/features/cart';
 
 const formatPrice = (value: number) =>
     value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
 
 const Cart = () => {
     const navigate = useNavigate();
+    const { replaceCartAsync, isReplacingCart } = useSyncCart();
     const cart = useCartStore(state => state.cart);
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
@@ -21,6 +23,11 @@ const Cart = () => {
     const totalPrice = useCartStore(state => state.totalPrice);
 
     const items = cart?.cartItems ?? [];
+
+    const goToCheckout = async () => {
+        await replaceCartAsync();
+        navigate('/checkout');
+    };
 
     if (items.length === 0) {
         return (
@@ -178,7 +185,11 @@ const Cart = () => {
                     <hr className='border-border' />
 
                     <div className='mt-4 flex flex-col gap-3'>
-                        <Button fullWidth onClick={() => navigate('/checkout')}>
+                        <Button
+                            fullWidth
+                            onClick={goToCheckout}
+                            loading={isReplacingCart}
+                        >
                             Proceder al pago
                         </Button>
                         <Button variant='danger' fullWidth onClick={clearCart}>
