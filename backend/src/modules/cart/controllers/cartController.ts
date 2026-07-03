@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import cartServices from '../services/cartServices';
-import { AddItemSchema, UpdateItemSchema } from '../schemas/cartZodSchema';
+
 import { getParam } from '../../../lib/utils';
+import { AddItemSchema, UpdateItemSchema } from '../schemas/cartZodSchema';
+import cartServices from '../services/cartServices';
 
 export const getCart = async (req: Request, res: Response) => {
     const cart = await cartServices.getOrCreateCart(req.user!.userId);

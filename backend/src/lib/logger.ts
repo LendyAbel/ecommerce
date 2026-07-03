@@ -1,4 +1,5 @@
 import pino from 'pino';
+
 import { config } from './config';
 
 const isTest = config.NODE_ENV === 'test';

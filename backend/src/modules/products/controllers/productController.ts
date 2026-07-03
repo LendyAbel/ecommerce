@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
-import productServices from '../services/productServices';
+
+import { AppError } from '../../../lib/AppError';
+import { getParam } from '../../../lib/utils';
 import {
     ProductCreateSchema,
     ProductQuerySchema,
     ProductUpdateSchema,
 } from '../schemas/productsZodSchema';
-import { AppError } from '../../../lib/AppError';
-import { getParam } from '../../../lib/utils';
+import productServices from '../services/productServices';
 
 export const getAllProducts = async (req: Request, res: Response) => {
     const filters = ProductQuerySchema.parse(req.query);

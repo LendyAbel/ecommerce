@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import addressServices from '../services/addressServices';
+
 import {
     AddressIdParamSchema,
     CreateAddressSchema,
     UpdateAddressSchema,
 } from '../schemas/addressSchemas';
+import addressServices from '../services/addressServices';
 
 export const listAddresses = async (req: Request, res: Response) => {
     const addresses = await addressServices.listAddresses(req.user!.userId);

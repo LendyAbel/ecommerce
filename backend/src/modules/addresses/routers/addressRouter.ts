@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { authenticate } from '../../../middlewares/authMiddleware';
 import * as addressController from '../controllers/addressControler';
 

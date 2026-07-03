@@ -1,7 +1,7 @@
 // Imported first so env vars are validated (and the process fails fast on bad
 // config) before anything else wires up routes or the DB.
-import { config } from './lib/config';
 import app from './app';
+import { config } from './lib/config';
 import { logger } from './lib/logger';
 import { prisma } from './lib/prisma';
 

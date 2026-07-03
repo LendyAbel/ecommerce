@@ -1,5 +1,6 @@
-import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import request from 'supertest';
+
 import app from '../app';
 
 // --- Mocks ---
@@ -18,8 +19,9 @@ jest.mock('bcrypt', () => ({
     compare: jest.fn(),
 }));
 
-import { prisma } from '../lib/prisma';
 import bcrypt from 'bcrypt';
+
+import { prisma } from '../lib/prisma';
 
 // --- Helpers ---
 const mockUser = {

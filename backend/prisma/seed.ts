@@ -1,7 +1,9 @@
 import 'dotenv/config';
-import bcrypt from 'bcrypt';
+
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient, ProductStatus, UserRole, OrderStatus } from '../generated/prisma/client';
+import bcrypt from 'bcrypt';
+
+import { OrderStatus,PrismaClient, ProductStatus, UserRole } from '../generated/prisma/client';
 
 const SALT_ROUNDS = 10;
 

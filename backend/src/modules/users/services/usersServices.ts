@@ -1,5 +1,5 @@
-import { prisma } from '../../../lib/prisma';
 import { AppError } from '../../../lib/AppError';
+import { prisma } from '../../../lib/prisma';
 
 const USER_SELECT = {
     id: true,

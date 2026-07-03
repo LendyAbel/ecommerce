@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import categoriesServices from '../services/categoriesServices';
+
 import { getParam } from '../../../lib/utils';
 import { CategoryNameParamSchema } from '../schemas/categoriesZodSchema';
+import categoriesServices from '../services/categoriesServices';
 
 export const getAllCategories = async (_req: Request, res: Response) => {
     const categories = await categoriesServices.getAllCategories();

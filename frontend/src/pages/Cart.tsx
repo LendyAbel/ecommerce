@@ -5,7 +5,6 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { IconButton, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router';
 
-import { useSyncCart } from '@/features/cart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { EmptyState, PageContainer } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
@@ -16,7 +15,6 @@ const formatPrice = (value: number) =>
 
 const Cart = () => {
     const navigate = useNavigate();
-    const { replaceCartAsync, isReplacingCart } = useSyncCart();
     const cart = useCartStore(state => state.cart);
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
@@ -25,11 +23,6 @@ const Cart = () => {
     const totalPrice = useCartStore(state => state.totalPrice);
 
     const items = cart?.cartItems ?? [];
-
-    const goToCheckout = async () => {
-        await replaceCartAsync();
-        navigate('/checkout');
-    };
 
     const handleClearCart = () => {
         clearCart();
@@ -192,11 +185,7 @@ const Cart = () => {
                     <hr className='border-border' />
 
                     <div className='mt-4 flex flex-col gap-3'>
-                        <Button
-                            fullWidth
-                            onClick={goToCheckout}
-                            loading={isReplacingCart}
-                        >
+                        <Button fullWidth onClick={() => navigate('/checkout')}>
                             Proceder al pago
                         </Button>
                         <Button

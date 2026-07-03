@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { LoginSchema, RegisterSchema } from '../schemas/authZodSchema';
-import authServices from '../services/authServices';
-import usersServices from '../../users/services/usersServices';
+
 import { AppError } from '../../../lib/AppError';
 import { config } from '../../../lib/config';
+import usersServices from '../../users/services/usersServices';
+import { LoginSchema, RegisterSchema } from '../schemas/authZodSchema';
+import authServices from '../services/authServices';
 
 const COOKIE_OPTIONS = {
     httpOnly: true,
@@ -14,7 +15,9 @@ const COOKIE_OPTIONS = {
 
 export const register = async (req: Request, res: Response) => {
     const data = RegisterSchema.parse(req.body);
-    const user = await authServices.register(data);
+    const { token, user } = await authServices.register(data);
+
+    res.cookie('token', token, COOKIE_OPTIONS);
     res.status(201).json({ user });
 };
 

@@ -4,3 +4,4 @@ coverage/
 .env
 generated/        # cliente de Prisma generado
 *.lo
+.vscode/

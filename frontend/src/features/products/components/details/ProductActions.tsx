@@ -2,6 +2,8 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
+import { useAuthStore } from '@/features/auth';
+import { useSyncCart } from '@/features/cart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import type { Product } from '@/features/products/types/productTypes';
 import { notify } from '@/shared/store/alertStore';
@@ -12,9 +14,14 @@ type ProductActionsProps = {
 
 const ProductActions = ({ product }: ProductActionsProps) => {
     const addItem = useCartStore(state => state.addItem);
+    const { user } = useAuthStore();
+    const { addItemToBackend } = useSyncCart();
 
     const handleAddToCart = () => {
         addItem({ product });
+        if (user) {
+            addItemToBackend({ productId: product.id, quantity: 1 });
+        }
         notify.success('Producto añadido al carrito');
     };
 

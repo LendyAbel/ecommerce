@@ -1,7 +1,8 @@
-import request from 'supertest';
 import jwt from 'jsonwebtoken';
-import app from '../app';
+import request from 'supertest';
+
 import { Prisma } from '../../generated/prisma/client';
+import app from '../app';
 
 // --- Mocks ---
 jest.mock('../lib/prisma', () => {

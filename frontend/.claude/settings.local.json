@@ -32,7 +32,8 @@
       "Bash(npx tsc *)",
       "Bash(npx eslint *)",
       "PowerShell(npx tsc --noEmit -p tsconfig.app.json)",
-      "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend/src/modules/orders/**)"
+      "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend/src/modules/orders/**)",
+      "PowerShell(Get-ChildItem \"..\\\\backend\\\\src\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\\(Resolve-Path \"..\\\\backend\\\\src\"\\).Path + '\\\\', ''\\) })"
     ]
   },
   "agents": [

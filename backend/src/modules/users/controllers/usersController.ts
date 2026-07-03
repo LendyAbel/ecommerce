@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import usersServices from '../services/usersServices';
+
 import { getParam } from '../../../lib/utils';
+import usersServices from '../services/usersServices';
 
 // Admin-only: list all active users.
 export const listUsers = async (_req: Request, res: Response) => {

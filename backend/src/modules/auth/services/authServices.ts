@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { LoginInput, RegisterInput } from '../schemas/authZodSchema';
-import { prisma } from '../../../lib/prisma';
+
 import { AppError } from '../../../lib/AppError';
-import { config } from '../../../lib/config';
+import { prisma } from '../../../lib/prisma';
+import { LoginInput, RegisterInput } from '../schemas/authZodSchema';
+import { getToken } from '../utils/utils';
 
 const SALT_ROUNDS = 10;
 
@@ -16,15 +16,11 @@ const register = async (data: RegisterInput) => {
             email: data.email,
             password: hashedPassword,
         },
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            createdAt: true,
-        },
     });
-    return user;
+
+    const token = getToken({ userId: user.id, role: user.role });
+    const { password: _, ...userWithoutPassword } = user;
+    return { token, user: userWithoutPassword };
 };
 
 const login = async (data: LoginInput) => {
@@ -33,26 +29,20 @@ const login = async (data: LoginInput) => {
             email: data.email,
         },
     });
-    // A soft-deleted user has its email rewritten, so findUnique won't match it.
-    // The deletedAt guard is a defensive backstop in case any delete path skips that.
+
+    // El deleteAr es un guard defensivo en caso de que en soft-deleted falle la
+    // reescritura del correo del usuario borrado
     if (!user || user.deletedAt) throw new AppError('Invalid credentials', 401);
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) throw new AppError('Invalid credentials', 401);
 
-    const token = jwt.sign(
-        { userId: user.id, role: user.role },
-        config.JWT_SECRET,
-        { expiresIn: '7d' },
-    );
+    const token = getToken({ userId: user.id, role: user.role });
     const { password: _, ...userWithoutPassword } = user;
     return { token, user: userWithoutPassword };
 };
 
-// The JWT is already verified by the `authenticate` middleware, which puts the
-// userId on req.user. This just loads the current user record by id.
 const getUserById = async (userId: string) => {
-    // findFirst (not findUnique) so the soft-delete extension injects deletedAt: null.
     const user = await prisma.user.findFirst({
         where: { id: userId },
         select: {

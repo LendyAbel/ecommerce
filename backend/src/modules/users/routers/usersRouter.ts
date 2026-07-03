@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { authenticate, requireAdmin } from '../../../middlewares/authMiddleware';
 import * as usersController from '../controllers/usersController';
 

@@ -2,8 +2,8 @@ import { useIsMutating } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router';
 
-import { importProductDetails,routeImports } from '@/app/routePreload';
-import { useAuth } from '@/features/auth/hooks/useAuth';
+import { importProductDetails, routeImports } from '@/app/routePreload';
+import { useAuthBootsTrap } from '@/features/auth/hooks/useAuth';
 import OrderDetails from '@/features/orders/components/OrderDetails';
 import Alerts from '@/shared/components/Alerts';
 import GeneralLoader from '@/shared/components/GeneralLoader';
@@ -28,7 +28,7 @@ const PageFallback = () => (
 );
 
 function App() {
-    useAuth();
+    useAuthBootsTrap();
 
     const isLoggingOut = useIsMutating({ mutationKey: ['logout'] }) > 0;
     const isDeletingProduct =

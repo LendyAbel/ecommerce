@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+
 import { AppError } from '../lib/AppError';
 import { config } from '../lib/config';
 
