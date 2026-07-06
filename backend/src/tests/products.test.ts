@@ -9,6 +9,7 @@ jest.mock('../lib/prisma', () => {
         product: {
             findMany: jest.fn(),
             findUnique: jest.fn(),
+            count: jest.fn(),
             create: jest.fn(),
             update: jest.fn(),
             delete: jest.fn(),
@@ -18,7 +19,6 @@ jest.mock('../lib/prisma', () => {
             findMany: jest.fn(),
             deleteMany: jest.fn(),
         },
-        $queryRaw: jest.fn(),
         $transaction: jest.fn(),
     };
     // Run interactive transactions against the same mock client.
@@ -80,9 +80,7 @@ describe('Products', () => {
 
     describe('GET /api/products', () => {
         it('should return a paginated payload with status 200', async () => {
-            (prisma.$queryRaw as jest.Mock).mockResolvedValue([
-                { id: mockProduct.id, total: 1 },
-            ]);
+            (prisma.product.count as jest.Mock).mockResolvedValue(1);
             (prisma.product.findMany as jest.Mock).mockResolvedValue([
                 mockProduct,
             ]);
@@ -97,17 +95,18 @@ describe('Products', () => {
         });
 
         it('should return an empty page when no products match', async () => {
-            (prisma.$queryRaw as jest.Mock).mockResolvedValue([]);
+            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            (prisma.product.findMany as jest.Mock).mockResolvedValue([]);
 
             const res = await request(app).get('/api/products');
 
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject({ data: [], total: 0 });
-            expect(prisma.product.findMany).not.toHaveBeenCalled();
         });
 
         it('should honor page and limit query params', async () => {
-            (prisma.$queryRaw as jest.Mock).mockResolvedValue([]);
+            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            (prisma.product.findMany as jest.Mock).mockResolvedValue([]);
 
             const res = await request(app).get('/api/products?page=2&limit=5');
 
@@ -116,7 +115,8 @@ describe('Products', () => {
         });
 
         it('should not require authentication', async () => {
-            (prisma.$queryRaw as jest.Mock).mockResolvedValue([]);
+            (prisma.product.count as jest.Mock).mockResolvedValue(0);
+            (prisma.product.findMany as jest.Mock).mockResolvedValue([]);
 
             const res = await request(app).get('/api/products');
 

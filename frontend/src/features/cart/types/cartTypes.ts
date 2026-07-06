@@ -1,6 +1,7 @@
 ﻿import type { Product } from '@/features/products/types/productTypes';
 
 export type LocalCartItem = {
+    id?: string
     quantity: number;
     product: Product;
 };

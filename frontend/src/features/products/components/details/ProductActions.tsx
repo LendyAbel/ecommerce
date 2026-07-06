@@ -18,7 +18,13 @@ const ProductActions = ({ product }: ProductActionsProps) => {
     const { addItemToBackend } = useSyncCart();
 
     const handleAddToCart = () => {
-        addItem({ product });
+        const added = addItem({ product });
+
+        if (!added) {
+            notify.error('No hay suficiente stock disponible');
+            return;
+        }
+
         if (user) {
             addItemToBackend({ productId: product.id, quantity: 1 });
         }

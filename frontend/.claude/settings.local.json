@@ -33,7 +33,19 @@
       "Bash(npx eslint *)",
       "PowerShell(npx tsc --noEmit -p tsconfig.app.json)",
       "Read(//c/Users/lendysan/Documents/MI CARPETA/++mio/+++CURSO HTML/Apps/ecommerce/backend/src/modules/orders/**)",
-      "PowerShell(Get-ChildItem \"..\\\\backend\\\\src\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\\(Resolve-Path \"..\\\\backend\\\\src\"\\).Path + '\\\\', ''\\) })"
+      "PowerShell(Get-ChildItem \"..\\\\backend\\\\src\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\\(Resolve-Path \"..\\\\backend\\\\src\"\\).Path + '\\\\', ''\\) })",
+      "Bash(dir)",
+      "Bash(npx prisma *)",
+      "Bash(cat)",
+      "Bash(cd \"../backend\")",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); console.log\\(process.env.DATABASE_URL ? 'has url' : 'no url'\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(cd \"../backend\" && rm -rf \"prisma/migrations/20260701134107_reorg_schema_folder\" && ls prisma/migrations)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"Si, procede con el reset\" npx prisma migrate dev --name remove_search_vector_add_cartitem_created_at)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"Si, procede con el reset\" npx prisma migrate reset --force)",
+      "Bash(npx ts-node *)",
+      "Bash(npx jest *)",
+      "Bash(echo \"EXIT:$?\")"
     ]
   },
   "agents": [

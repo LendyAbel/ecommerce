@@ -1,4 +1,4 @@
-import { Prisma } from '../../../../generated/prisma/client';
+import { Prisma } from '../../../../prisma/generated/prisma/client';
 import { prisma } from '../../../lib/prisma';
 import { serializeProduct } from '../../../lib/serializers';
 import { normalizeName } from '../../../lib/utils';
@@ -10,85 +10,61 @@ const productInclude = {
     categories: true,
 } as const;
 
-// Turns a free-text search into a prefix tsquery ("lap top" -> "lap:* & top:*"),
-// stripping any character that is a tsquery operator so user input can't break it.
-const buildTsQuery = (search: string): string | null => {
-    const terms = search
-        .split(/\s+/)
-        .map(term => term.replace(/[^\p{L}\p{N}]/gu, ''))
-        .filter(Boolean);
-    return terms.length ? terms.map(term => `${term}:*`).join(' & ') : null;
-};
-
 const getAllProducts = async (filters: Partial<ProductQuery> = {}) => {
     const { search, category, sortBy, page = 1, limit = 20 } = filters;
     const offset = (page - 1) * limit;
 
-    const conditions: Prisma.Sql[] = [];
+    const conditions: Prisma.ProductWhereInput[] = [];
 
-    const tsQuery = search ? buildTsQuery(search) : null;
-    if (tsQuery) {
-        conditions.push(
-            Prisma.sql`p."searchVector" @@ to_tsquery('simple', f_unaccent(${tsQuery}))`,
-        );
+    if (search) {
+        conditions.push({
+            OR: [
+                { name: { contains: search, mode: 'insensitive' } },
+                { shortDescription: { contains: search, mode: 'insensitive' } },
+                { longDescription: { contains: search, mode: 'insensitive' } },
+                { brand: { contains: search, mode: 'insensitive' } },
+                { sku: { contains: search, mode: 'insensitive' } },
+            ],
+        });
     }
 
     if (category) {
         // Matches either the product's mainCategory or any of its M-N categories.
-        // "_ProductCategories" is Prisma's implicit join table (A=Category, B=Product).
-        conditions.push(Prisma.sql`(
-            EXISTS (
-                SELECT 1 FROM "Category" mc
-                WHERE mc.id = p."mainCategoryId" AND lower(mc.name) = lower(${category})
-            )
-            OR EXISTS (
-                SELECT 1 FROM "_ProductCategories" pc
-                JOIN "Category" c ON c.id = pc."A"
-                WHERE pc."B" = p.id AND lower(c.name) = lower(${category})
-            )
-        )`);
+        conditions.push({
+            OR: [
+                { mainCategory: { name: { equals: category, mode: 'insensitive' } } },
+                {
+                    categories: {
+                        some: { name: { equals: category, mode: 'insensitive' } },
+                    },
+                },
+            ],
+        });
     }
 
-    const where = conditions.length
-        ? Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`
-        : Prisma.empty;
+    const where: Prisma.ProductWhereInput = conditions.length
+        ? { AND: conditions }
+        : {};
 
-    // p.id is a deterministic tiebreaker so pagination is stable across pages.
-    const orderBy =
-        sortBy === 'price_asc' ? Prisma.sql`p.price ASC, p.id ASC`
-        : sortBy === 'price_desc' ? Prisma.sql`p.price DESC, p.id ASC`
-        : sortBy === 'oldest' ? Prisma.sql`p."createdAt" ASC, p.id ASC`
-        : Prisma.sql`p."createdAt" DESC, p.id ASC`;
+    // id is a deterministic tiebreaker so pagination is stable across pages.
+    const orderBy: Prisma.ProductOrderByWithRelationInput[] =
+        sortBy === 'price_asc' ? [{ price: 'asc' }, { id: 'asc' }]
+        : sortBy === 'price_desc' ? [{ price: 'desc' }, { id: 'asc' }]
+        : sortBy === 'oldest' ? [{ createdAt: 'asc' }, { id: 'asc' }]
+        : [{ createdAt: 'desc' }, { id: 'asc' }];
 
-    // One query: filtered + ordered + paginated ids, plus the full count via a
-    // window function so we never load more than `limit` rows.
-    const rows = await prisma.$queryRaw<{ id: string; total: bigint }[]>(Prisma.sql`
-        SELECT p.id, count(*) OVER() AS total
-        FROM "Product" p
-        ${where}
-        ORDER BY ${orderBy}
-        LIMIT ${limit} OFFSET ${offset}
-    `);
+    const [total, products] = await Promise.all([
+        prisma.product.count({ where }),
+        prisma.product.findMany({
+            where,
+            orderBy,
+            skip: offset,
+            take: limit,
+            include: productInclude,
+        }),
+    ]);
 
-    const total = rows[0] ? Number(rows[0].total) : 0;
-    const ids = rows.map(row => row.id);
-
-    if (!ids.length) return { data: [], total, page, limit };
-
-    // Hydrate the (bounded) id list with relations in a single query.
-    const products = await prisma.product.findMany({
-        where: { id: { in: ids } },
-        include: productInclude,
-    });
-
-    // findMany with `IN` does not preserve order, so re-sort to match the ids.
-    const byId = new Map(products.map(product => [product.id, product]));
-    const data = ids
-        .map(id => byId.get(id))
-        .filter((product): product is NonNullable<typeof product> => Boolean(product))
-        .map(serializeProduct);
-
-    return { data, total, page, limit };
+    return { data: products.map(serializeProduct), total, page, limit };
 };
 
 const getProductById = async (id: string) => {

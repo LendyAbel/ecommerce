@@ -6,7 +6,7 @@ export const AddItemSchema = z.object({
 });
 
 export const UpdateItemSchema = z.object({
-    quantity: z.coerce.number().int().min(1).default(1),
+    quantity: z.coerce.number().int().min(0).default(1),
 });
 
 export type AddItemInput = z.infer<typeof AddItemSchema>;

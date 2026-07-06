@@ -27,15 +27,10 @@ model Product {
   mainCategory   Category? @relation("MainCategory", fields: [mainCategoryId], references: [id])
   mainCategoryId String?
 
-  // Stored, DB-generated full-text search vector (see migration). Managed entirely
-  // in SQL; exposed here only so Prisma is aware of the column and its GIN index.
-  searchVector Unsupported("tsvector")?
-
   @@index([mainCategoryId])
   @@index([status])
   @@index([createdAt])
   @@index([price])
-  @@index([searchVector], type: Gin)
 }
 
 model Image {

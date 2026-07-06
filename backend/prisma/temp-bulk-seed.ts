@@ -17,7 +17,7 @@ import {
     PrismaClient,
     ProductStatus,
     UserRole,
-} from '../generated/prisma/client';
+} from './generated/prisma/client';
 
 const SALT_ROUNDS = 10;
 

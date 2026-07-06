@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
-import { Prisma } from '../../generated/prisma/client';
+import { Prisma } from '../../prisma/generated/prisma/client';
 import app from '../app';
 
 // --- Mocks ---

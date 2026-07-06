@@ -5,6 +5,8 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { IconButton, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router';
 
+import { useAuthStore } from '@/features/auth';
+import { useSyncCart } from '@/features/cart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { EmptyState, PageContainer } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
@@ -15,18 +17,49 @@ const formatPrice = (value: number) =>
 
 const Cart = () => {
     const navigate = useNavigate();
+    const { user } = useAuthStore();
     const cart = useCartStore(state => state.cart);
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
     const clearCart = useCartStore(state => state.clearCart);
 
+    const { updateItemInBackend, clearCartInBackend, removeItemInBackend } =
+        useSyncCart();
+
     const totalPrice = useCartStore(state => state.totalPrice);
 
     const items = cart?.cartItems ?? [];
 
-    const handleClearCart = () => {
+    const handleUpdate = async (productId: string, quantity: number) => {
+        const updated = updateItem(productId, quantity);
+
+        if (!updated) {
+            notify.error('No hay suficiente stock disponible');
+            return;
+        }
+
+        if (user) {
+            const item = cart.cartItems.find(i => i.product.id === productId);
+            if (!item?.id) return;
+            await updateItemInBackend({ itemId: item.id, quantity });
+        }
+    };
+
+    const handleRemove = async (productId: string) => {
+        const item = cart.cartItems.find(i => i.product.id === productId);
+        removeItem(productId);
+
+        if (user && item?.id) {
+            await removeItemInBackend(item.id);
+        }
+    };
+
+    const handleClearCart = async () => {
         clearCart();
         notify.warning('Carrito vaciado');
+        if (user) {
+            await clearCartInBackend();
+        }
     };
 
     if (items.length === 0) {
@@ -71,7 +104,7 @@ const Cart = () => {
                                         opacity: 0.6,
                                         '&:hover': { opacity: 1 },
                                     }}
-                                    onClick={() => removeItem(product.id)}
+                                    onClick={() => handleRemove(product.id)}
                                 >
                                     <DeleteOutlineIcon fontSize='small' />
                                 </IconButton>
@@ -125,7 +158,7 @@ const Cart = () => {
                                                     color: 'var(--color-text-60)',
                                                 }}
                                                 onClick={() =>
-                                                    updateItem(
+                                                    handleUpdate(
                                                         product.id,
                                                         quantity - 1,
                                                     )
@@ -144,7 +177,7 @@ const Cart = () => {
                                                     color: 'var(--color-text-60)',
                                                 }}
                                                 onClick={() =>
-                                                    updateItem(
+                                                    handleUpdate(
                                                         product.id,
                                                         quantity + 1,
                                                     )

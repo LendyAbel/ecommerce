@@ -4,12 +4,24 @@ import cartService from '@/features/cart/api/cart.service';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { logger } from '@/lib/logger';
 
-
 const CART_KEY = 'cart';
 
 export const useSyncCart = () => {
     const { cart } = useCartStore();
-    const setCartItems = useCartStore(state => state.setCartItems);
+    const setStoreCartItems = useCartStore(state => state.setCartItems);
+    const clearStoreCart = useCartStore(state => state.clearCart);
+
+    const fetchMutation = useMutation({
+        mutationKey: [...CART_KEY, 'fetch'],
+        mutationFn: () => cartService.getCart(),
+        onSuccess: data => {
+            logger.debug('fetchmutation:', data);
+            setStoreCartItems(data.cartItems);
+        },
+        onError: error => {
+            logger.error('Cart fetch failed:', error);
+        },
+    });
 
     const addMutation = useMutation({
         mutationKey: [...CART_KEY, 'add'],
@@ -24,11 +36,47 @@ export const useSyncCart = () => {
         },
         onSuccess: data => {
             logger.debug('addMutation:', data);
-            setCartItems(data.cartItems);
+            setStoreCartItems(data.cartItems);
         },
     });
 
-    const syncLoggoutCartMutation = useMutation({
+    const updateMutation = useMutation({
+        mutationKey: [...CART_KEY, 'update'],
+        mutationFn: async ({
+            itemId,
+            quantity = 1,
+        }: {
+            itemId: string;
+            quantity: number;
+        }) => {
+            return await cartService.updateItem(itemId, quantity);
+        },
+        onSuccess: data => {
+            logger.debug('addMutation:', data);
+            setStoreCartItems(data.cartItems);
+        },
+    });
+
+    const removeMutation = useMutation({
+        mutationKey: [...CART_KEY, 'remove'],
+        mutationFn: async (itemId: string) => {
+            return await cartService.removeItem(itemId);
+        },
+    });
+
+    const clearMutation = useMutation({
+        mutationKey: [...CART_KEY, 'clear'],
+        mutationFn: () => cartService.clearCart(),
+        onSuccess: () => {
+            logger.debug('clearMutation:');
+            clearStoreCart();
+        },
+        onError: error => {
+            logger.error('Cart fetch failed:', error);
+        },
+    });
+
+    const syncCartMutation = useMutation({
         mutationKey: [...CART_KEY, 'sync'],
         mutationFn: async () => {
             await Promise.all(
@@ -40,32 +88,22 @@ export const useSyncCart = () => {
         },
         onSuccess: data => {
             logger.debug('syncmutation:', data);
-            setCartItems(data.cartItems);
+            setStoreCartItems(data.cartItems);
         },
         onError: error => {
             logger.error('Cart sync failed:', error);
         },
     });
 
-    const fetchMutation = useMutation({
-        mutationKey: [...CART_KEY, 'fetch'],
-        mutationFn: () => cartService.getCart(),
-        onSuccess: data => {
-            logger.debug('fetchmutation:', data);
-            setCartItems(data.cartItems);
-        },
-        onError: error => {
-            logger.error('Cart fetch failed:', error);
-        },
-    });
-
     return {
         addItemToBackend: addMutation.mutateAsync,
-        syncWithBackendAsync: syncLoggoutCartMutation.mutateAsync,
-        isSyncing: syncLoggoutCartMutation.isPending,
-        syncError: syncLoggoutCartMutation.error,
+        updateItemInBackend: updateMutation.mutateAsync,
+        removeItemInBackend: removeMutation.mutateAsync,
+        clearCartInBackend: clearMutation.mutateAsync,
+        syncWithBackendAsync: syncCartMutation.mutateAsync,
+        isSyncing: syncCartMutation.isPending,
+        syncError: syncCartMutation.error,
         fetchFromBackendAsync: fetchMutation.mutateAsync,
         isFetchingCart: fetchMutation.isPending,
-        
     };
 };

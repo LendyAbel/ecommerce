@@ -8,9 +8,9 @@ type CartStore = {
 
     addItem: (
         item: Omit<LocalCartItem, 'quantity'> & { quantity?: number },
-    ) => void;
+    ) => boolean;
     removeItem: (productId: string) => void;
-    updateItem: (productId: string, quantity: number) => void;
+    updateItem: (productId: string, quantity: number) => boolean;
     clearCart: () => void;
     setCartItems: (cartItems: LocalCartItem[]) => void;
 
@@ -20,17 +20,26 @@ type CartStore = {
 
 const EMPTY_CART = { cartItems: [] };
 
+const hasEnoughStock = (desiredQuantity: number, stock: number) =>
+    desiredQuantity <= stock;
+
 export const useCartStore = create<CartStore>()(
     persist(
         (set, get) => ({
             cart: EMPTY_CART,
 
             addItem: ({ product, quantity = 1 }) => {
-                set(state => {
-                    const existingItem = state.cart.cartItems.find(
-                        item => item.product.id === product.id,
-                    );
+                const existingItem = get().cart.cartItems.find(
+                    item => item.product.id === product.id,
+                );
+                const desiredQuantity =
+                    (existingItem?.quantity ?? 0) + quantity;
 
+                if (!hasEnoughStock(desiredQuantity, product.stock ?? 0)) {
+                    return false;
+                }
+
+                set(state => {
                     let newItems: LocalCartItem[];
 
                     if (existingItem) {
@@ -50,7 +59,10 @@ export const useCartStore = create<CartStore>()(
                     }
                     return { cart: { cartItems: newItems } };
                 });
+
+                return true;
             },
+
             removeItem: productId => {
                 set(state => ({
                     cart: {
@@ -60,11 +72,24 @@ export const useCartStore = create<CartStore>()(
                     },
                 }));
             },
+
             updateItem: (productId, quantity) => {
                 if (quantity <= 0) {
                     get().removeItem(productId);
-                    return;
+                    return true;
                 }
+
+                const item = get().cart.cartItems.find(
+                    item => item.product.id === productId,
+                );
+
+                if (
+                    item &&
+                    !hasEnoughStock(quantity, item.product.stock ?? 0)
+                ) {
+                    return false;
+                }
+
                 set(state => ({
                     cart: {
                         cartItems: state.cart.cartItems.map(item =>
@@ -74,10 +99,14 @@ export const useCartStore = create<CartStore>()(
                         ),
                     },
                 }));
+
+                return true;
             },
+
             clearCart: () => {
                 set({ cart: EMPTY_CART });
             },
+
             setCartItems: cartItems => set({ cart: { cartItems } }),
 
             totalItems: () =>
@@ -85,6 +114,7 @@ export const useCartStore = create<CartStore>()(
                     (acc, item) => acc + item.quantity,
                     0,
                 ),
+
             totalPrice: () =>
                 get().cart.cartItems.reduce(
                     (acc, item) => acc + item.product.price * item.quantity,

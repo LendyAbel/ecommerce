@@ -1,10 +1,12 @@
-    import { AppError } from '../../../lib/AppError';
+import { Prisma } from '../../../../prisma/generated/prisma/client';
+import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
 import { serializeCart } from '../../../lib/serializers';
 import { AddItemInput, UpdateItemInput } from '../schemas/cartZodSchema';
 
 const cartInclude = {
     cartItems: {
+        orderBy: { createdAt: 'asc' },
         include: {
             product: {
                 include: {
@@ -15,7 +17,7 @@ const cartInclude = {
             },
         },
     },
-};
+} satisfies Prisma.CartInclude;
 
 const fetchCart = async (userId: string) => {
     const cart = await prisma.cart.findUnique({
@@ -51,7 +53,10 @@ const addItem = async (userId: string, data: AddItemInput) => {
     await prisma.$transaction(async tx => {
         const item = await tx.cartItem.upsert({
             where: {
-                cartId_productId: { cartId: cart.id, productId: data.productId },
+                cartId_productId: {
+                    cartId: cart.id,
+                    productId: data.productId,
+                },
             },
             create: {
                 cartId: cart.id,
@@ -66,7 +71,6 @@ const addItem = async (userId: string, data: AddItemInput) => {
             throw new AppError('Not enough stock', 409);
         }
     });
-
     return fetchCart(userId);
 };
 
@@ -84,6 +88,9 @@ const updateItem = async (
 
     if (data.quantity > item.product.stock) {
         throw new AppError('Not enough stock', 409);
+    }
+    if (data.quantity <= 0) {
+        return removeItem(userId, itemId);
     }
 
     await prisma.cartItem.update({
