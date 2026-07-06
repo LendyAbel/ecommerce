@@ -26,7 +26,7 @@ con preload por intención, `ErrorBoundary`, logger central. Lo que queda es de 
 
 ## Fase 1 — Bugs y correcciones funcionales (prioridad máxima)
 
-### ⬜ 1.1 Registro no crea sesión real (bug frontend + backend)
+### ✅ 1.1 Registro no crea sesión real (bug frontend + backend)
 `backend/src/modules/auth/controllers/authController.ts` → `register` **no setea la cookie**
 `token`, pero el frontend (`useAuth.registerMutation.onSuccess`) hace `setUser(user)` +
 `syncWithBackendAsync()`. Resultado: tras registrarse, la UI muestra sesión iniciada
@@ -35,7 +35,7 @@ con preload por intención, `ErrorBoundary`, logger central. Lo que queda es de 
   (reutilizar la lógica; devolver `{ user }`).
 - Añadir test en `backend/src/tests/auth.test.ts` que verifique la cookie en register.
 
-### ⬜ 1.2 `useAuth()` se ejecuta en 6 componentes → efectos y fetches multiplicados
+### ✅ 1.2 `useAuth()` se ejecuta en 6 componentes → efectos y fetches multiplicados
 `useAuth` (query `me` + 3 mutaciones + 2 `useEffect`) se llama en `App`, `Navbar`, `Login`,
 `Register`, `AuthMobile` y `UserMenu`. Cada instancia repite los `useEffect`: al resolverse
 `me`, `fetchFromBackendAsync()` (GET /cart) se dispara **una vez por instancia montada**
@@ -50,7 +50,7 @@ con preload por intención, `ErrorBoundary`, logger central. Lo que queda es de 
   hacer el `setUser` en el propio `queryFn`/`onSuccess` de la única instancia, no en efectos
   que observan `isSuccess`/`isError`.
 
-### ⬜ 1.3 Promesas de mutación sin capturar en handlers (unhandled rejections)
+### ✅ 1.3 Promesas de mutación sin capturar en handlers (unhandled rejections)
 Patrón inconsistente: `AuthForm`, `AddressForm` y `Wizard` capturan errores y muestran
 feedback; estos otros no — si la mutación falla, hay unhandled rejection y el usuario no
 ve nada:

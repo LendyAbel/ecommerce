@@ -8,6 +8,7 @@ import ProductStockBadge from '@/features/products/components/details/ProductSto
 import ProductDetailsSkeleton from '@/features/products/components/skeletons/ProductDetailsSkeleton';
 import useDeleteProductById from '@/features/products/hooks/useDeleteProductById';
 import useProductById from '@/features/products/hooks/useProductById';
+import { ApiError } from '@/lib/api/client';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button } from '@/shared/ui';
@@ -21,9 +22,17 @@ const ProductDetails = () => {
     const navigate = useNavigate();
 
     const handleDelete = async () => {
-        await deleteProductById(id!);
-        navigate('/products');
-        notify.info('Producto eliminado');
+        try {
+            await deleteProductById(id!);
+            navigate('/products');
+            notify.info('Producto eliminado');
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo eliminar el producto. Inténtalo de nuevo.',
+            );
+        }
     };
 
     if (isProductLoading) {

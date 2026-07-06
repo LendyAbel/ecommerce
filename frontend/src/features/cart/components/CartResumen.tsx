@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router';
 
 import { useAuthStore } from '@/features/auth';
+import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Card } from '@/shared/ui';
 
@@ -21,7 +22,15 @@ const CartResumen = () => {
         clearCart();
         notify.warning('Carrito vaciado');
         if (user) {
-            await clearCartInBackend();
+            try {
+                await clearCartInBackend();
+            } catch (error) {
+                notify.error(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'No se pudo vaciar el carrito en el servidor. Inténtalo de nuevo.',
+                );
+            }
         }
     };
 

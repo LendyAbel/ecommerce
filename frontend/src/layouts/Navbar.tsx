@@ -9,6 +9,8 @@ import UserMenu from '@/features/auth/components/UserMenu';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import CartBadge from '@/features/cart/components/CartBadge';
+import { ApiError } from '@/lib/api/client';
+import { notify } from '@/shared/store/alertStore';
 import { ThemeToggle } from '@/shared/ui';
 
 type Props = {
@@ -48,6 +50,18 @@ const Navbar = ({ children }: Props) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const closeMenu = () => setMenuOpen(false);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo cerrar sesión. Inténtalo de nuevo.',
+            );
+        }
+    };
 
     return (
         <>
@@ -114,7 +128,7 @@ const Navbar = ({ children }: Props) => {
                                 <button
                                     type='button'
                                     onClick={() => {
-                                        logout();
+                                        handleLogout();
                                         closeMenu();
                                     }}
                                     className='text-text-60 hover:text-error cursor-pointer text-left text-xs font-semibold tracking-widest uppercase transition-colors duration-200'

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 
@@ -18,9 +19,17 @@ const OrderUserActions = ({ order }: OrderUserActionsProps) => {
 
     const handleCancel = async () => {
         if (!order) return;
-        await cancelOrder.mutateAsync(order.id);
-        setConfirmCancel(false);
-        notify.info('Pedido cancelado');
+        try {
+            await cancelOrder.mutateAsync(order.id);
+            setConfirmCancel(false);
+            notify.info('Pedido cancelado');
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo cancelar el pedido. Inténtalo de nuevo.',
+            );
+        }
     };
 
     return (

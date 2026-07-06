@@ -2,6 +2,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import { useState } from 'react';
 
+import { ApiError } from '@/lib/api/client';
 import { EmptyState, ErrorState } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
@@ -32,9 +33,17 @@ const AddressBook = () => {
 
     const handleConfirmDelete = async () => {
         if (!toDelete) return;
-        await deleteAddress.mutateAsync(toDelete.id);
-        setToDelete(null);
-        notify.info('Dirección eliminada');
+        try {
+            await deleteAddress.mutateAsync(toDelete.id);
+            setToDelete(null);
+            notify.info('Dirección eliminada');
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo eliminar la dirección. Inténtalo de nuevo.',
+            );
+        }
     };
 
     return (

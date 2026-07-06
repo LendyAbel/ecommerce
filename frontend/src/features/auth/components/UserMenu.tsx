@@ -8,6 +8,8 @@ import { preloadRoute } from '@/app/routePreload';
 import { ACCOUNT_LINKS } from '@/features/auth/components/accountLinks';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import { ApiError } from '@/lib/api/client';
+import { notify } from '@/shared/store/alertStore';
 
 const itemClass =
     'flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold tracking-widest uppercase transition-colors duration-200';
@@ -19,6 +21,18 @@ const UserMenu = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const close = () => setOpen(false);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo cerrar sesión. Inténtalo de nuevo.',
+            );
+        }
+    };
 
     // Cerrar al hacer clic fuera o al pulsar Escape.
     useEffect(() => {
@@ -95,7 +109,7 @@ const UserMenu = () => {
                         role='menuitem'
                         onClick={() => {
                             close();
-                            logout();
+                            handleLogout();
                         }}
                         className={`${itemClass} text-text-60 hover:text-error hover:bg-error/10 cursor-pointer`}
                     >
