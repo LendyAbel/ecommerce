@@ -66,7 +66,7 @@ export const useAuth = () => {
         onSuccess: () => {
             setUser(null);
             useCartStore.getState().clearCart();
-            queryClient.resetQueries({ queryKey: ['user'] });
+            queryClient.clear();
         },
     });
 

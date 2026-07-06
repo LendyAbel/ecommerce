@@ -52,14 +52,18 @@ export const useGetOrdersList = (filters: OrdersFilters = {}) => {
 };
 
 export const useGetOrderDetails = (id: string) => {
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'admin';
+
     const query = useQuery({
-        queryKey: [...ORDER_KEY, 'detail', id],
+        queryKey: [...ORDER_KEY, 'detail', id, isAdmin],
         queryFn: () => ordersService.fetchOrder(id),
         enabled: !!id,
     });
 
     return {
         order: query.data,
+        isAdmin,
         isLoading: query.isLoading,
         isError: query.isError,
     };

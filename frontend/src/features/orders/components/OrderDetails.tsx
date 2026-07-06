@@ -18,7 +18,7 @@ import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
 
 const OrderDetails = () => {
     const { id } = useParams();
-    const { order, isLoading, isError } = useGetOrderDetails(id!);
+    const { order, isAdmin, isLoading, isError } = useGetOrderDetails(id!);
 
     return (
         <PageContainer maxWidth='3xl'>
@@ -67,18 +67,16 @@ const OrderDetails = () => {
                         </p>
 
                         <div className='flex flex-col gap-3 sm:flex-row'>
-                            {/* Orden pendiente vista por su dueño: si no viene user en la orden es porque es el dueño, si viene user es porque es admin */}
-                            {order.status === 'pending' && !order.user && (
+                            {/* Orden pendiente vista por su dueño */}
+                            {order.status === 'pending' && !isAdmin && (
                                 <OrderUserActions order={order} />
                             )}
                             {/* Modificar orden por el admin de manera manual escogiendo el status */}
-                            {order.user && (
-                                <OrderAdminStatusSelect order={order} />
-                            )}
+                            {isAdmin && <OrderAdminStatusSelect order={order} />}
                         </div>
 
                         {/* Cliente: solo lo recibe el admin desde el backend. */}
-                        {order.user && (
+                        {isAdmin && order.user && (
                             <div className='border-border flex flex-col gap-0.5 border-t pt-4'>
                                 <span className='text-text-38 text-xs font-semibold tracking-wide uppercase'>
                                     Cliente

@@ -5,9 +5,9 @@ import { Route, Routes } from 'react-router';
 import { importProductDetails, routeImports } from '@/app/routePreload';
 import { useAuthBootsTrap } from '@/features/auth/hooks/useAuth';
 import OrderDetails from '@/features/orders/components/OrderDetails';
+import Navbar from '@/layouts/Navbar';
 import Alerts from '@/shared/components/Alerts';
 import GeneralLoader from '@/shared/components/GeneralLoader';
-import Navbar from '@/shared/components/Navbar';
 import ProtectedRoute from '@/shared/components/ProtectedRoute';
 import { Spinner } from '@/shared/ui';
 
@@ -51,10 +51,6 @@ function App() {
                     <Route path='/cart' element={<Cart />} />
 
                     <Route element={<ProtectedRoute />}>
-                        {/* Rutas PRIVADAS (requieren sesión). Si no hay usuario,
-                            ProtectedRoute redirige a /auth. Aquí irán /checkout,
-                            /account, /orders:
-                            <Route path='/checkout' element={<Checkout />} /> */}
                         <Route path='/orders' element={<Orders />} />
                         <Route path='/orders/:id' element={<OrderDetails />} />
                         <Route
