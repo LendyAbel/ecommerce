@@ -19,10 +19,9 @@ import { formatPrice } from '../utils';
 
 interface CartItemCardProps {
     item: LocalCartItem;
-    key?: string;
 }
 
-const CartItemCard = ({ item, key }: CartItemCardProps) => {
+const CartItemCard = ({ item }: CartItemCardProps) => {
     const { product, quantity } = item;
 
     const { user } = useAuthStore();
@@ -98,7 +97,6 @@ const CartItemCard = ({ item, key }: CartItemCardProps) => {
     );
     return (
         <Card
-            key={key}
             className='flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4'
         >
             {/* Imagen + info (+ eliminar en móvil) */}

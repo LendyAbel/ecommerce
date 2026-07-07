@@ -36,7 +36,7 @@ const CartItemsList = () => {
     return (
         <div className='flex flex-col gap-4 md:col-span-2'>
             {items.map(item => {
-                return <CartItemCard item={item} key={item.id} />;
+                return <CartItemCard key={item.id} item={item} />;
             })}
         </div>
     );
