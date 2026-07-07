@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { useRef } from 'react';
 
 import cartService from '@/features/cart/api/cart.service';
 import { useCartStore } from '@/features/cart/store/cartStore';
@@ -40,6 +41,9 @@ export const useSyncCart = () => {
         },
     });
 
+    
+    const updateRequestIdRef = useRef(0);
+
     const updateMutation = useMutation({
         mutationKey: [...CART_KEY, 'update'],
         mutationFn: async ({
@@ -48,12 +52,14 @@ export const useSyncCart = () => {
         }: {
             itemId: string;
             quantity: number;
-        }) => {
-            return await cartService.updateItem(itemId, quantity);
-        },
-        onSuccess: data => {
+        }) => await cartService.updateItem(itemId, quantity),
+        onMutate: () => ({ requestId: ++updateRequestIdRef.current }),
+        onSuccess: (data, _vars, onMutateResult) => {
+            if (onMutateResult.requestId !== updateRequestIdRef.current) {
+                logger.debug('Discarding stale cart-update response');
+                return;
+            }
             logger.debug('addMutation:', data);
-            setStoreCartItems(data.cartItems);
         },
     });
 

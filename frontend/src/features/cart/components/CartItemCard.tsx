@@ -4,10 +4,13 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { useEffect, useRef } from 'react';
 
 import { useAuthStore } from '@/features/auth';
+import { logger } from '@/lib/logger';
 import { notify } from '@/shared/store/alertStore';
 import { Card } from '@/shared/ui';
+import { useDebounce } from '@/shared/utils/utils';
 
 import { useSyncCart } from '../hooks/useSyncCart';
 import { useCartStore } from '../store/cartStore';
@@ -16,31 +19,52 @@ import { formatPrice } from '../utils';
 
 interface CartItemCardProps {
     item: LocalCartItem;
+    key?: string;
 }
 
-const CartItemCard = ({ item }: CartItemCardProps) => {
-    const { user } = useAuthStore();
-
+const CartItemCard = ({ item, key }: CartItemCardProps) => {
     const { product, quantity } = item;
+
+    const { user } = useAuthStore();
 
     const cart = useCartStore(state => state.cart);
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
-
     const { updateItemInBackend, removeItemInBackend } = useSyncCart();
 
-    const handleUpdate = async (productId: string, quantity: number) => {
-        const updated = updateItem(productId, quantity);
+    const CART_SYNC_DEBOUNCE_TIME = 500;
+    const debounceQuantity = useDebounce(quantity, CART_SYNC_DEBOUNCE_TIME);
+    const lastSyncQuantityRef = useRef(quantity);
 
-        if (!updated) {
-            notify.error('No hay suficiente stock disponible');
+    // useEffect para esperar el debounce de los clicks al añadir o disminuir
+    // productos y sincronizarlos con el backend
+    useEffect(() => {
+        // Si no hay usuario no hay que sincronizar
+        if (!user) return;
+        // guard para que no haga sync en el render inicial
+        if (debounceQuantity === lastSyncQuantityRef.current) return;
+        // vuelve a disparar el useEffect cuando item.id llegue
+        if (!item.id) return;
+
+        lastSyncQuantityRef.current = debounceQuantity;
+        updateItemInBackend({
+            itemId: item.id,
+            quantity: debounceQuantity,
+        }).catch(() => {
+            logger.debug('Error sincronizando cantidad del item:');
+        });
+    }, [user, debounceQuantity, item.id, updateItemInBackend]);
+
+    const handleUpdate = async (productId: string, quantity: number) => {
+        if (quantity <= 0) {
+            handleRemove(productId);
             return;
         }
 
-        if (user) {
-            const item = cart.cartItems.find(i => i.product.id === productId);
-            if (!item?.id) return;
-            await updateItemInBackend({ itemId: item.id, quantity });
+        const updated = updateItem(productId, quantity);
+        if (!updated) {
+            notify.error('No hay suficiente stock disponible');
+            return;
         }
     };
 
@@ -74,7 +98,7 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
     );
     return (
         <Card
-            key={product.id}
+            key={key}
             className='flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4'
         >
             {/* Imagen + info (+ eliminar en móvil) */}
