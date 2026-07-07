@@ -27,19 +27,20 @@ const ProductDetails = () => {
     const [toDelete, setToDelete] = useState<Product | null>(null);
 
     const handleConfirmDelete = async () => {
-        if (!toDelete)
-            try {
-                await deleteProductById(id!);
-                setToDelete(null);
-                navigate('/products');
-                notify.info('Producto eliminado');
-            } catch (error) {
-                notify.error(
-                    error instanceof ApiError
-                        ? error.message
-                        : 'No se pudo eliminar el producto. Inténtalo de nuevo.',
-                );
-            }
+        if (!toDelete) return;
+
+        try {
+            await deleteProductById(id!);
+            setToDelete(null);
+            navigate('/products');
+            notify.info('Producto eliminado');
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo eliminar el producto. Inténtalo de nuevo.',
+            );
+        }
     };
 
     if (isProductLoading) {
