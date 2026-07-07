@@ -3,16 +3,12 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import {
+    type AddressFormInput,
     useCreateAddress,
     useGetAddresses,
-} from '@/features/addresses/hooks/useAddresses';
-import type { AddressFormInput } from '@/features/addresses/schemas/addressSchemas';
-import { useCartStore } from '@/features/cart/store/cartStore';
-import {
-    useCreateOrder,
-    useGetOrderDetails,
-} from '@/features/orders/hooks/useOrder';
-import type { Order } from '@/features/orders/schemas/orderSchemas';
+} from '@/features/addresses';
+import { useCartStore } from '@/features/cart';
+import { type Order, useCreateOrder, useGetOrderDetails } from '@/features/orders';
 import { ApiError } from '@/lib/api/client';
 import { EmptyState } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';

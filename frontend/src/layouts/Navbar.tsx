@@ -1,14 +1,14 @@
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
-import { type ReactNode,useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { NavLink } from 'react-router';
 
 import { preloadRoute } from '@/app/routePreload';
 import { ACCOUNT_LINKS } from '@/features/auth';
-import UserMenu from '@/features/auth/components/UserMenu';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useAuthStore } from '@/features/auth/store/authStore';
-import CartBadge from '@/features/cart/components/CartBadge';
+import { UserMenu } from '@/features/auth';
+import { useAuth } from '@/features/auth';
+import { useAuthStore } from '@/features/auth';
+import { CartBadge } from '@/features/cart';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { ThemeToggle } from '@/shared/ui';

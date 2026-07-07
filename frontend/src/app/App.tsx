@@ -2,14 +2,13 @@ import { useIsMutating } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router';
 
-import { importProductDetails, routeImports } from '@/app/routePreload';
-import { useAuthBootsTrap } from '@/features/auth/hooks/useAuth';
-import OrderDetails from '@/features/orders/components/OrderDetails';
+import { useAuthBootsTrap } from '@/features/auth/';
+import { OrderDetails } from '@/features/orders/';
 import Navbar from '@/layouts/Navbar';
-import Alerts from '@/shared/components/Alerts';
-import GeneralLoader from '@/shared/components/GeneralLoader';
-import ProtectedRoute from '@/shared/components/ProtectedRoute';
+import { Alerts, GeneralLoader, ProtectedRoute } from '@/shared/components';
 import { Spinner } from '@/shared/ui';
+
+import { importProductDetails, routeImports } from './routePreload';
 
 const Home = lazy(routeImports['/']);
 const Products = lazy(routeImports['/products']);

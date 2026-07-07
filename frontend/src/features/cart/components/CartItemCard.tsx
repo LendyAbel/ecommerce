@@ -8,9 +8,9 @@ import { useEffect, useRef } from 'react';
 
 import { useAuthStore } from '@/features/auth';
 import { logger } from '@/lib/logger';
+import { useDebounce } from '@/shared/hooks';
 import { notify } from '@/shared/store/alertStore';
 import { Card } from '@/shared/ui';
-import { useDebounce } from '@/shared/utils/utils';
 
 import { useSyncCart } from '../hooks/useSyncCart';
 import { useCartStore } from '../store/cartStore';

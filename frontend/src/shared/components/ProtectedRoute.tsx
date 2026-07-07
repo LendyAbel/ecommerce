@@ -1,6 +1,6 @@
 ﻿import { Navigate, Outlet } from 'react-router';
 
-import { useAuthStore } from '@/features/auth/store/authStore';
+import { useAuthStore } from '@/features/auth';
 import { Spinner } from '@/shared/ui';
 
 const ProtectedRoute = () => {

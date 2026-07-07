@@ -1,4 +1,4 @@
-import Wizard from '@/features/checkout/components/Wizard';
+import { Wizard } from '@/features/checkout';
 import { PageContainer } from '@/shared/components';
 
 const Checkout = () => {

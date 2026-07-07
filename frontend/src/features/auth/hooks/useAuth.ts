@@ -1,10 +1,10 @@
 ﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import authService from '@/features/auth/api/auth.service';
-import { useAuthStore } from '@/features/auth/store/authStore';
-import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
-import { useCartStore } from '@/features/cart/store/cartStore';
+import { useCartStore, useSyncCart } from '@/features/cart';
 import { logger } from '@/lib/logger';
+
+import authService from '../api/auth.service';
+import { useAuthStore } from '../store/authStore';
 
 export const useAuthBootsTrap = () => {
     const setUser = useAuthStore(state => state.setUser);

@@ -1,4 +1,4 @@
-import type { Address } from '@/features/addresses/schemas/addressSchemas';
+import type { Address } from '@/features/addresses';
 import { Spinner } from '@/shared/ui';
 
 import type { CheckoutAddress } from '../types/checkoutTypes';

@@ -1,5 +1,6 @@
-﻿import type { Category } from '@/features/categories/types/categoryTypes';
-import { apiClient } from '@/lib/api/client';
+﻿import { apiClient } from '@/lib/api/client';
+
+import type { Category } from '../schemas/categoryZodSchema';
 
 const getCategories = async (): Promise<Category[]> => {
     const res = await apiClient.get('/categories');

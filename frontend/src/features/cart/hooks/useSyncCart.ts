@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRef } from 'react';
 
-import cartService from '@/features/cart/api/cart.service';
-import { useCartStore } from '@/features/cart/store/cartStore';
 import { logger } from '@/lib/logger';
+
+import cartService from '../api/cart.service';
+import { useCartStore } from '../store/cartStore';
 
 const CART_KEY = 'cart';
 

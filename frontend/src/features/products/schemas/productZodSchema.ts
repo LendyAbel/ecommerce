@@ -1,20 +1,20 @@
 import z from 'zod';
 
-import {
-    categoryFormSchema,
-    categorySchema,
-} from '@/features/categories/schemas/categoryZodSchema';
+import { categoryFormSchema, categorySchema } from '@/features/categories';
 
 export const imageSchema = z.object({
     id: z.string(),
     url: z.url('URL no válida'),
     isMain: z.boolean(),
 });
+export type Image = z.infer<typeof imageSchema>;
 
 export const imageFormSchema = imageSchema.omit({ id: true });
+export type ImageForm = z.infer<typeof imageFormSchema>;
 
 export const productStatus = ['published', 'draft', 'discontinued'] as const;
 export const statusSchema = z.enum(productStatus, 'Obligatorio');
+export type ProductStatus = z.infer<typeof statusSchema>;
 
 export const productSchema = z.object({
     id: z.uuid(),
@@ -61,6 +61,7 @@ export const productSchema = z.object({
         .optional(),
     images: z.array(imageSchema).optional(),
 });
+export type Product = z.infer<typeof productSchema>;
 
 export const productFormSchema = productSchema
     .omit({ id: true, images: true, mainCategory: true, categories: true })
@@ -74,3 +75,4 @@ export const productFormSchema = productSchema
                 'Marca una principal',
             ),
     });
+export type ProductForm = z.infer<typeof productFormSchema>;

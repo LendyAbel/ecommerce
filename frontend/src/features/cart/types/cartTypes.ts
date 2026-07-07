@@ -1,7 +1,7 @@
-﻿import type { Product } from '@/features/products/types/productTypes';
+﻿import type { Product } from '@/features/products';
 
 export type LocalCartItem = {
-    id?: string
+    id?: string;
     quantity: number;
     product: Product;
 };

@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/features/auth';
-import { useCartStore } from '@/features/cart/store/cartStore';
+import { useCartStore } from '@/features/cart';
 
 import ordersService, { type OrdersFilters } from '../api/orders.service';
 import type { CreateOrderInput, OrderStatus } from '../schemas/orderSchemas';

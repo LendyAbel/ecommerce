@@ -1,7 +1,4 @@
-import type {
-    Address,
-    AddressFormInput,
-} from '@/features/addresses/schemas/addressSchemas';
+import type { Address, AddressFormInput } from '@/features/addresses';
 
 /**
  * Dirección elegida en el wizard. Puede ser:

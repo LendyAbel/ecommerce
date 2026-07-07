@@ -1,9 +1,9 @@
 import { motion } from 'motion/react';
 
-import { loginFields } from '@/features/auth/components/authFields';
-import AuthForm from '@/features/auth/components/AuthForm';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { LoginFormSchema } from '@/features/auth/schemas/userSchema';
+import { useAuth } from '../hooks/useAuth';
+import { LoginFormSchema } from '../schemas/userSchema';
+import { loginFields } from './authFields';
+import AuthForm from './AuthForm';
 
 type LoginProps = {
     showLogin: boolean;

@@ -1,4 +1,4 @@
-import { Spinner } from '../ui';
+import { Spinner } from '@/shared/ui';
 
 type GeneralLoaderProps = {
     label?: string;

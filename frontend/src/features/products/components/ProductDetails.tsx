@@ -1,38 +1,45 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
-import { useAuthStore } from '@/features/auth/store/authStore';
-import ProductActions from '@/features/products/components/details/ProductActions';
-import ProductImageGallery from '@/features/products/components/details/ProductImageGallery';
-import ProductPrice from '@/features/products/components/details/ProductPrice';
-import ProductStockBadge from '@/features/products/components/details/ProductStockBadge';
-import ProductDetailsSkeleton from '@/features/products/components/skeletons/ProductDetailsSkeleton';
-import useDeleteProductById from '@/features/products/hooks/useDeleteProductById';
-import useProductById from '@/features/products/hooks/useProductById';
+import { useAuthStore } from '@/features/auth';
 import { ApiError } from '@/lib/api/client';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
-import { Button } from '@/shared/ui';
+import { Button, Modal } from '@/shared/ui';
+
+import useDeleteProductById from '../hooks/useDeleteProductById';
+import useProductById from '../hooks/useProductById';
+import type { Product } from '../schemas/productZodSchema';
+import ProductActions from './details/ProductActions';
+import ProductImageGallery from './details/ProductImageGallery';
+import ProductPrice from './details/ProductPrice';
+import ProductStockBadge from './details/ProductStockBadge';
+import ProductDetailsSkeleton from './skeletons/ProductDetailsSkeleton';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const { product, isProductError, isProductLoading } = useProductById(id!);
     const userRole = useAuthStore(state => state.user?.role);
     const images = product?.images ?? [];
-    const { deleteProductById } = useDeleteProductById();
+    const { deleteProductById, isPending } = useDeleteProductById();
     const navigate = useNavigate();
 
-    const handleDelete = async () => {
-        try {
-            await deleteProductById(id!);
-            navigate('/products');
-            notify.info('Producto eliminado');
-        } catch (error) {
-            notify.error(
-                error instanceof ApiError
-                    ? error.message
-                    : 'No se pudo eliminar el producto. Inténtalo de nuevo.',
-            );
-        }
+    const [toDelete, setToDelete] = useState<Product | null>(null);
+
+    const handleConfirmDelete = async () => {
+        if (!toDelete)
+            try {
+                await deleteProductById(id!);
+                setToDelete(null);
+                navigate('/products');
+                notify.info('Producto eliminado');
+            } catch (error) {
+                notify.error(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'No se pudo eliminar el producto. Inténtalo de nuevo.',
+                );
+            }
     };
 
     if (isProductLoading) {
@@ -113,13 +120,49 @@ const ProductDetails = () => {
                     <ProductActions product={product} />
 
                     {userRole === 'admin' && (
-                        <Button
-                            variant='danger'
-                            fullWidth
-                            onClick={handleDelete}
-                        >
-                            Eliminar producto
-                        </Button>
+                        <>
+                            <Button
+                                variant='danger'
+                                fullWidth
+                                onClick={() => setToDelete(product)}
+                            >
+                                Eliminar producto
+                            </Button>
+                            <Modal
+                                open={toDelete != null}
+                                onClose={() => setToDelete(null)}
+                                title='Eliminar producto'
+                            >
+                                <div className='px-6 pt-2 pb-6'>
+                                    <p className='text-text-60 text-sm'>
+                                        ¿Seguro que quieres eliminar este
+                                        producto? Esta acción no se puede
+                                        deshacer.
+                                    </p>
+                                    {toDelete && (
+                                        <p className='text-text mt-3 text-sm font-medium'>
+                                            {toDelete.brand} — {toDelete.name},{' '}
+                                            {toDelete.shortDescription}{' '}
+                                        </p>
+                                    )}
+                                    <div className='mt-6 flex justify-end gap-3'>
+                                        <Button
+                                            variant='outline'
+                                            onClick={() => setToDelete(null)}
+                                        >
+                                            Cancelar
+                                        </Button>
+                                        <Button
+                                            variant='danger'
+                                            loading={isPending}
+                                            onClick={handleConfirmDelete}
+                                        >
+                                            Eliminar
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Modal>
+                        </>
                     )}
                 </div>
             </div>

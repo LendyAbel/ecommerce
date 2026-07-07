@@ -1,7 +1,7 @@
 ﻿import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { LocalCart, LocalCartItem } from '@/features/cart/types/cartTypes';
+import type { LocalCart, LocalCartItem } from '../types/cartTypes';
 
 type CartStore = {
     cart: LocalCart;

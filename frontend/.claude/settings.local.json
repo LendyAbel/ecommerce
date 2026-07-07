@@ -45,7 +45,11 @@
       "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"Si, procede con el reset\" npx prisma migrate reset --force)",
       "Bash(npx ts-node *)",
       "Bash(npx jest *)",
-      "Bash(echo \"EXIT:$?\")"
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(cat tsconfig.json)",
+      "Bash(cat vite.config.ts)",
+      "Bash(npm run *)",
+      "Bash(git stash *)"
     ]
   },
   "agents": [

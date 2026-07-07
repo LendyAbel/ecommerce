@@ -2,7 +2,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useState } from 'react';
 
-import type { Address } from '@/features/addresses/schemas/addressSchemas';
+import type { Address } from '@/features/addresses';
 import { Button } from '@/shared/ui';
 
 import type { CheckoutAddress } from '../types/checkoutTypes';

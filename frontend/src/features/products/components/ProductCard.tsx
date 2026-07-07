@@ -3,11 +3,12 @@ import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
 import { preloadProductDetails } from '@/app/routePreload';
-import productsService from '@/features/products/api/products.service';
-import ProductPrice from '@/features/products/components/details/ProductPrice';
-import ProductStockBadge from '@/features/products/components/details/ProductStockBadge';
-import type { Product } from '@/features/products/types/productTypes';
 import { queryClient } from '@/lib/queryClient';
+
+import productsService from '../api/products.service';
+import type { Product } from '../schemas/productZodSchema';
+import ProductPrice from './details/ProductPrice';
+import ProductStockBadge from './details/ProductStockBadge';
 
 interface ProductCardProps {
     product: Product;

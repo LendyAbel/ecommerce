@@ -19,7 +19,7 @@ export const preloadRoute = (to: string) =>
     routeImports[to as keyof typeof routeImports]?.();
 
 export const importProductDetails = () =>
-    import('@/features/products/components/ProductDetails');
+    import('@/features/products').then(m => ({ default: m.ProductDetails }));
 
 /** Precarga el chunk de la vista de detalle de producto (hover en una card). */
 export const preloadProductDetails = importProductDetails;

@@ -2,7 +2,7 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
-import type { AuthFieldConfig } from '@/features/auth/components/AuthForm';
+import type { AuthFieldConfig } from './AuthForm';
 
 const iconSx = { color: 'var(--color-text-38)', fontSize: 18 };
 

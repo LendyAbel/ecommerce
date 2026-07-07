@@ -1,9 +1,7 @@
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useNavigate } from 'react-router';
 
-import OrderItemsCard from '@/features/orders/components/OrderItemsCard';
-import type { Order } from '@/features/orders/schemas/orderSchemas';
-import { formatCurrency } from '@/features/orders/utils/orderStatus';
+import { formatCurrency, type Order, OrderItemsCard } from '@/features/orders';
 import { Button } from '@/shared/ui';
 
 type Step3Props = {

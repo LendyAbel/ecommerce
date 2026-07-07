@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router';
 
 import { preloadRoute } from '@/app/routePreload';
-import { ACCOUNT_LINKS } from '@/features/auth/components/accountLinks';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useAuthStore } from '@/features/auth/store/authStore';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
+
+import { useAuth } from '../hooks/useAuth';
+import { useAuthStore } from '../store/authStore';
+import { ACCOUNT_LINKS } from './accountLinks';
 
 const itemClass =
     'flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold tracking-widest uppercase transition-colors duration-200';

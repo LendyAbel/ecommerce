@@ -1,6 +1,5 @@
 import { useCartStore } from '@/features/cart';
-import CartItemsList from '@/features/cart/components/CartItemsList';
-import CartResumen from '@/features/cart/components/CartResumen';
+import { CartItemsList, CartResumen } from '@/features/cart';
 import { PageContainer } from '@/shared/components';
 
 const Cart = () => {

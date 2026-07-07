@@ -1,19 +1,19 @@
 import { useMemo, useState } from 'react';
 
-import { useAuthStore } from '@/features/auth/store/authStore';
-import useCategory from '@/features/categories/hooks/useCategory';
-import type { SortBy } from '@/features/products/api/products.service';
-import AddProductButton from '@/features/products/components/AddProductButton';
-import NewProductDialog from '@/features/products/components/NewProductDialog';
-import ProductCard from '@/features/products/components/ProductCard';
-import ProductFilters from '@/features/products/components/ProductFilters';
-import ProductCardSkeleton from '@/features/products/components/skeletons/ProductCardSkeleton';
-import useNewProductDialog from '@/features/products/hooks/useNewProductDialog';
-import useProducts from '@/features/products/hooks/useProducts';
-import type { Product } from '@/features/products/types/productTypes';
+import { useAuthStore } from '@/features/auth';
+import { useCategory } from '@/features/categories';
+import type { Product, SortBy } from '@/features/products';
+import {
+    AddProductButton,
+    NewProductDialog,
+    ProductCard,
+    ProductCardSkeleton,
+    ProductFilters,
+} from '@/features/products/';
+import { useNewProductDialog, useProducts } from '@/features/products/';
 import { EmptyState, ErrorState, PageContainer } from '@/shared/components';
+import { useDebounce } from '@/shared/hooks';
 import { Button } from '@/shared/ui';
-import { useDebounce } from '@/shared/utils/utils';
 
 const Products = () => {
     const [searchQuery, setSearchQuery] = useState('');

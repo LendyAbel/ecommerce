@@ -1,8 +1,9 @@
 ﻿import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import productsService from '@/features/products/api/products.service';
-import type { ProductForm } from '@/features/products/types/productTypes';
 import { logger } from '@/lib/logger';
+
+import productsService from '../api/products.service';
+import type { ProductForm } from '../schemas/productZodSchema';
 
 const useAddNewProduct = () => {
     const queryClient = useQueryClient();

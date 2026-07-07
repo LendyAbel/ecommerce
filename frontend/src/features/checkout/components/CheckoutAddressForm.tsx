@@ -1,10 +1,7 @@
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 
-import {
-    type AddressFormInput,
-    AddressFormSchema,
-} from '@/features/addresses/schemas/addressSchemas';
+import { type AddressFormInput, AddressFormSchema } from '@/features/addresses';
 import { Button } from '@/shared/ui';
 import TextFieldInput from '@/shared/ui/TextFieldInput';
 

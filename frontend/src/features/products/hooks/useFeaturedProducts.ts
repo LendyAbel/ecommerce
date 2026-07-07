@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import productsService from '@/features/products/api/products.service';
+import productsService from '../api/products.service';
 
 /**
  * Productos destacados para la Home: pide solo `limit` items al backend (en vez

@@ -1,8 +1,6 @@
-﻿import type {
-    Product,
-    ProductForm,
-} from '@/features/products/types/productTypes';
-import { apiClient } from '@/lib/api/client';
+﻿import { apiClient } from '@/lib/api/client';
+
+import type { Product, ProductForm } from '../schemas/productZodSchema';
 
 export type SortBy = 'price_asc' | 'price_desc' | 'newest' | 'oldest';
 

@@ -5,8 +5,9 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useAuthStore } from '@/features/auth';
 import { useSyncCart } from '@/features/cart';
 import { useCartStore } from '@/features/cart/store/cartStore';
-import type { Product } from '@/features/products/types/productTypes';
 import { notify } from '@/shared/store/alertStore';
+
+import type { Product } from '../../schemas/productZodSchema';
 
 type ProductActionsProps = {
     product: Product;

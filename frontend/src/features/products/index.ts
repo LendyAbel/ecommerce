@@ -13,4 +13,4 @@ export { default as useFeaturedProducts } from './hooks/useFeaturedProducts';
 export { default as useNewProductDialog } from './hooks/useNewProductDialog';
 export { default as useProductById } from './hooks/useProductById';
 export { default as useProducts } from './hooks/useProducts';
-export type { Product } from './types/productTypes';
+export type { ImageForm, Product } from './schemas/productZodSchema';
