@@ -16,6 +16,11 @@ const envSchema = z.object({
     LOG_LEVEL: z
         .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'])
         .default('info'),
+    STRIPE_SECRET_KEY: z.string().min(1, 'STRIPE_SECRET_KEY is required'),
+    STRIPE_WEBHOOK_SECRET: z
+        .string()
+        .min(1, 'STRIPE_WEBHOOK_SECRET is required'),
+    STRIPE_CURRENCY: z.string().length(3).default('eur'),
 });
 
 export type Config = z.infer<typeof envSchema>;

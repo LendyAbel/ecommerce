@@ -19,6 +19,8 @@ const Authenticate = lazy(routeImports['/auth']);
 const Orders = lazy(routeImports['/orders']);
 const Address = lazy(routeImports['/account/addresses']);
 const Checkout = lazy(routeImports['/checkout']);
+const CheckoutSuccess = lazy(routeImports['/checkout/success']);
+const CheckoutCancel = lazy(routeImports['/checkout/cancel']);
 
 const PageFallback = () => (
     <div className='flex min-h-[calc(100vh-48px)] items-center justify-center'>
@@ -57,6 +59,14 @@ function App() {
                             element={<Address />}
                         />
                         <Route path='/checkout' element={<Checkout />} />
+                        <Route
+                            path='/checkout/success'
+                            element={<CheckoutSuccess />}
+                        />
+                        <Route
+                            path='/checkout/cancel'
+                            element={<CheckoutCancel />}
+                        />
                     </Route>
                 </Routes>
             </Suspense>

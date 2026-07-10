@@ -14,9 +14,9 @@ import authRouter from './modules/auth/routers/authRouter';
 import cartRouter from './modules/cart/routers/cartRouter';
 import categoriesRouter from './modules/categories/routers/categoriesRouter';
 import ordersRouter from './modules/orders/routers/ordersRouter';
+import webhookRouter from './modules/payments/routers/webhookRouter';
 import productsRouter from './modules/products/routers/productRouter';
 import usersRouter from './modules/users/routers/usersRouter';
-
 const app = express();
 
 const FRONTEND_URL = config.FRONTEND_URL;
@@ -25,6 +25,9 @@ app.use(httpLogger);
 app.use(helmet());
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(compression());
+
+app.use('/api/webhooks', webhookRouter);
+
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 

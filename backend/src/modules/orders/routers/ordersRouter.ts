@@ -4,6 +4,7 @@ import {
     authenticate,
     requireAdmin,
 } from '../../../middlewares/authMiddleware';
+import * as paymentController from '../../payments/controllers/paymentController';
 import * as orderController from '../controllers/ordersController';
 
 const router = express.Router();
@@ -22,5 +23,10 @@ router.patch(
     orderController.updateStatusOrder,
 );
 router.patch('/:orderId/cancel', orderController.cancelOrder);
+
+router.post(
+    '/:orderId/checkout-session',
+    paymentController.createCheckoutSession,
+);
 
 export default router;

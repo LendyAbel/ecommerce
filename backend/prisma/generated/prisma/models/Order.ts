@@ -46,6 +46,8 @@ export type OrderMinAggregateOutputType = {
   billingAddressId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  stripeCheckoutSessionId: string | null
+  stripePaymentIntentId: string | null
 }
 
 export type OrderMaxAggregateOutputType = {
@@ -58,6 +60,8 @@ export type OrderMaxAggregateOutputType = {
   billingAddressId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  stripeCheckoutSessionId: string | null
+  stripePaymentIntentId: string | null
 }
 
 export type OrderCountAggregateOutputType = {
@@ -70,6 +74,8 @@ export type OrderCountAggregateOutputType = {
   billingAddressId: number
   createdAt: number
   updatedAt: number
+  stripeCheckoutSessionId: number
+  stripePaymentIntentId: number
   _all: number
 }
 
@@ -94,6 +100,8 @@ export type OrderMinAggregateInputType = {
   billingAddressId?: true
   createdAt?: true
   updatedAt?: true
+  stripeCheckoutSessionId?: true
+  stripePaymentIntentId?: true
 }
 
 export type OrderMaxAggregateInputType = {
@@ -106,6 +114,8 @@ export type OrderMaxAggregateInputType = {
   billingAddressId?: true
   createdAt?: true
   updatedAt?: true
+  stripeCheckoutSessionId?: true
+  stripePaymentIntentId?: true
 }
 
 export type OrderCountAggregateInputType = {
@@ -118,6 +128,8 @@ export type OrderCountAggregateInputType = {
   billingAddressId?: true
   createdAt?: true
   updatedAt?: true
+  stripeCheckoutSessionId?: true
+  stripePaymentIntentId?: true
   _all?: true
 }
 
@@ -217,6 +229,8 @@ export type OrderGroupByOutputType = {
   billingAddressId: string | null
   createdAt: Date
   updatedAt: Date
+  stripeCheckoutSessionId: string | null
+  stripePaymentIntentId: string | null
   _count: OrderCountAggregateOutputType | null
   _avg: OrderAvgAggregateOutputType | null
   _sum: OrderSumAggregateOutputType | null
@@ -252,6 +266,8 @@ export type OrderWhereInput = {
   billingAddressId?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  stripeCheckoutSessionId?: Prisma.StringNullableFilter<"Order"> | string | null
+  stripePaymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
   orderItems?: Prisma.OrderItemListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   shippingAddress?: Prisma.XOR<Prisma.AddressNullableScalarRelationFilter, Prisma.AddressWhereInput> | null
@@ -268,6 +284,8 @@ export type OrderOrderByWithRelationInput = {
   billingAddressId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  stripeCheckoutSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripePaymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderItems?: Prisma.OrderItemOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
   shippingAddress?: Prisma.AddressOrderByWithRelationInput
@@ -277,6 +295,8 @@ export type OrderOrderByWithRelationInput = {
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   orderNumber?: number
+  stripeCheckoutSessionId?: string
+  stripePaymentIntentId?: string
   AND?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
@@ -291,7 +311,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   shippingAddress?: Prisma.XOR<Prisma.AddressNullableScalarRelationFilter, Prisma.AddressWhereInput> | null
   billingAddress?: Prisma.XOR<Prisma.AddressNullableScalarRelationFilter, Prisma.AddressWhereInput> | null
-}, "id" | "id" | "orderNumber">
+}, "id" | "id" | "orderNumber" | "stripeCheckoutSessionId" | "stripePaymentIntentId">
 
 export type OrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -303,6 +323,8 @@ export type OrderOrderByWithAggregationInput = {
   billingAddressId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  stripeCheckoutSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripePaymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OrderCountOrderByAggregateInput
   _avg?: Prisma.OrderAvgOrderByAggregateInput
   _max?: Prisma.OrderMaxOrderByAggregateInput
@@ -323,6 +345,8 @@ export type OrderScalarWhereWithAggregatesInput = {
   billingAddressId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
+  stripeCheckoutSessionId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  stripePaymentIntentId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
 }
 
 export type OrderCreateInput = {
@@ -332,6 +356,8 @@ export type OrderCreateInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   shippingAddress?: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
@@ -348,6 +374,8 @@ export type OrderUncheckedCreateInput = {
   billingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -357,6 +385,8 @@ export type OrderUpdateInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   shippingAddress?: Prisma.AddressUpdateOneWithoutShippingOrdersNestedInput
@@ -373,6 +403,8 @@ export type OrderUncheckedUpdateInput = {
   billingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -386,6 +418,8 @@ export type OrderCreateManyInput = {
   billingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
 }
 
 export type OrderUpdateManyMutationInput = {
@@ -394,6 +428,8 @@ export type OrderUpdateManyMutationInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrderUncheckedUpdateManyInput = {
@@ -406,6 +442,8 @@ export type OrderUncheckedUpdateManyInput = {
   billingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrderListRelationFilter = {
@@ -428,6 +466,8 @@ export type OrderCountOrderByAggregateInput = {
   billingAddressId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  stripeCheckoutSessionId?: Prisma.SortOrder
+  stripePaymentIntentId?: Prisma.SortOrder
 }
 
 export type OrderAvgOrderByAggregateInput = {
@@ -445,6 +485,8 @@ export type OrderMaxOrderByAggregateInput = {
   billingAddressId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  stripeCheckoutSessionId?: Prisma.SortOrder
+  stripePaymentIntentId?: Prisma.SortOrder
 }
 
 export type OrderMinOrderByAggregateInput = {
@@ -457,6 +499,8 @@ export type OrderMinOrderByAggregateInput = {
   billingAddressId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  stripeCheckoutSessionId?: Prisma.SortOrder
+  stripePaymentIntentId?: Prisma.SortOrder
 }
 
 export type OrderSumOrderByAggregateInput = {
@@ -628,6 +672,8 @@ export type OrderCreateWithoutShippingAddressInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   billingAddress?: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
@@ -642,6 +688,8 @@ export type OrderUncheckedCreateWithoutShippingAddressInput = {
   billingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -662,6 +710,8 @@ export type OrderCreateWithoutBillingAddressInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   shippingAddress?: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
@@ -676,6 +726,8 @@ export type OrderUncheckedCreateWithoutBillingAddressInput = {
   shippingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -718,6 +770,8 @@ export type OrderScalarWhereInput = {
   billingAddressId?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  stripeCheckoutSessionId?: Prisma.StringNullableFilter<"Order"> | string | null
+  stripePaymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
 }
 
 export type OrderUpsertWithWhereUniqueWithoutBillingAddressInput = {
@@ -743,6 +797,8 @@ export type OrderCreateWithoutOrderItemsInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   shippingAddress?: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress?: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
@@ -758,6 +814,8 @@ export type OrderUncheckedCreateWithoutOrderItemsInput = {
   billingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
 }
 
 export type OrderCreateOrConnectWithoutOrderItemsInput = {
@@ -782,6 +840,8 @@ export type OrderUpdateWithoutOrderItemsInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   shippingAddress?: Prisma.AddressUpdateOneWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneWithoutBillingOrdersNestedInput
@@ -797,6 +857,8 @@ export type OrderUncheckedUpdateWithoutOrderItemsInput = {
   billingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrderCreateWithoutUserInput = {
@@ -806,6 +868,8 @@ export type OrderCreateWithoutUserInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   shippingAddress?: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress?: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
@@ -820,6 +884,8 @@ export type OrderUncheckedCreateWithoutUserInput = {
   billingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -858,6 +924,8 @@ export type OrderCreateManyShippingAddressInput = {
   billingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
 }
 
 export type OrderCreateManyBillingAddressInput = {
@@ -869,6 +937,8 @@ export type OrderCreateManyBillingAddressInput = {
   shippingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
 }
 
 export type OrderUpdateWithoutShippingAddressInput = {
@@ -877,6 +947,8 @@ export type OrderUpdateWithoutShippingAddressInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneWithoutBillingOrdersNestedInput
@@ -891,6 +963,8 @@ export type OrderUncheckedUpdateWithoutShippingAddressInput = {
   billingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -903,6 +977,8 @@ export type OrderUncheckedUpdateManyWithoutShippingAddressInput = {
   billingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrderUpdateWithoutBillingAddressInput = {
@@ -911,6 +987,8 @@ export type OrderUpdateWithoutBillingAddressInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   shippingAddress?: Prisma.AddressUpdateOneWithoutShippingOrdersNestedInput
@@ -925,6 +1003,8 @@ export type OrderUncheckedUpdateWithoutBillingAddressInput = {
   shippingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -937,6 +1017,8 @@ export type OrderUncheckedUpdateManyWithoutBillingAddressInput = {
   shippingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrderCreateManyUserInput = {
@@ -948,6 +1030,8 @@ export type OrderCreateManyUserInput = {
   billingAddressId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  stripeCheckoutSessionId?: string | null
+  stripePaymentIntentId?: string | null
 }
 
 export type OrderUpdateWithoutUserInput = {
@@ -956,6 +1040,8 @@ export type OrderUpdateWithoutUserInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   shippingAddress?: Prisma.AddressUpdateOneWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneWithoutBillingOrdersNestedInput
@@ -970,6 +1056,8 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   billingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -982,6 +1070,8 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   billingAddressId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1025,6 +1115,8 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   billingAddressId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  stripeCheckoutSessionId?: boolean
+  stripePaymentIntentId?: boolean
   orderItems?: boolean | Prisma.Order$orderItemsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shippingAddress?: boolean | Prisma.Order$shippingAddressArgs<ExtArgs>
@@ -1042,6 +1134,8 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   billingAddressId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  stripeCheckoutSessionId?: boolean
+  stripePaymentIntentId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shippingAddress?: boolean | Prisma.Order$shippingAddressArgs<ExtArgs>
   billingAddress?: boolean | Prisma.Order$billingAddressArgs<ExtArgs>
@@ -1057,6 +1151,8 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   billingAddressId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  stripeCheckoutSessionId?: boolean
+  stripePaymentIntentId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shippingAddress?: boolean | Prisma.Order$shippingAddressArgs<ExtArgs>
   billingAddress?: boolean | Prisma.Order$billingAddressArgs<ExtArgs>
@@ -1072,9 +1168,11 @@ export type OrderSelectScalar = {
   billingAddressId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  stripeCheckoutSessionId?: boolean
+  stripePaymentIntentId?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "status" | "totalAmount" | "userId" | "shippingAddressId" | "billingAddressId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "status" | "totalAmount" | "userId" | "shippingAddressId" | "billingAddressId" | "createdAt" | "updatedAt" | "stripeCheckoutSessionId" | "stripePaymentIntentId", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orderItems?: boolean | Prisma.Order$orderItemsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1111,6 +1209,8 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     billingAddressId: string | null
     createdAt: Date
     updatedAt: Date
+    stripeCheckoutSessionId: string | null
+    stripePaymentIntentId: string | null
   }, ExtArgs["result"]["order"]>
   composites: {}
 }
@@ -1547,6 +1647,8 @@ export interface OrderFieldRefs {
   readonly billingAddressId: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly stripeCheckoutSessionId: Prisma.FieldRef<"Order", 'String'>
+  readonly stripePaymentIntentId: Prisma.FieldRef<"Order", 'String'>
 }
     
 

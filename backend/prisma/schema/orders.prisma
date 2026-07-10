@@ -4,11 +4,12 @@ enum OrderStatus {
   shipped
   delivered
   cancelled
+  refunded
 }
 
 model Order {
   id          String      @id @unique @default(uuid())
-  orderNumber Int         @default(autoincrement()) @unique
+  orderNumber Int         @unique @default(autoincrement())
   status      OrderStatus @default(pending)
   totalAmount Decimal     @db.Decimal(10, 2)
 
@@ -25,6 +26,9 @@ model Order {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId   String? @unique
 
   @@index([userId])
   @@index([status])

@@ -59,6 +59,7 @@ export const orderStatusValues = [
     'shipped',
     'delivered',
     'cancelled',
+    'refunded',
 ] as const;
 
 export const OrderStatusSchema = z.object({
@@ -68,6 +69,7 @@ export const OrderStatusSchema = z.object({
 export const OrderIdParamSchema = z.object({
     orderId: z.uuid(),
 });
+
 
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 export type OrderStatus = (typeof orderStatusValues)[number];

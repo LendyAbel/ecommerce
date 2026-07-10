@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router';
 import { formatCurrency, type Order, OrderItemsCard } from '@/features/orders';
 import { Button } from '@/shared/ui';
 
+import { useCreateCheckout } from '../hooks/useCheckout';
+import { getOrCreateIdempotencyKey } from '../utils';
+
 type Step3Props = {
     order: Order;
 };
@@ -15,6 +18,17 @@ type Step3Props = {
  */
 const Step3 = ({ order }: Step3Props) => {
     const navigate = useNavigate();
+    const idempotencyKey = getOrCreateIdempotencyKey(order.id);
+    const createCheckout = useCreateCheckout();
+
+    const handlePay = async () => {
+        console.log(idempotencyKey);
+        const { url } = await createCheckout.mutateAsync({
+            orderId: order.id,
+            idempotencyKey,
+        });
+        window.location.href = url;
+    };
 
     return (
         <div className='flex flex-col gap-6'>
@@ -48,7 +62,7 @@ const Step3 = ({ order }: Step3Props) => {
                     Ver pedido
                 </Button>
                 {/* El pago real llegará con la integración de Stripe. */}
-                <Button disabled>Pagar (próximamente)</Button>
+                <Button onClick={handlePay}>Pagar</Button>
             </div>
         </div>
     );

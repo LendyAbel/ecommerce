@@ -11,7 +11,9 @@ export const routeImports = {
     '/auth': () => import('@/pages/Authenticate'),
     '/orders': () => import('@/pages/Orders'),
     '/account/addresses': () => import('@/pages/Address'),
-    '/checkout': () => import('@/pages/Checkout')
+    '/checkout': () => import('@/pages/Checkout'),
+    '/checkout/success': () => import('@/pages/CheckoutSuccess'),
+    '/checkout/cancel': () => import('@/pages/CheckoutCancel'),
 } as const;
 
 /** Precarga el chunk de una ruta conocida (no-op si la ruta no está mapeada). */

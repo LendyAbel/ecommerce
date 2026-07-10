@@ -11,7 +11,7 @@ import { useCartStore } from '@/features/cart';
 import ordersService, { type OrdersFilters } from '../api/orders.service';
 import type { CreateOrderInput, OrderStatus } from '../schemas/orderSchemas';
 
-const ORDER_KEY = ['order'];
+export const ORDER_KEY = ['order'];
 
 const PAGE_SIZE = 6;
 
