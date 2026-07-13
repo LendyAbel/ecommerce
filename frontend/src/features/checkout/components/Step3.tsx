@@ -1,7 +1,10 @@
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useNavigate } from 'react-router';
 
 import { formatCurrency, type Order, OrderItemsCard } from '@/features/orders';
+import { useProductsStock } from '@/features/products';
+import { notify } from '@/shared/store/alertStore';
 import { Button } from '@/shared/ui';
 
 import { useCreateCheckout } from '../hooks/useCheckout';
@@ -11,18 +14,25 @@ type Step3Props = {
     order: Order;
 };
 
-/**
- * Paso final del checkout. La orden ya existe en estado «pendiente de pago»; el
- * cobro real se implementará con Stripe. De momento se muestra el resumen y un
- * botón de pago deshabilitado (placeholder).
- */
 const Step3 = ({ order }: Step3Props) => {
     const navigate = useNavigate();
     const idempotencyKey = getOrCreateIdempotencyKey(order.id);
     const createCheckout = useCreateCheckout();
 
+    const { stockByProductId } = useProductsStock(
+        order.orderItems.map(item => item.productId),
+    );
+    const hasInsufficientStock = order.orderItems.some(item => {
+        if (!item.productId) return false;
+        const stock = stockByProductId.get(item.productId);
+        return stock !== undefined && stock < item.quantity;
+    });
+
     const handlePay = async () => {
-        console.log(idempotencyKey);
+        if (hasInsufficientStock) {
+            notify.error('No hay suficiente stock disponible');
+            return;
+        }
         const { url } = await createCheckout.mutateAsync({
             orderId: order.id,
             idempotencyKey,
@@ -32,6 +42,14 @@ const Step3 = ({ order }: Step3Props) => {
 
     return (
         <div className='flex flex-col gap-6'>
+            {hasInsufficientStock && (
+                <div className='border-warning bg-warning-20 text-warning flex items-center gap-2 rounded-2xl border p-4 text-sm font-medium'>
+                    <WarningAmberIcon fontSize='small' />
+                    Lo sentimos, en este momento no hay stock suficiente de
+                    alguno de los artículos de tu pedido. Espera a que
+                    volvamos a reponer.
+                </div>
+            )}
             <div className='border-border bg-surface flex flex-col items-center gap-2 rounded-2xl border p-6 text-center'>
                 <CheckCircleOutlineIcon
                     className='text-primary'

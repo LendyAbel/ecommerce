@@ -51,7 +51,10 @@ export const useGetOrdersList = (filters: OrdersFilters = {}) => {
     };
 };
 
-export const useGetOrderDetails = (id: string) => {
+export const useGetOrderDetails = (
+    id: string,
+    { pollWhilePending = false }: { pollWhilePending?: boolean } = {},
+) => {
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
 
@@ -59,6 +62,11 @@ export const useGetOrderDetails = (id: string) => {
         queryKey: [...ORDER_KEY, 'detail', id, isAdmin],
         queryFn: () => ordersService.fetchOrder(id),
         enabled: !!id,
+        // Tras volver de Stripe el webhook puede tardar en marcar la orden como
+        // pagada; se reconsulta cada 2s mientras siga 'pending' y se detiene sola.
+        refetchInterval: pollWhilePending
+            ? query => (query.state.data?.status === 'pending' ? 2000 : false)
+            : undefined,
     });
 
     return {

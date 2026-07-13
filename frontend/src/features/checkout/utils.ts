@@ -8,3 +8,7 @@ export const getOrCreateIdempotencyKey = (orderId: string): string => {
     }
     return key;
 };
+
+export const clearIdempotencyKey = (orderId: string): void => {
+    sessionStorage.removeItem(`idempotency_key_${orderId}`);
+};

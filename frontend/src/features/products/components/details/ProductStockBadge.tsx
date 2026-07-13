@@ -1,5 +1,4 @@
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
-import { memo } from 'react';
 
 import { Badge } from '@/shared/ui';
 
@@ -45,4 +44,4 @@ const ProductStockBadge = ({
     );
 };
 
-export default memo(ProductStockBadge);
+export default ProductStockBadge;
