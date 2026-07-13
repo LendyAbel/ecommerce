@@ -55,7 +55,6 @@ const listUserOrders = async (
     return { data, total, page, limit };
 };
 
-
 const listAllOrders = async (filters: Partial<OrdersQuery>) => {
     const { page = 1, limit = 20 } = filters;
     const offset = (page - 1) * limit;
@@ -78,6 +77,7 @@ const getOrderbyId = async (orderId: string, userId: string, role: string) => {
         where: { id: orderId, ...(isAdmin ? {} : { userId }) },
         include: {
             orderItems: true,
+            shippingAddress: true,
             // Solo el admin necesita saber a qué cliente pertenece la orden.
             ...(isAdmin
                 ? { user: { select: { id: true, name: true, email: true } } }

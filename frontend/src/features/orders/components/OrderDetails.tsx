@@ -19,6 +19,7 @@ import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
 const OrderDetails = () => {
     const { id } = useParams();
     const { order, isAdmin, isLoading, isError } = useGetOrderDetails(id!);
+    console.log(order);
 
     return (
         <PageContainer maxWidth='3xl'>

@@ -25,6 +25,7 @@ const createCheckoutSession = async (
             payment_intent_data: { metadata: { orderId: order.id } },
             success_url: `${config.FRONTEND_URL}/checkout/success?orderId=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${config.FRONTEND_URL}/checkout/cancel?orderId=${order.id}`,
+            payment_method_types: ['card', 'bizum', 'paypal']
         },
         idempotencyKey ? { idempotencyKey } : undefined,
     );
