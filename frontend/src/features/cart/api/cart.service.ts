@@ -15,13 +15,18 @@ const addItem = async (
     return res.data;
 };
 
-const updateItem = async (itemId: string, quantity: number): Promise<Cart> => {
-    const res = await apiClient.patch(`/cart/items/${itemId}`, { quantity });
+const updateItem = async (
+    productId: string,
+    quantity: number,
+): Promise<Cart> => {
+    const res = await apiClient.patch(`/cart/items/${productId}`, {
+        quantity,
+    });
     return res.data;
 };
 
-const removeItem = async (itemId: string): Promise<Cart> => {
-    const res = await apiClient.delete(`/cart/items/${itemId}`);
+const removeItem = async (productId: string): Promise<Cart> => {
+    const res = await apiClient.delete(`/cart/items/${productId}`);
     return res.data;
 };
 

@@ -5,8 +5,14 @@ import { logger } from '@/lib/logger';
 
 import cartService from '../api/cart.service';
 import { useCartStore } from '../store/cartStore';
+import type { CartItem, LocalCartItem } from '../types/cartTypes';
 
 const CART_KEY = 'cart';
+
+const mapBackendCartItemsToLocalCartItems = (
+    items: CartItem[],
+): LocalCartItem[] =>
+    items.map(({ product, quantity }) => ({ product, quantity }));
 
 export const useSyncCart = () => {
     const { cart } = useCartStore();
@@ -18,7 +24,10 @@ export const useSyncCart = () => {
         mutationFn: () => cartService.getCart(),
         onSuccess: data => {
             logger.debug('fetchmutation:', data);
-            setStoreCartItems(data.cartItems);
+            const localCartItems = mapBackendCartItemsToLocalCartItems(
+                data.cartItems,
+            );
+            setStoreCartItems(localCartItems);
         },
         onError: error => {
             logger.error('Cart fetch failed:', error);
@@ -38,22 +47,24 @@ export const useSyncCart = () => {
         },
         onSuccess: data => {
             logger.debug('addMutation:', data);
-            setStoreCartItems(data.cartItems);
+            const localCartItems = mapBackendCartItemsToLocalCartItems(
+                data.cartItems,
+            );
+            setStoreCartItems(localCartItems);
         },
     });
 
-    
     const updateRequestIdRef = useRef(0);
 
     const updateMutation = useMutation({
         mutationKey: [...CART_KEY, 'update'],
         mutationFn: async ({
-            itemId,
+            productId,
             quantity = 1,
         }: {
-            itemId: string;
+            productId: string;
             quantity: number;
-        }) => await cartService.updateItem(itemId, quantity),
+        }) => await cartService.updateItem(productId, quantity),
         onMutate: () => ({ requestId: ++updateRequestIdRef.current }),
         onSuccess: (data, _vars, onMutateResult) => {
             if (onMutateResult.requestId !== updateRequestIdRef.current) {
@@ -66,8 +77,14 @@ export const useSyncCart = () => {
 
     const removeMutation = useMutation({
         mutationKey: [...CART_KEY, 'remove'],
-        mutationFn: async (itemId: string) => {
-            return await cartService.removeItem(itemId);
+        mutationFn: async (productId: string) => {
+            return await cartService.removeItem(productId);
+        },
+        onSuccess: data => {
+            const localCartItems = mapBackendCartItemsToLocalCartItems(
+                data.cartItems,
+            );
+            setStoreCartItems(localCartItems);
         },
     });
 
@@ -95,7 +112,10 @@ export const useSyncCart = () => {
         },
         onSuccess: data => {
             logger.debug('syncmutation:', data);
-            setStoreCartItems(data.cartItems);
+            const localCartItems = mapBackendCartItemsToLocalCartItems(
+                data.cartItems,
+            );
+            setStoreCartItems(localCartItems);
         },
         onError: error => {
             logger.error('Cart sync failed:', error);

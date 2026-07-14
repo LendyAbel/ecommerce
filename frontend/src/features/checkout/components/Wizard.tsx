@@ -8,9 +8,13 @@ import {
     useGetAddresses,
 } from '@/features/addresses';
 import { useCartStore } from '@/features/cart';
-import { type Order, useCreateOrder, useGetOrderDetails } from '@/features/orders';
+import {
+    type Order,
+    useCreateOrder,
+    useGetOrderDetails,
+} from '@/features/orders';
 import { ApiError } from '@/lib/api/client';
-import { EmptyState } from '@/shared/components';
+import { EmptyState, ErrorState } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Spinner } from '@/shared/ui';
 
@@ -40,7 +44,8 @@ const Wizard = () => {
 
     // Modo «reanudar»: se entra con ?orderId=... desde una orden pendiente. Se
     // carga la orden y se salta directo al paso 3 (sin pasar por 1 y 2).
-    const { order: resumedOrder } = useGetOrderDetails(resumeOrderId);
+    const { order: resumedOrder, isError: errorResumeOrder } =
+        useGetOrderDetails(resumeOrderId);
     const isResuming = !!resumeOrderId;
 
     // Orden a mostrar en el paso 3: la recién creada o la reanudada.
@@ -88,6 +93,20 @@ const Wizard = () => {
             );
         }
     };
+
+    // Id de la orden mal formado o inexistente/ajena.
+    if (errorResumeOrder) {
+        return (
+            <ErrorState
+                message='Algo salio mal. Intentelo de nuevo'
+                action={
+                    <Button onClick={() => navigate('/orders')}>
+                        Volver
+                    </Button>
+                }
+            />
+        );
+    }
 
     // Carga inicial al reanudar una orden existente.
     if (isResuming && !activeOrder) {

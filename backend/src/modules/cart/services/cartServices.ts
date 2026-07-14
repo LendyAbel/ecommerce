@@ -76,39 +76,36 @@ const addItem = async (userId: string, data: AddItemInput) => {
 
 const updateItem = async (
     userId: string,
-    itemId: string,
+    productId: string,
     data: UpdateItemInput,
 ) => {
-    const item = await prisma.cartItem.findUnique({
-        where: { id: itemId },
-        include: { cart: true, product: { select: { stock: true } } },
+    const item = await prisma.cartItem.findFirst({
+        where: { productId, cart: { userId } },
+        include: { product: { select: { stock: true } } },
     });
-    if (!item || item.cart.userId !== userId)
-        throw new AppError('Item not found', 404);
+    if (!item) throw new AppError('Item not found', 404);
 
     if (data.quantity > item.product.stock) {
         throw new AppError('Not enough stock', 409);
     }
     if (data.quantity <= 0) {
-        return removeItem(userId, itemId);
+        return removeItem(userId, productId);
     }
 
     await prisma.cartItem.update({
-        where: { id: itemId },
+        where: { id: item.id },
         data: { quantity: data.quantity },
     });
     return fetchCart(userId);
 };
 
-const removeItem = async (userId: string, itemId: string) => {
-    const item = await prisma.cartItem.findUnique({
-        where: { id: itemId },
-        include: { cart: true },
+const removeItem = async (userId: string, productId: string) => {
+    const item = await prisma.cartItem.findFirst({
+        where: { productId, cart: { userId } },
     });
-    if (!item || item.cart.userId !== userId)
-        throw new AppError('Item not found', 404);
+    if (!item) throw new AppError('Item not found', 404);
 
-    await prisma.cartItem.delete({ where: { id: itemId } });
+    await prisma.cartItem.delete({ where: { id: item.id } });
     return fetchCart(userId);
 };
 

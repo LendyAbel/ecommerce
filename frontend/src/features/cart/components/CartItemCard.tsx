@@ -4,7 +4,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useAuthStore } from '@/features/auth';
 import { logger } from '@/lib/logger';
@@ -23,16 +23,19 @@ interface CartItemCardProps {
 
 const CartItemCard = ({ item }: CartItemCardProps) => {
     const { product, quantity } = item;
+    const [quantityCliked, setQuantityClicked] = useState(quantity);
 
     const { user } = useAuthStore();
 
-    const cart = useCartStore(state => state.cart);
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
     const { updateItemInBackend, removeItemInBackend } = useSyncCart();
 
     const CART_SYNC_DEBOUNCE_TIME = 500;
-    const debounceQuantity = useDebounce(quantity, CART_SYNC_DEBOUNCE_TIME);
+    const debounceQuantity = useDebounce(
+        quantityCliked,
+        CART_SYNC_DEBOUNCE_TIME,
+    );
     const lastSyncQuantityRef = useRef(quantity);
 
     // useEffect para esperar el debounce de los clicks al añadir o disminuir
@@ -42,37 +45,36 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
         if (!user) return;
         // guard para que no haga sync en el render inicial
         if (debounceQuantity === lastSyncQuantityRef.current) return;
-        // vuelve a disparar el useEffect cuando item.id llegue
-        if (!item.id) return;
 
         lastSyncQuantityRef.current = debounceQuantity;
         updateItemInBackend({
-            itemId: item.id,
+            productId: product.id,
             quantity: debounceQuantity,
         }).catch(() => {
             logger.debug('Error sincronizando cantidad del item:');
         });
-    }, [user, debounceQuantity, item.id, updateItemInBackend]);
+    }, [user, debounceQuantity, product.id, updateItemInBackend]);
 
     const handleUpdate = async (productId: string, quantity: number) => {
         if (quantity <= 0) {
             handleRemove(productId);
             return;
         }
-
+        console.log('hola');
         const updated = updateItem(productId, quantity);
         if (!updated) {
             notify.error('No hay suficiente stock disponible');
             return;
         }
+
+        setQuantityClicked(quantity);
     };
 
     const handleRemove = async (productId: string) => {
-        const item = cart.cartItems.find(i => i.product.id === productId);
         removeItem(productId);
 
-        if (user && item?.id) {
-            await removeItemInBackend(item.id);
+        if (user) {
+            await removeItemInBackend(productId);
         }
     };
 
@@ -96,9 +98,7 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
         </Tooltip>
     );
     return (
-        <Card
-            className='flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4'
-        >
+        <Card className='flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4'>
             {/* Imagen + info (+ eliminar en móvil) */}
             <div className='flex items-center gap-4 sm:flex-1'>
                 {mainImage ? (

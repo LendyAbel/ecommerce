@@ -16,15 +16,19 @@ export const addItem = async (req: Request, res: Response) => {
 };
 
 export const updateItem = async (req: Request, res: Response) => {
-    const itemId = getParam(req.params['itemId']);
+    const productId = getParam(req.params['productId']);
     const data = UpdateItemSchema.parse(req.body);
-    const cart = await cartServices.updateItem(req.user!.userId, itemId, data);
+    const cart = await cartServices.updateItem(
+        req.user!.userId,
+        productId,
+        data,
+    );
     res.status(200).json(cart);
 };
 
 export const removeItem = async (req: Request, res: Response) => {
-    const itemId = getParam(req.params['itemId']);
-    const cart = await cartServices.removeItem(req.user!.userId, itemId);
+    const productId = getParam(req.params['productId']);
+    const cart = await cartServices.removeItem(req.user!.userId, productId);
     res.status(200).json(cart);
 };
 
