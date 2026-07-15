@@ -1,6 +1,10 @@
 ﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useCartStore, useSyncCart } from '@/features/cart';
+import {
+    mapBackendCartItemsToLocalCartItems,
+    useCartStore,
+    useSyncCart,
+} from '@/features/cart';
 import { logger } from '@/lib/logger';
 
 import authService from '../api/auth.service';
@@ -11,6 +15,19 @@ export const useAuthBootsTrap = () => {
     const setAuthLoading = useAuthStore(state => state.setAuthLoading);
     const { fetchFromBackendAsync } = useSyncCart();
 
+    // No se espera (fire-and-forget): el bootstrap de auth no debe bloquearse
+    // ni fallar por un error al traer el carrito. useSyncCart ya loguea el error.
+    const hydrateCartFromBackend = async () => {
+        try {
+            const cart = await fetchFromBackendAsync();
+            useCartStore
+                .getState()
+                .setCartItems(mapBackendCartItemsToLocalCartItems(cart.cartItems));
+        } catch {
+            /* empty */
+        }
+    };
+
     const meQuery = useQuery({
         queryKey: ['user'],
         queryFn: async () => {
@@ -18,7 +35,7 @@ export const useAuthBootsTrap = () => {
             try {
                 const data = await authService.me();
                 setUser(data);
-                fetchFromBackendAsync();
+                hydrateCartFromBackend();
                 return data;
             } catch (error) {
                 setUser(null);
@@ -39,11 +56,19 @@ export const useAuth = () => {
     const setUser = useAuthStore(state => state.setUser);
     const { syncWithBackendAsync } = useSyncCart();
 
+    const syncCartOnAuth = async () => {
+        const localCartItems = useCartStore.getState().cart.cartItems;
+        const cart = await syncWithBackendAsync(localCartItems);
+        useCartStore
+            .getState()
+            .setCartItems(mapBackendCartItemsToLocalCartItems(cart.cartItems));
+    };
+
     const loginMutation = useMutation({
         mutationFn: authService.login,
         onSuccess: async user => {
             setUser(user);
-            await syncWithBackendAsync();
+            await syncCartOnAuth();
             logger.debug('Sync Cart on LOGIN');
         },
     });
@@ -52,7 +77,7 @@ export const useAuth = () => {
         mutationFn: authService.register,
         onSuccess: async user => {
             setUser(user);
-            await syncWithBackendAsync();
+            await syncCartOnAuth();
             logger.debug('Sync Cart on REGISTER');
         },
     });
