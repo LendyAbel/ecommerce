@@ -4,7 +4,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAuthStore } from '@/features/auth';
 import { useDebounce } from '@/shared/hooks';
@@ -20,18 +20,31 @@ interface CartItemCardProps {
     item: LocalCartItem;
 }
 
-const CartItemCard = ({ item }: CartItemCardProps) => {
+const CartItemCard = memo(function CartItemCard({ item }: CartItemCardProps) {
     const { product, quantity } = item;
     const [quantityClicked, setQuantityClicked] = useState(quantity);
     const debounceQuantity = useDebounce(quantityClicked, 250);
 
-    const { user } = useAuthStore();
+    const user = useAuthStore(state => state.user);
 
     const removeItem = useCartStore(state => state.removeItem);
     const updateItem = useCartStore(state => state.updateItem);
     const { updateItemInBackend, removeItemInBackend } = useSyncCart();
 
+    // última cantidad enviada/confirmada al backend, usada por el efecto de
+    // sincronización de abajo (no dispara render al mutarla)
     const lastSyncQuantityRef = useRef(quantity);
+
+    // última cantidad de `item.quantity` (store) que ya reflejamos en pantalla
+    const [lastAppliedQuantity, setLastAppliedQuantity] = useState(quantity);
+
+    // Si el store cambia por una fuente externa a esta card (login: fetch/merge
+    // del carrito), resincroniza la cantidad mostrada durante el render en vez
+    // de con un efecto: evita que la card se quede con un valor obsoleto.
+    if (quantity !== lastAppliedQuantity) {
+        setLastAppliedQuantity(quantity);
+        setQuantityClicked(quantity);
+    }
 
     const notStock = quantityClicked >= (product.stock ?? 0);
 
@@ -49,6 +62,7 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
             setQuantityClicked(lastSyncQuantityRef.current);
             return;
         }
+        lastSyncQuantityRef.current = debounceQuantity;
 
         if (user) {
             await updateItemInBackend({
@@ -72,7 +86,6 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
     useEffect(() => {
         // guard para que no haga sync en el render inicial
         if (debounceQuantity === lastSyncQuantityRef.current) return;
-        lastSyncQuantityRef.current = debounceQuantity;
 
         handleUpdate();
     }, [debounceQuantity, handleUpdate]);
@@ -166,6 +179,6 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
             </div>
         </Card>
     );
-};
+});
 
 export default CartItemCard;
