@@ -8,19 +8,17 @@ import Navbar from '@/layouts/Navbar';
 import { Alerts, GeneralLoader, ProtectedRoute } from '@/shared/components';
 import { Spinner } from '@/shared/ui';
 
-import { importProductDetails, routeImports } from './routePreload';
+import { appRoutes } from './routes.config';
 
-const Home = lazy(routeImports['/']);
-const Products = lazy(routeImports['/products']);
-const Cart = lazy(routeImports['/cart']);
-const About = lazy(routeImports['/about']);
-const ProductDetails = lazy(importProductDetails);
-const Authenticate = lazy(routeImports['/auth']);
-const Orders = lazy(routeImports['/orders']);
-const Address = lazy(routeImports['/account/addresses']);
-const Checkout = lazy(routeImports['/checkout']);
-const CheckoutSuccess = lazy(routeImports['/checkout/success']);
-const CheckoutCancel = lazy(routeImports['/checkout/cancel']);
+// lazy() se llama una sola vez por ruta a nivel de módulo (no en el render de
+// App) para no generar un componente nuevo -y remontar la vista- en cada render.
+const routeComponents = appRoutes.map(route => ({
+    ...route,
+    Component: lazy(route.import),
+}));
+
+const publicRoutes = routeComponents.filter(route => !route.protected);
+const protectedRoutes = routeComponents.filter(route => route.protected);
 
 const PageFallback = () => (
     <div className='flex min-h-[calc(100vh-48px)] items-center justify-center'>
@@ -44,29 +42,21 @@ function App() {
 
             <Suspense fallback={<PageFallback />}>
                 <Routes>
-                    <Route path='/' element={<Home />} />
-                    <Route path='/products' element={<Products />} />
-                    <Route path='/products/:id' element={<ProductDetails />} />
-                    <Route path='/about' element={<About />} />
-                    <Route path='/auth' element={<Authenticate />} />
-                    <Route path='/cart' element={<Cart />} />
+                    {publicRoutes.map(({ path, Component }) => (
+                        <Route key={path} path={path} element={<Component />} />
+                    ))}
 
                     <Route element={<ProtectedRoute />}>
-                        <Route path='/orders' element={<Orders />} />
+                        {protectedRoutes.map(({ path, Component }) => (
+                            <Route
+                                key={path}
+                                path={path}
+                                element={<Component />}
+                            />
+                        ))}
+                        {/* OrderDetails se importa eager (no en routes.config) porque
+                            su hook ya se comparte con Wizard/CheckoutSuccess. */}
                         <Route path='/orders/:id' element={<OrderDetails />} />
-                        <Route
-                            path='/account/addresses'
-                            element={<Address />}
-                        />
-                        <Route path='/checkout' element={<Checkout />} />
-                        <Route
-                            path='/checkout/success'
-                            element={<CheckoutSuccess />}
-                        />
-                        <Route
-                            path='/checkout/cancel'
-                            element={<CheckoutCancel />}
-                        />
                     </Route>
                 </Routes>
             </Suspense>

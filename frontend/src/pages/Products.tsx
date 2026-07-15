@@ -10,7 +10,7 @@ import {
     ProductCardSkeleton,
     ProductFilters,
 } from '@/features/products/';
-import { useNewProductDialog, useProducts } from '@/features/products/';
+import { useGetProducts, useNewProductDialog } from '@/features/products/';
 import { EmptyState, ErrorState, PageContainer } from '@/shared/components';
 import { useDebounce } from '@/shared/hooks';
 import { Button } from '@/shared/ui';
@@ -29,7 +29,7 @@ const Products = () => {
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = useProducts({
+    } = useGetProducts({
         search: debouncedSearch,
         category: selectedCategory,
         sortBy,

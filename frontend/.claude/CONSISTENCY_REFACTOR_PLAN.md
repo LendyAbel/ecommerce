@@ -63,7 +63,7 @@ ve nada:
 Unificar el patrón: `try { await mutateAsync() ... } catch (e) { notify.error(...) }` usando
 el mensaje de `ApiError` (igual que hace `Wizard.handleConfirm`).
 
-### ⬜ 1.4 `/cart` es pública pero "Proceder al pago" exige sesión
+### ✅ 1.4 `/cart` es pública pero "Proceder al pago" exige sesión
 `goToCheckout` llama `replaceCartAsync()` (endpoints de cart autenticados) **antes** de
 navegar a `/checkout`. Un usuario anónimo obtiene un 401 silencioso y no pasa nada.
 - Comprobar `user` en `Cart`: si no hay sesión, redirigir a `/auth` (idealmente con
@@ -71,24 +71,24 @@ navegar a `/checkout`. Un usuario anónimo obtiene un 401 silencioso y no pasa n
 - Alternativa mínima: dejar que `ProtectedRoute` haga la redirección y mover el
   `replaceCartAsync` al montar el `Wizard` (así el sync ocurre ya autenticado).
 
-### ⬜ 1.5 Reanudar checkout con `?orderId=` inválido → spinner infinito
+### ✅ 1.5 Reanudar checkout con `?orderId=` inválido → spinner infinito
 `Wizard` solo contempla `isResuming && !activeOrder` como "cargando". Si
 `useGetOrderDetails` falla (404, orden ajena), el spinner queda para siempre.
 Manejar `isError`: mostrar `ErrorState` con acción de volver a `/orders`.
 
-### ⬜ 1.6 Carrito local guarda el shape del servidor
+### ✅ 1.6 Carrito local guarda el shape del servidor
 `useSyncCart` pasa `Cart.cartItems` del backend (con `id`, `cartId`, `productId`) directo a
 `setCartItems(...)`, que espera `LocalCartItem[]` (`{ product, quantity }`). Los campos extra
 se persisten en localStorage y los dos modelos (item local por `product.id`, item remoto por
 `itemId`) se mezclan. Mapear explícitamente al shape local en los `onSuccess`:
 `items.map(({ product, quantity }) => ({ product, quantity }))`.
 
-### ⬜ 1.7 Restos de UI en `OrderDetails`
+### ✅ 1.7 Restos de UI en `OrderDetails`
 `src/features/orders/components/OrderDetails.tsx:58-63`: párrafo suelto
 "Direccion de envio: ..." sin estilos ni acentos que duplica el `OrderAddressCard`
 renderizado más abajo. Eliminarlo.
 
-### ⬜ 1.8 Invalidación incompleta del detalle de producto
+### ✅ 1.8 Invalidación incompleta del detalle de producto
 `useAddNewProduct`/`useDeleteProductById` invalidan `['products']` y `['categories']` pero
 **no** `['product', id]` (singular). Tras editar/borrar, el detalle cacheado queda obsoleto.
 Se resuelve de raíz con las query key factories de la Fase 2.1 (hacer el detalle hijo de la

@@ -9,7 +9,7 @@ import MultipleSelectInput from '@/shared/ui/MultipleSelectInput';
 import SingleSelectInput from '@/shared/ui/SingleSelectInput';
 import TextFieldInput from '@/shared/ui/TextFieldInput';
 
-import useAddNewProduct from '../hooks/useAddNewProduct';
+import {useAddNewProduct} from '../hooks/useProduct';
 import {
     type ProductForm,
     productFormSchema,

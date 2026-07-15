@@ -10,9 +10,11 @@ export { default as ProductDetails } from './components/ProductDetails';
 export { default as ProductFilters } from './components/ProductFilters';
 export { default as ProductCardSkeleton } from './components/skeletons/ProductCardSkeleton';
 export { default as ProductDetailsSkeleton } from './components/skeletons/ProductDetailsSkeleton';
-export { default as useFeaturedProducts } from './hooks/useFeaturedProducts';
-export { default as useNewProductDialog } from './hooks/useNewProductDialog';
-export { default as useProductById } from './hooks/useProductById';
-export { default as useProducts } from './hooks/useProducts';
-export { default as useProductsStock } from './hooks/useProductsStock';
+export {
+    useFeaturedProducts,
+    useGetProducts,
+    useNewProductDialog,
+    useProductById,
+    useProductsStock,
+} from './hooks/useProduct';
 export type { ImageForm, Product } from './schemas/productZodSchema';

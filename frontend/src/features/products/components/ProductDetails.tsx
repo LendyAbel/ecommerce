@@ -7,8 +7,8 @@ import { BackLink, ErrorState, PageContainer } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 
-import useDeleteProductById from '../hooks/useDeleteProductById';
-import useProductById from '../hooks/useProductById';
+import { useDeleteProductById } from '../hooks/useProduct';
+import { useProductById } from '../hooks/useProduct';
 import type { Product } from '../schemas/productZodSchema';
 import ProductActions from './details/ProductActions';
 import ProductImageGallery from './details/ProductImageGallery';

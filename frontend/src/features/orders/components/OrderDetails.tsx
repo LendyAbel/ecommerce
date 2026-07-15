@@ -19,7 +19,6 @@ import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
 const OrderDetails = () => {
     const { id } = useParams();
     const { order, isAdmin, isLoading, isError } = useGetOrderDetails(id!);
-    console.log(order);
 
     return (
         <PageContainer maxWidth='3xl'>
@@ -55,12 +54,6 @@ const OrderDetails = () => {
                                     } el {formatOrderDateTime(order.updatedAt)}
                                 </>
                             )}
-                        </p>
-                        <p>
-                            Direccion de envio: {order.shippingAddress?.line1},{' '}
-                            {order.shippingAddress?.line2},{' '}
-                            {order.shippingAddress?.city},{' '}
-                            {order.shippingAddress?.state}{' '}
                         </p>
 
                         <p className='text-text font-display text-3xl font-extrabold'>
