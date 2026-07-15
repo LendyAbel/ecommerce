@@ -4,10 +4,9 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAuthStore } from '@/features/auth';
-import { logger } from '@/lib/logger';
 import { useDebounce } from '@/shared/hooks';
 import { notify } from '@/shared/store/alertStore';
 import { Card } from '@/shared/ui';
@@ -23,7 +22,8 @@ interface CartItemCardProps {
 
 const CartItemCard = ({ item }: CartItemCardProps) => {
     const { product, quantity } = item;
-    const [quantityCliked, setQuantityClicked] = useState(quantity);
+    const [quantityClicked, setQuantityClicked] = useState(quantity);
+    const debounceQuantity = useDebounce(quantityClicked, 250);
 
     const { user } = useAuthStore();
 
@@ -31,52 +31,51 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
     const updateItem = useCartStore(state => state.updateItem);
     const { updateItemInBackend, removeItemInBackend } = useSyncCart();
 
-    const CART_SYNC_DEBOUNCE_TIME = 500;
-    const debounceQuantity = useDebounce(
-        quantityCliked,
-        CART_SYNC_DEBOUNCE_TIME,
-    );
     const lastSyncQuantityRef = useRef(quantity);
+
+    const notStock = quantityClicked >= (product.stock ?? 0);
+
+    const handleRemove = async () => {
+        removeItem(product.id);
+        if (user) {
+            await removeItemInBackend(product.id);
+        }
+    };
+
+    const handleUpdate = useCallback(async () => {
+        const updated = updateItem(product.id, debounceQuantity);
+        if (!updated) {
+            notify.error('No hay suficiente stock disponible');
+            setQuantityClicked(lastSyncQuantityRef.current);
+            return;
+        }
+
+        if (user) {
+            await updateItemInBackend({
+                productId: product.id,
+                quantity: debounceQuantity,
+            });
+        }
+    }, [debounceQuantity, product.id, user, updateItem, updateItemInBackend]);
+
+    const handleUpdateQuantityClick = (quant: number) => {
+        if (quantityClicked + quant <= 0) {
+            handleRemove();
+            return;
+        }
+
+        setQuantityClicked(prev => Math.max(prev + quant, 0));
+    };
 
     // useEffect para esperar el debounce de los clicks al añadir o disminuir
     // productos y sincronizarlos con el backend
     useEffect(() => {
-        // Si no hay usuario no hay que sincronizar
-        if (!user) return;
         // guard para que no haga sync en el render inicial
         if (debounceQuantity === lastSyncQuantityRef.current) return;
-
         lastSyncQuantityRef.current = debounceQuantity;
-        updateItemInBackend({
-            productId: product.id,
-            quantity: debounceQuantity,
-        }).catch(() => {
-            logger.debug('Error sincronizando cantidad del item:');
-        });
-    }, [user, debounceQuantity, product.id, updateItemInBackend]);
 
-    const handleUpdate = async (productId: string, quantity: number) => {
-        if (quantity <= 0) {
-            handleRemove(productId);
-            return;
-        }
-        console.log('hola');
-        const updated = updateItem(productId, quantity);
-        if (!updated) {
-            notify.error('No hay suficiente stock disponible');
-            return;
-        }
-
-        setQuantityClicked(quantity);
-    };
-
-    const handleRemove = async (productId: string) => {
-        removeItem(productId);
-
-        if (user) {
-            await removeItemInBackend(productId);
-        }
-    };
+        handleUpdate();
+    }, [debounceQuantity, handleUpdate]);
 
     const mainImage =
         product.images?.find(img => img.isMain)?.url ??
@@ -91,7 +90,7 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
                     opacity: 0.6,
                     '&:hover': { opacity: 1 },
                 }}
-                onClick={() => handleRemove(product.id)}
+                onClick={handleRemove}
             >
                 <DeleteOutlineIcon fontSize='small' />
             </IconButton>
@@ -137,25 +136,22 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
                             sx={{
                                 color: 'var(--color-text-60)',
                             }}
-                            onClick={() =>
-                                handleUpdate(product.id, quantity - 1)
-                            }
+                            onClick={() => handleUpdateQuantityClick(-1)}
                         >
                             <RemoveIcon fontSize='small' />
                         </IconButton>
                     </Tooltip>
                     <span className='text-text w-6 text-center text-sm font-bold'>
-                        {quantity}
+                        {quantityClicked}
                     </span>
                     <Tooltip title='Añadir uno'>
                         <IconButton
+                            disabled={notStock}
                             size='small'
                             sx={{
                                 color: 'var(--color-text-60)',
                             }}
-                            onClick={() =>
-                                handleUpdate(product.id, quantity + 1)
-                            }
+                            onClick={() => handleUpdateQuantityClick(1)}
                         >
                             <AddIcon fontSize='small' />
                         </IconButton>
@@ -163,7 +159,7 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
                 </div>
 
                 <p className='text-text text-right text-sm font-bold sm:w-20'>
-                    {formatPrice(product.price * quantity)}
+                    {formatPrice(product.price * quantityClicked)}
                 </p>
 
                 <div className='hidden sm:block'>{deleteButton}</div>
