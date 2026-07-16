@@ -34,8 +34,6 @@ const randInt = (min: number, max: number): number =>
 // Sufijo único para esta ejecución, evita colisiones de SKU/email al re-ejecutar.
 const RUN = Date.now().toString(36).toUpperCase().slice(-5);
 
-const PLACEHOLDER_IMG = 'https://placehold.co/600x600/png';
-
 const CATEGORIES = [
     'electronica',
     'gaming',
@@ -83,6 +81,101 @@ const PRODUCT_TYPES = [
     'Patinete eléctrico',
 ] as const;
 
+// Fotos reales de Wikimedia Commons (contenido verificado por título de archivo,
+// no un servicio de tags no fiable) — 2 imágenes distintas por tipo de producto.
+const PRODUCT_TYPE_IMAGES: Record<(typeof PRODUCT_TYPES)[number], [string, string]> = {
+    'Ratón inalámbrico': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/2023_Mysz_komputerowa_Logitech_G903_Lightspeed.jpg/960px-2023_Mysz_komputerowa_Logitech_G903_Lightspeed.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Computer_mouse_1_2015-02-28.JPG/960px-Computer_mouse_1_2015-02-28.JPG',
+    ],
+    'Teclado mecánico': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Backlit_keyboard.jpg/960px-Backlit_keyboard.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/QWERTY_keyboard.jpg/960px-QWERTY_keyboard.jpg',
+    ],
+    'Auriculares Bluetooth': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Headphones_on_desk.jpg/960px-Headphones_on_desk.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Studio_Headphones.jpg/960px-Studio_Headphones.jpg',
+    ],
+    'Monitor 24"': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Dell_monitor_and_keyboard.jpg/960px-Dell_monitor_and_keyboard.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/7/7a/Dual_Dell_monitor_workstation_setup.jpg',
+    ],
+    'Webcam Full HD': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/USB_webcam_for_PC.jpg/960px-USB_webcam_for_PC.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Webcam_%28Logitech_c922%29.jpg/960px-Webcam_%28Logitech_c922%29.jpg',
+    ],
+    'Altavoz portátil': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/JBL_Flip_3_bluetooth_speaker_%28DSCF2653%29.jpg/960px-JBL_Flip_3_bluetooth_speaker_%28DSCF2653%29.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/UE_Boom_2.jpg/960px-UE_Boom_2.jpg',
+    ],
+    'Disco SSD 1TB': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Toshiba_1_TB_External_USB_Hard_Drive.jpg/960px-Toshiba_1_TB_External_USB_Hard_Drive.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/WD_Blue_Hard_Disk_Drive_connected_to_Laptop_via_USB-C.jpg/960px-WD_Blue_Hard_Disk_Drive_connected_to_Laptop_via_USB-C.jpg',
+    ],
+    'Memoria USB 128GB': [
+        'https://upload.wikimedia.org/wikipedia/commons/6/67/USB_flash_drive.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Kingston_Technology_DataTraveler_G4_USB_flash_drive_USB_3.0_32_Gb.jpg/960px-Kingston_Technology_DataTraveler_G4_USB_flash_drive_USB_3.0_32_Gb.jpg',
+    ],
+    'Hub USB-C': [
+        'https://upload.wikimedia.org/wikipedia/commons/b/b2/4port-usb-hub-bus-powered.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/USB_hub_Gembird.jpg/960px-USB_hub_Gembird.jpg',
+    ],
+    'Cargador rápido': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/USB_power_adapter_for_Apple_iPod%2C_Model_A1205%2C_by_Foxlink_Technology_Ltd-1048.jpg/960px-USB_power_adapter_for_Apple_iPod%2C_Model_A1205%2C_by_Foxlink_Technology_Ltd-1048.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Apple_5W_USB_Power_Adapter_%284935%29.jpg/960px-Apple_5W_USB_Power_Adapter_%284935%29.jpg',
+    ],
+    'Silla ergonómica': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Buerostuhl_%28fcm%29.jpg/960px-Buerostuhl_%28fcm%29.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Office_chair_%284444288246%29.jpg/960px-Office_chair_%284444288246%29.jpg',
+    ],
+    'Lámpara LED escritorio': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Battery_powered_LED_desk_lamp-7420.jpg/960px-Battery_powered_LED_desk_lamp-7420.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/7/71/Concise_bamboo_eye_protection_LED_desk_lamp.jpg',
+    ],
+    'Router WiFi 6': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Netgear_N300_wireless_router_n03.jpg/960px-Netgear_N300_wireless_router_n03.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wi-fi_router.jpg/960px-Wi-fi_router.jpg',
+    ],
+    'Tablet 10"': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Tablet_computer.jpeg/960px-Tablet_computer.jpeg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Tablet_computer.jpg/960px-Tablet_computer.jpg',
+    ],
+    Smartwatch: [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/PineTime_smartwatch.jpg/960px-PineTime_smartwatch.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Samsung_Gear_S3.jpg/960px-Samsung_Gear_S3.jpg',
+    ],
+    'Powerbank 20000mAh': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/GP_PowerBank_Smart_2.jpg/960px-GP_PowerBank_Smart_2.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Power_bank.JPG/960px-Power_bank.JPG',
+    ],
+    'Micrófono USB': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Blue_Snowflake_USB_microphone.jpg/960px-Blue_Snowflake_USB_microphone.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Rode_NT-USB.jpg/960px-Rode_NT-USB.jpg',
+    ],
+    'Soporte para portátil': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Laptop_stand.jpg/960px-Laptop_stand.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/X_Shaped_Laptop_Stand_With_Telescopic_Holders.png/960px-X_Shaped_Laptop_Stand_With_Telescopic_Holders.png',
+    ],
+    'Cámara de seguridad': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/CCTV_camera_in_Poland_%281%29.jpg/960px-CCTV_camera_in_Poland_%281%29.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/e/e1/CP_Plus_CCTV_camera.jpg',
+    ],
+    'Patinete eléctrico': [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Seattle_%28WA%2C_USA%29%2C_Pike_Street%2C_E-Scooter_--_2022_--_1460.jpg/960px-Seattle_%28WA%2C_USA%29%2C_Pike_Street%2C_E-Scooter_--_2022_--_1460.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Seattle_%28WA%2C_USA%29%2C_Pine_Street%2C_E-Scooter_--_2022_--_1489.jpg/960px-Seattle_%28WA%2C_USA%29%2C_Pine_Street%2C_E-Scooter_--_2022_--_1489.jpg',
+    ],
+};
+
+// Todos los productos generados de un mismo tipo comparten estas 2 fotos reales
+// (son unidades de prueba sintéticas, no hace falta una foto única por unidad).
+const imagesForType = (type: (typeof PRODUCT_TYPES)[number]) => {
+    const [main, secondary] = PRODUCT_TYPE_IMAGES[type];
+    return [
+        { url: main, isMain: true },
+        { url: secondary, isMain: false },
+    ];
+};
+
 const PRODUCT_STATUSES: ProductStatus[] = ['published', 'discontinued', 'draft'];
 
 // 30 productos generados con datos variados
@@ -109,7 +202,7 @@ const products = Array.from({ length: 30 }, (_, i) => {
         status: status as ProductStatus,
         mainCategory,
         otherCategories: [otherCategory],
-        images: [{ url: PLACEHOLDER_IMG, isMain: true }],
+        images: imagesForType(type),
     };
 });
 
