@@ -94,7 +94,7 @@ renderizado más abajo. Eliminarlo.
 Se resuelve de raíz con las query key factories de la Fase 2.1 (hacer el detalle hijo de la
 key raíz: `['products', 'detail', id]`).
 
-### ⬜ 1.9 Verificación de fase
+### ✅ 1.9 Verificación de fase
 `npm run build` + `npm run lint` + prueba manual: registro → carrito → checkout → orden;
 registro con backend levantado comprobando cookie y GET /cart único en Network.
 
