@@ -1,5 +1,7 @@
 import z from 'zod';
 
+import { AddressSchema } from '@/features/addresses/schemas/addressSchemas';
+
 // --- Estados ---
 export const orderStatusValues = [
     'pending',
@@ -10,20 +12,6 @@ export const orderStatusValues = [
 ] as const;
 export const OrderStatusSchema = z.enum(orderStatusValues);
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
-
-// --- Dirección (libreta del usuario y copia congelada en la orden) ---
-export const AddressSchema = z.object({
-    id: z.uuid(),
-    fullName: z.string(),
-    phone: z.string().nullable().optional(),
-    line1: z.string(),
-    line2: z.string().nullable().optional(),
-    city: z.string(),
-    state: z.string().nullable().optional(),
-    postalCode: z.string(),
-    country: z.string(),
-});
-export type Address = z.infer<typeof AddressSchema>;
 
 // --- Línea de la orden (snapshot del producto al comprar) ---
 export const OrderItemSchema = z.object({

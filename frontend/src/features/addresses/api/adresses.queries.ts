@@ -1,8 +1,8 @@
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 
+import type { AddressFormInput } from '@/features/addresses/schemas/addressSchemas';
 import { queryClient } from '@/lib/queryClient';
 
-import type { AddressFormInput } from '../schemas/addressSchemas';
 import addressesService from './addresses.service';
 
 const addressesKeys = {

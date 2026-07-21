@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router';
 
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
+import { useCartStore } from '@/features/cart/store/cartStore';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Card } from '@/shared/ui';
-
-import { useSyncCart } from '../hooks/useSyncCart';
-import { useCartStore } from '../store/cartStore';
-import { formatPrice } from '../utils';
+import { formatCurrency } from '@/shared/utils/format';
 
 const CartResumen = () => {
     const { user } = useAuthStore();
@@ -44,7 +43,7 @@ const CartResumen = () => {
             <div className='text-text-60 my-4 flex justify-between text-sm'>
                 <span>Subtotal</span>
                 <span className='text-text font-semibold'>
-                    {formatPrice(totalPrice())}
+                    {formatCurrency(totalPrice())}
                 </span>
             </div>
 

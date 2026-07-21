@@ -1,14 +1,13 @@
-﻿import { apiClient } from '@/lib/api/client';
-import { validateResponse } from '@/lib/api/validateResponse';
-
-import {
+﻿import {
     type PaginatedProducts,
     PaginatedProductsSchema,
     type Product,
     type ProductFilters,
     type ProductForm,
     ProductSchema,
-} from '../schemas/productSchema';
+} from '@/features/products/schemas/productSchema';
+import { apiClient } from '@/lib/api/client';
+import { validateResponse } from '@/lib/api/validateResponse';
 
 const getProducts = async (
     filters: ProductFilters = {},

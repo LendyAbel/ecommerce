@@ -1,8 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRef } from 'react';
 
-import { logger } from '@/lib/logger';
-
 import {
     addToCartMutationOptions,
     clearCartMutationOptions,
@@ -10,8 +8,9 @@ import {
     removeCartItemMutationOptions,
     syncCartMutationOptions,
     updateCartMutationOptions,
-} from '../api/cart.queries';
-import type { CartItem, LocalCartItem } from '../types/cartTypes';
+} from '@/features/cart/api/cart.queries';
+import type { CartItem, LocalCartItem } from '@/features/cart/types/cartTypes';
+import { logger } from '@/lib/logger';
 
 export const mapBackendCartItemsToLocalCartItems = (
     items: CartItem[],

@@ -1,11 +1,11 @@
 import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
+import { getprefetchQueryOptions } from '@/features/orders/api/orders.queries';
+import type { OrderSummary } from '@/features/orders/schemas/orderSchemas';
 import { queryClient } from '@/lib/queryClient';
+import { formatCurrency, formatOrderDate } from '@/shared/utils/format';
 
-import { getprefetchQueryOptions } from '../api/orders.queries';
-import type { OrderSummary } from '../schemas/orderSchemas';
-import { formatCurrency, formatOrderDate } from '../utils/orderStatus';
 import OrderStatusBadge from './OrderStatusBadge';
 
 type OrderRowProps = {

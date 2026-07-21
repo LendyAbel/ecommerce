@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router';
 
+import { useGetOrdersList } from '@/features/orders/hooks/useOrder';
 import { Button } from '@/shared/ui';
 
-import { useGetOrdersList } from '../hooks/useOrder';
 import OrderRow from './OrderRow';
 import OrdersListSkeleton from './skeletons/OrdersListSkeleton';
 

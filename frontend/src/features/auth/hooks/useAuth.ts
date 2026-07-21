@@ -2,20 +2,19 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import {
-    mapBackendCartItemsToLocalCartItems,
-    useCartStore,
-    useSyncCart,
-} from '@/features/cart';
-import { logger } from '@/lib/logger';
-import { queryClient } from '@/lib/queryClient';
-
-import {
     loginMutationOptions,
     logoutMutationOptions,
     meQueryOptions,
     registerMutationOptions,
-} from '../api/auth.queries';
-import { useAuthStore } from '../store/authStore';
+} from '@/features/auth/api/auth.queries';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import {
+    mapBackendCartItemsToLocalCartItems,
+    useSyncCart,
+} from '@/features/cart/hooks/useSyncCart';
+import { useCartStore } from '@/features/cart/store/cartStore';
+import { logger } from '@/lib/logger';
+import { queryClient } from '@/lib/queryClient';
 
 export const useAuthBootsTrap = () => {
     const { fetchFromBackendAsync } = useSyncCart();

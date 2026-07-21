@@ -4,17 +4,16 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import { useState } from 'react';
 
-import { notify } from '@/shared/store/alertStore';
-import { Button, Modal } from '@/shared/ui';
-import { sxInputStyle } from '@/shared/utils/utils';
-
-import { useUpdateStatusOrder } from '../hooks/useOrder';
+import { useUpdateStatusOrder } from '@/features/orders/hooks/useOrder';
 import {
     type Order,
     type OrderStatus,
     orderStatusValues,
-} from '../schemas/orderSchemas';
-import { ORDER_STATUS_CONFIG } from '../utils/orderStatus';
+} from '@/features/orders/schemas/orderSchemas';
+import { ORDER_STATUS_CONFIG } from '@/features/orders/utils/orderStatus';
+import { notify } from '@/shared/store/alertStore';
+import { Button, Modal } from '@/shared/ui';
+import { sxInputStyle } from '@/shared/utils/styles';
 
 interface OrderAdminStatusSelectProps {
     order: Order;

@@ -1,13 +1,10 @@
 import { useParams } from 'react-router';
 
+import { useGetOrderDetails } from '@/features/orders/hooks/useOrder';
+import { ORDER_STATUS_CONFIG } from '@/features/orders/utils/orderStatus';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
+import { formatCurrency, formatOrderDateTime } from '@/shared/utils/format';
 
-import { useGetOrderDetails } from '../hooks/useOrder';
-import {
-    formatCurrency,
-    formatOrderDateTime,
-    ORDER_STATUS_CONFIG,
-} from '../utils/orderStatus';
 import OrderAddressCard from './OrderAddressCard';
 import OrderAdminStatusSelect from './OrderAdminStatusSelect';
 import OrderItemsCard from './OrderItemsCard';
@@ -66,7 +63,9 @@ const OrderDetails = () => {
                                 <OrderUserActions order={order} />
                             )}
                             {/* Modificar orden por el admin de manera manual escogiendo el status */}
-                            {isAdmin && <OrderAdminStatusSelect order={order} />}
+                            {isAdmin && (
+                                <OrderAdminStatusSelect order={order} />
+                            )}
                         </div>
 
                         {/* Cliente: solo lo recibe el admin desde el backend. */}

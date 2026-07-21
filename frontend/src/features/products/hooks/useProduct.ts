@@ -12,8 +12,8 @@ import {
     detailProductQueryOptions,
     featureProductQueryOptions,
     getProductQueryOptions,
-} from '../api/products.queries';
-import { type ProductFilters } from '../api/products.service';
+} from '@/features/products/api/products.queries';
+import type { ProductFilters } from '@/features/products/schemas/productSchema';
 
 /* Quieries */
 export const useGetProducts = (filters: ProductFilters = {}) => {

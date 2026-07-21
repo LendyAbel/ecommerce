@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-type BadgeVariant =
+export type BadgeVariant =
     | 'primary'
     | 'success'
     | 'warning'

@@ -1,7 +1,6 @@
 import { memo } from 'react';
 
-const formatPrice = (price: string | number) =>
-    parseFloat(String(price)).toFixed(2);
+import { formatCurrency } from '@/shared/utils/format';
 
 type ProductPriceProps = {
     price: number;
@@ -15,7 +14,7 @@ const ProductPrice = ({ price, tax, compact = false }: ProductPriceProps) => {
     if (compact) {
         return (
             <span className='text-text text-lg font-extrabold'>
-                {formatPrice(price)} €
+                {formatCurrency(price)} €
             </span>
         );
     }
@@ -23,11 +22,11 @@ const ProductPrice = ({ price, tax, compact = false }: ProductPriceProps) => {
     return (
         <div className='flex items-end gap-3'>
             <span className='text-text text-4xl font-extrabold'>
-                {formatPrice(price)} €
+                {formatCurrency(price)} €
             </span>
             {priceWithTax && (
                 <span className='text-text-60 mb-1 text-sm'>
-                    {formatPrice(priceWithTax)} € con IVA ({tax}%)
+                    {formatCurrency(priceWithTax)} € con IVA ({tax}%)
                 </span>
             )}
         </div>

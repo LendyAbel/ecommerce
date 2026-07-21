@@ -2,13 +2,13 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import { useState } from 'react';
 
+import { useDeleteAddress, useGetAddresses } from '@/features/addresses/hooks/useAddresses';
+import type { Address } from '@/features/addresses/schemas/addressSchemas';
 import { ApiError } from '@/lib/api/client';
 import { EmptyState, ErrorState } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 
-import { useDeleteAddress, useGetAddresses } from '../hooks/useAddresses';
-import type { Address } from '../schemas/addressSchemas';
 import AddressCard from './AddressCard';
 import AddressForm from './AddressForm';
 import AddressListSkeleton from './AddressListSkeleton';

@@ -1,6 +1,9 @@
 import z from 'zod';
 
-import { categoryFormSchema, categorySchema } from '@/features/categories';
+import {
+    categoryFormSchema,
+    categorySchema,
+} from '@/features/categories/schemas/categorySchema';
 
 export const imageSchema = z.object({
     id: z.string(),

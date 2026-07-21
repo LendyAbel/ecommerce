@@ -20,10 +20,7 @@ export const appRoutes: AppRouteConfig[] = [
     { path: '/products', import: () => import('@/pages/Products') },
     {
         path: '/products/:id',
-        import: () =>
-            import('@/features/products').then(m => ({
-                default: m.ProductDetails,
-            })),
+        import: () => import('@/features/products/components/ProductDetails'),
     },
     { path: '/about', import: () => import('@/pages/About') },
     { path: '/auth', import: () => import('@/pages/Authenticate') },

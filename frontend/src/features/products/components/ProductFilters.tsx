@@ -10,9 +10,8 @@ import {
     ToggleButtonGroup,
 } from '@mui/material';
 
-import { sxInputStyle } from '@/shared/utils/utils';
-
-import type { SortBy } from '../api/products.service';
+import type { SortBy } from '@/features/products/schemas/productSchema';
+import { sxInputStyle } from '@/shared/utils/styles';
 
 type ProductFiltersProps = {
     searchQuery: string;

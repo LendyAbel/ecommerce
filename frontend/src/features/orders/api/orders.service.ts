@@ -1,6 +1,3 @@
-import { apiClient } from '@/lib/api/client';
-import { validateResponse } from '@/lib/api/validateResponse';
-
 import {
     type CreateOrderInput,
     type Order,
@@ -9,7 +6,9 @@ import {
     type PaginatedOrders,
     PaginatedOrdersSchema,
     type UpdateStatusInput,
-} from '../schemas/orderSchemas';
+} from '@/features/orders/schemas/orderSchemas';
+import { apiClient } from '@/lib/api/client';
+import { validateResponse } from '@/lib/api/validateResponse';
 
 const BASE_ENDPOINT = '/orders';
 

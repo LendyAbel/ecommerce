@@ -1,5 +1,5 @@
-import { useAuthStore } from '@/features/auth';
-import { OrdersList } from '@/features/orders';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import OrdersList from '@/features/orders/components/OrdersList';
 import { PageContainer } from '@/shared/components';
 
 const Orders = () => {

@@ -1,8 +1,8 @@
 import { mutationOptions } from '@tanstack/react-query';
 
+import type { LocalCartItem } from '@/features/cart/types/cartTypes';
 import { logger } from '@/lib/logger';
 
-import type { LocalCartItem } from '../types/cartTypes';
 import cartService from './cart.service';
 
 const cartKeys = {

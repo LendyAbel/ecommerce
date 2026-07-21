@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
-import { useAuth } from '../hooks/useAuth';
-import { LoginFormSchema, RegisterFormSchema } from '../schemas/userSchema';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { LoginFormSchema, RegisterFormSchema } from '@/features/auth/schemas/userSchema';
+
 import { loginFields, registerFields } from './authFields';
 import AuthForm from './AuthForm';
 

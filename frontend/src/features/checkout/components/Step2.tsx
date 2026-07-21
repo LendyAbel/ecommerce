@@ -1,8 +1,7 @@
-import { useCartStore } from '@/features/cart';
-import { formatCurrency } from '@/features/orders';
-
-import type { CheckoutAddress } from '../types/checkoutTypes';
-import { toDisplayAddress } from '../types/checkoutTypes';
+import { useCartStore } from '@/features/cart/store/cartStore';
+import type { CheckoutAddress } from '@/features/checkout/types/checkoutTypes';
+import { toDisplayAddress } from '@/features/checkout/types/checkoutTypes';
+import { formatCurrency } from '@/shared/utils/format';
 
 type Step2Props = {
     shipping: CheckoutAddress;

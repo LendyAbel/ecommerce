@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
 
-import { OrderDetails } from '@/features/orders/';
+import OrderDetails from '@/features/orders/components/OrderDetails';
 import { ProtectedRoute } from '@/shared/components';
 
 import App from './App';

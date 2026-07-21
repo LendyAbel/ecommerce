@@ -1,6 +1,6 @@
 ﻿import { useQuery } from '@tanstack/react-query';
 
-import { getCategoriesQueryOptions } from '../api/categories.queries';
+import { getCategoriesQueryOptions } from '@/features/categories/api/categories.queries';
 
 const useCategory = () => {
     const query = useQuery(getCategoriesQueryOptions());

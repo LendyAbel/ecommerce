@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import {
+    useDeleteProductById,
+    useProductById,
+} from '@/features/products/hooks/useProduct';
+import type { Product } from '@/features/products/schemas/productSchema';
 import { ApiError } from '@/lib/api/client';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 
-import { useDeleteProductById } from '../hooks/useProduct';
-import { useProductById } from '../hooks/useProduct';
-import type { Product } from '../schemas/productSchema';
 import ProductActions from './details/ProductActions';
 import ProductImageGallery from './details/ProductImageGallery';
 import ProductPrice from './details/ProductPrice';

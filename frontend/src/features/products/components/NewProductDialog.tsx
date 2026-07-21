@@ -1,20 +1,19 @@
 import { Alert } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 
-import { useCategory } from '@/features/categories';
+import useCategory from '@/features/categories/hooks/useCategory';
+import { useAddNewProduct } from '@/features/products/hooks/useProduct';
+import {
+    type ProductForm,
+    ProductFormSchema,
+    productStatus,
+} from '@/features/products/schemas/productSchema';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 import ImagesInput from '@/shared/ui/ImagesInput';
 import MultipleSelectInput from '@/shared/ui/MultipleSelectInput';
 import SingleSelectInput from '@/shared/ui/SingleSelectInput';
 import TextFieldInput from '@/shared/ui/TextFieldInput';
-
-import { useAddNewProduct } from '../hooks/useProduct';
-import {
-    type ProductForm,
-    ProductFormSchema,
-    productStatus,
-} from '../schemas/productSchema';
 
 const formDefaultValues: ProductForm = {
     name: '',

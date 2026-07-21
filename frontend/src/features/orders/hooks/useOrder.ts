@@ -1,15 +1,14 @@
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/features/auth';
-
+import { useAuthStore } from '@/features/auth/store/authStore';
 import {
     cancelOrderMutationOptions,
     createOrderMutationOptions,
     getOrderDetailsQueryOptions,
     getOrdersListQueryOptions,
     updateOrderStatusMutationOptions,
-} from '../api/orders.queries';
-import type { OrdersFilters } from '../schemas/orderSchemas';
+} from '@/features/orders/api/orders.queries';
+import type { OrdersFilters } from '@/features/orders/schemas/orderSchemas';
 
 
 export const useGetOrdersList = (filters: OrdersFilters = {}) => {

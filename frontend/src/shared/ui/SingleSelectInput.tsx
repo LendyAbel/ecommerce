@@ -10,7 +10,7 @@ import {
 import type { AnyFieldApi } from '@tanstack/react-form';
 import { useState } from 'react';
 
-import { sxButtonStyle, sxInputStyle } from '@/shared/utils/utils';
+import { sxButtonStyle, sxInputStyle } from '@/shared/utils/styles';
 
 type SingleSelectInputProps = {
     field: AnyFieldApi;

@@ -1,9 +1,9 @@
 import { memo } from 'react';
 
-import { ProductStockBadge, useProductsStock } from '@/features/products/';
-
-import type { OrderItem } from '../schemas/orderSchemas';
-import { formatCurrency } from '../utils/orderStatus';
+import type { OrderItem } from '@/features/orders/schemas/orderSchemas';
+import ProductStockBadge from '@/features/products/components/details/ProductStockBadge';
+import { useProductsStock } from '@/features/products/hooks/useProduct';
+import { formatCurrency } from '@/shared/utils/format';
 
 type OrderItemsCardProps = {
     items: OrderItem[];

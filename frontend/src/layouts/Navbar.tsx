@@ -4,11 +4,11 @@ import { type ReactNode, useState } from 'react';
 import { NavLink } from 'react-router';
 
 import { preloadRoute } from '@/app/routePreload';
-import { ACCOUNT_LINKS } from '@/features/auth';
-import { UserMenu } from '@/features/auth';
-import { useAuth } from '@/features/auth';
-import { useAuthStore } from '@/features/auth';
-import { CartBadge } from '@/features/cart';
+import { ACCOUNT_LINKS } from '@/features/auth/components/accountLinks';
+import UserMenu from '@/features/auth/components/UserMenu';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import CartBadge from '@/features/cart/components/CartBadge';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { ThemeToggle } from '@/shared/ui';

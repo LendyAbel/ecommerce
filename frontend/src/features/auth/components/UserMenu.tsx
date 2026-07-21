@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router';
 
 import { preloadRoute } from '@/app/routePreload';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 
-import { useAuth } from '../hooks/useAuth';
-import { useAuthStore } from '../store/authStore';
 import { ACCOUNT_LINKS } from './accountLinks';
 
 const itemClass =

@@ -2,7 +2,7 @@ import { useIsMutating } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { Outlet, ScrollRestoration } from 'react-router';
 
-import { useAuthBootsTrap } from '@/features/auth/';
+import { useAuthBootsTrap } from '@/features/auth/hooks/useAuth';
 import Navbar from '@/layouts/Navbar';
 import { Alerts, GeneralLoader } from '@/shared/components';
 import { Spinner } from '@/shared/ui';

@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router';
 
-import { useAuthStore } from '@/features/auth/';
-import { ProductCard, ProductCardSkeleton } from '@/features/products/';
-import { useFeaturedProducts } from '@/features/products/';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import ProductCard from '@/features/products/components/ProductCard';
+import ProductCardSkeleton from '@/features/products/components/skeletons/ProductCardSkeleton';
+import { useFeaturedProducts } from '@/features/products/hooks/useProduct';
 
 const Home = () => {
     const user = useAuthStore(state => state.user);

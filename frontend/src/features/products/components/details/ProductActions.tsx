@@ -2,12 +2,11 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
-import { useAuthStore } from '@/features/auth';
-import { useSyncCart } from '@/features/cart';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
 import { useCartStore } from '@/features/cart/store/cartStore';
+import type { Product } from '@/features/products/schemas/productSchema';
 import { notify } from '@/shared/store/alertStore';
-
-import type { Product } from '../../schemas/productSchema';
 
 type ProductActionsProps = {
     product: Product;

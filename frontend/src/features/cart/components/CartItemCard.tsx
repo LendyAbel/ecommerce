@@ -6,15 +6,14 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
+import { useCartStore } from '@/features/cart/store/cartStore';
+import type { LocalCartItem } from '@/features/cart/types/cartTypes';
 import { useDebounce } from '@/shared/hooks';
 import { notify } from '@/shared/store/alertStore';
 import { Card } from '@/shared/ui';
-
-import { useSyncCart } from '../hooks/useSyncCart';
-import { useCartStore } from '../store/cartStore';
-import type { LocalCartItem } from '../types/cartTypes';
-import { formatPrice } from '../utils';
+import { formatCurrency } from '@/shared/utils/format';
 
 interface CartItemCardProps {
     item: LocalCartItem;
@@ -133,7 +132,7 @@ const CartItemCard = memo(function CartItemCard({ item }: CartItemCardProps) {
                     </p>
                     <p className='text-text-60 text-sm'>{product.brand}</p>
                     <p className='text-primary text-sm font-medium'>
-                        {formatPrice(product.price)} / ud.
+                        {formatCurrency(product.price)} / ud.
                     </p>
                 </div>
 
@@ -172,7 +171,7 @@ const CartItemCard = memo(function CartItemCard({ item }: CartItemCardProps) {
                 </div>
 
                 <p className='text-text text-right text-sm font-bold sm:w-20'>
-                    {formatPrice(product.price * quantityClicked)}
+                    {formatCurrency(product.price * quantityClicked)}
                 </p>
 
                 <div className='hidden sm:block'>{deleteButton}</div>

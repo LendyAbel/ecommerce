@@ -1,6 +1,5 @@
-﻿import { apiClient } from '@/lib/api/client';
-
-import type { LoginForm, RegisterForm, User } from '../schemas/userSchema';
+﻿import type { LoginForm, RegisterForm, User } from '@/features/auth/schemas/userSchema';
+import { apiClient } from '@/lib/api/client';
 
 const login = async (data: LoginForm): Promise<User | null> => {
     const res = await apiClient.post('/auth/login', data);

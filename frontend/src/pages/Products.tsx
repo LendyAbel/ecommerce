@@ -1,16 +1,20 @@
 import { useMemo, useState } from 'react';
 
-import { useAuthStore } from '@/features/auth';
-import { useCategory } from '@/features/categories';
-import type { Product, SortBy } from '@/features/products';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import useCategory from '@/features/categories/hooks/useCategory';
+import AddProductButton from '@/features/products/components/AddProductButton';
+import NewProductDialog from '@/features/products/components/NewProductDialog';
+import ProductCard from '@/features/products/components/ProductCard';
+import ProductFilters from '@/features/products/components/ProductFilters';
+import ProductCardSkeleton from '@/features/products/components/skeletons/ProductCardSkeleton';
 import {
-    AddProductButton,
-    NewProductDialog,
-    ProductCard,
-    ProductCardSkeleton,
-    ProductFilters,
-} from '@/features/products/';
-import { useGetProducts, useNewProductDialog } from '@/features/products/';
+    useGetProducts,
+    useNewProductDialog,
+} from '@/features/products/hooks/useProduct';
+import type {
+    Product,
+    SortBy,
+} from '@/features/products/schemas/productSchema';
 import { EmptyState, ErrorState, PageContainer } from '@/shared/components';
 import { useDebounce } from '@/shared/hooks';
 import { Button } from '@/shared/ui';

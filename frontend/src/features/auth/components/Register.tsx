@@ -1,7 +1,8 @@
 ﻿import { motion } from 'motion/react';
 
-import { useAuth } from '../hooks/useAuth';
-import { RegisterFormSchema } from '../schemas/userSchema';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { RegisterFormSchema } from '@/features/auth/schemas/userSchema';
+
 import { registerFields } from './authFields';
 import AuthForm from './AuthForm';
 

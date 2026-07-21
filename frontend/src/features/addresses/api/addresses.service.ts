@@ -1,11 +1,10 @@
-import { apiClient } from '@/lib/api/client';
-import { validateResponse } from '@/lib/api/validateResponse';
-
 import {
     type Address,
     type AddressFormInput,
     AddressSchema,
-} from '../schemas/addressSchemas';
+} from '@/features/addresses/schemas/addressSchemas';
+import { apiClient } from '@/lib/api/client';
+import { validateResponse } from '@/lib/api/validateResponse';
 
 const getMyAddresses = async (): Promise<Address[]> => {
     const res = await apiClient.get('/addresses');

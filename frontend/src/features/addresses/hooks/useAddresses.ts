@@ -1,13 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/features/auth/store/authStore';
-
 import {
     createAddressMutationOptions,
     deleteAddressMutationOptions,
     getAddressesQueryOptions,
     updateAddressMutationOptions,
-} from '../api/adresses.queries';
+} from '@/features/addresses/api/adresses.queries';
+import { useAuthStore } from '@/features/auth/store/authStore';
 
 export const useGetAddresses = () => {
     const { user } = useAuthStore();

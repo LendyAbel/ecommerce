@@ -1,7 +1,7 @@
 import ShoppingCart from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from 'react-router';
 
-import { useCartStore } from '../store/cartStore';
+import { useCartStore } from '@/features/cart/store/cartStore';
 
 const CartBadge = () => {
     const navigate = useNavigate();

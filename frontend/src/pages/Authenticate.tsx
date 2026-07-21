@@ -1,7 +1,10 @@
 import { useMediaQuery } from '@mui/material';
 import { useState } from 'react';
 
-import { AuthMobile, Login, Register, SlicePanel } from '@/features/auth';
+import AuthMobile from '@/features/auth/components/AuthMobile';
+import Login from '@/features/auth/components/Login';
+import Register from '@/features/auth/components/Register';
+import SlicePanel from '@/features/auth/components/SlicePanel';
 
 const Authenticate = () => {
     const [showLogin, setShowLogin] = useState(true);

@@ -2,9 +2,9 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import type { AnyFieldApi } from '@tanstack/react-form';
-import { type JSX,useState } from 'react';
+import { type JSX, useState } from 'react';
 
-import { sxInputStyle } from '@/shared/utils/utils';
+import { sxInputStyle } from '@/shared/utils/styles';
 type TextFieldInputProps = {
     field: AnyFieldApi;
     label: string;

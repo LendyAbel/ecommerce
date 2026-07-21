@@ -6,11 +6,13 @@ import {
 } from '@tanstack/react-query';
 
 import { categoryKeys } from '@/features/categories/api/categories.queries';
+import type {
+    ProductFilters,
+    ProductForm,
+} from '@/features/products/schemas/productSchema';
 import { logger } from '@/lib/logger';
 import { queryClient } from '@/lib/queryClient';
 
-import type { ProductForm } from '../schemas/productSchema';
-import type { ProductFilters } from './products.service';
 import productsService from './products.service';
 
 export const productKeys = {

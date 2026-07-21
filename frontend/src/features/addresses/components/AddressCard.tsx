@@ -2,9 +2,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { memo } from 'react';
 
+import type { Address } from '@/features/addresses/schemas/addressSchemas';
 import { Button, Card } from '@/shared/ui';
-
-import type { Address } from '../schemas/addressSchemas';
 
 type AddressCardProps = {
     address: Address;

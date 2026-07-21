@@ -1,17 +1,16 @@
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 
-import { ApiError } from '@/lib/api/client';
-import { notify } from '@/shared/store/alertStore';
-import { Button } from '@/shared/ui';
-import TextFieldInput from '@/shared/ui/TextFieldInput';
-
-import { useCreateAddress, useUpdateAddress } from '../hooks/useAddresses';
+import { useCreateAddress, useUpdateAddress } from '@/features/addresses/hooks/useAddresses';
 import {
     type Address,
     type AddressFormInput,
     AddressFormSchema,
-} from '../schemas/addressSchemas';
+} from '@/features/addresses/schemas/addressSchemas';
+import { ApiError } from '@/lib/api/client';
+import { notify } from '@/shared/store/alertStore';
+import { Button } from '@/shared/ui';
+import TextFieldInput from '@/shared/ui/TextFieldInput';
 
 const emptyValues: AddressFormInput = {
     fullName: '',

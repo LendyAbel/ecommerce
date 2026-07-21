@@ -1,7 +1,7 @@
-import type { Address } from '@/features/addresses';
+import type { Address } from '@/features/addresses/schemas/addressSchemas';
+import type { CheckoutAddress } from '@/features/checkout/types/checkoutTypes';
 import { Spinner } from '@/shared/ui';
 
-import type { CheckoutAddress } from '../types/checkoutTypes';
 import AddressPicker from './AddressPicker';
 
 type Step1Props = {

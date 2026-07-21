@@ -3,22 +3,22 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import {
-    type AddressFormInput,
     useCreateAddress,
     useGetAddresses,
-} from '@/features/addresses';
-import { useCartStore } from '@/features/cart';
+} from '@/features/addresses/hooks/useAddresses';
+import type { AddressFormInput } from '@/features/addresses/schemas/addressSchemas';
+import { useCartStore } from '@/features/cart/store/cartStore';
+import type { CheckoutAddress } from '@/features/checkout/types/checkoutTypes';
 import {
-    type Order,
     useCreateOrder,
     useGetOrderDetails,
-} from '@/features/orders';
+} from '@/features/orders/hooks/useOrder';
+import type { Order } from '@/features/orders/schemas/orderSchemas';
 import { ApiError } from '@/lib/api/client';
 import { EmptyState, ErrorState } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Spinner } from '@/shared/ui';
 
-import type { CheckoutAddress } from '../types/checkoutTypes';
 import CheckoutStepperLine from './CheckoutStepperLine';
 import Step1 from './Step1';
 import Step2 from './Step2';

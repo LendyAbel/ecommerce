@@ -5,13 +5,13 @@ import {
 } from '@tanstack/react-query';
 
 import { useCartStore } from '@/features/cart/store/cartStore';
-import { queryClient } from '@/lib/queryClient';
-
 import type {
     CreateOrderInput,
     OrdersFilters,
     OrderStatus,
-} from '../schemas/orderSchemas';
+} from '@/features/orders/schemas/orderSchemas';
+import { queryClient } from '@/lib/queryClient';
+
 import ordersService from './orders.service';
 
 const PAGE_SIZE = 6;

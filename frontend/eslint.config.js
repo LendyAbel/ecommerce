@@ -28,6 +28,23 @@ export default defineConfig([
         rules: {
             'simple-import-sort/imports': 'error',
             'simple-import-sort/exports': 'error',
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            regex: '^\\.\\./',
+                            message:
+                                'No se permiten imports relativos al padre ("../"). Usa el alias "@/" para cualquier import fuera de la carpeta actual; "./" solo dentro de la misma carpeta.',
+                        },
+                        {
+                            regex: '^@/features/[^/]+/?$',
+                            message:
+                                'No importes el barrel de una feature. Importa directamente el módulo (p. ej. "@/features/cart/store/cartStore").',
+                        },
+                    ],
+                },
+            ],
         },
     },
 ]);

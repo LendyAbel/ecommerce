@@ -1,10 +1,10 @@
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useNavigate } from 'react-router';
 
+import { useCartStore } from '@/features/cart/store/cartStore';
 import { EmptyState } from '@/shared/components';
 import { Button } from '@/shared/ui';
 
-import { useCartStore } from '../store/cartStore';
 import CartItemCard from './CartItemCard';
 
 const CartItemsList = () => {

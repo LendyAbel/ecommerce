@@ -1,4 +1,4 @@
-import { AddressBook } from '@/features/addresses';
+import AddressBook from '@/features/addresses/components/AddressBook';
 import { PageContainer } from '@/shared/components';
 
 const Address = () => {

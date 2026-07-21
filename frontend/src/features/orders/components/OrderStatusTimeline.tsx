@@ -1,9 +1,8 @@
 import { memo } from 'react';
 
+import type { OrderStatus } from '@/features/orders/schemas/orderSchemas';
+import { ORDER_FLOW, ORDER_STATUS_CONFIG } from '@/features/orders/utils/orderStatus';
 import { StepProgressLine } from '@/shared/ui';
-
-import type { OrderStatus } from '../schemas/orderSchemas';
-import { ORDER_FLOW, ORDER_STATUS_CONFIG } from '../utils/orderStatus';
 
 type OrderStatusTimelineProps = {
     status: OrderStatus;

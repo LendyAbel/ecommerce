@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+import { useCancelOrder } from '@/features/orders/hooks/useOrder';
+import type { Order } from '@/features/orders/schemas/orderSchemas';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
-
-import { useCancelOrder } from '../hooks/useOrder';
-import type { Order } from '../schemas/orderSchemas';
 
 interface OrderUserActionsProps {
     order: Order;

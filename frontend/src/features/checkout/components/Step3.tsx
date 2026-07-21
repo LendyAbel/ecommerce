@@ -2,13 +2,14 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useNavigate } from 'react-router';
 
-import { formatCurrency, type Order, OrderItemsCard } from '@/features/orders';
-import { useProductsStock } from '@/features/products';
+import { useCreateCheckout } from '@/features/checkout/hooks/useCheckout';
+import { getOrCreateIdempotencyKey } from '@/features/checkout/utils';
+import OrderItemsCard from '@/features/orders/components/OrderItemsCard';
+import type { Order } from '@/features/orders/schemas/orderSchemas';
+import { useProductsStock } from '@/features/products/hooks/useProduct';
 import { notify } from '@/shared/store/alertStore';
 import { Button } from '@/shared/ui';
-
-import { useCreateCheckout } from '../hooks/useCheckout';
-import { getOrCreateIdempotencyKey } from '../utils';
+import { formatCurrency } from '@/shared/utils/format';
 
 type Step3Props = {
     order: Order;
@@ -46,8 +47,8 @@ const Step3 = ({ order }: Step3Props) => {
                 <div className='border-warning bg-warning-20 text-warning flex items-center gap-2 rounded-2xl border p-4 text-sm font-medium'>
                     <WarningAmberIcon fontSize='small' />
                     Lo sentimos, en este momento no hay stock suficiente de
-                    alguno de los artículos de tu pedido. Espera a que
-                    volvamos a reponer.
+                    alguno de los artículos de tu pedido. Espera a que volvamos
+                    a reponer.
                 </div>
             )}
             <div className='border-border bg-surface flex flex-col items-center gap-2 rounded-2xl border p-6 text-center'>

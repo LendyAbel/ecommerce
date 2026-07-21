@@ -2,14 +2,12 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
-import { clearIdempotencyKey } from '@/features/checkout';
-import {
-    formatCurrency,
-    OrderItemsCard,
-    useGetOrderDetails,
-} from '@/features/orders';
+import { clearIdempotencyKey } from '@/features/checkout/utils';
+import OrderItemsCard from '@/features/orders/components/OrderItemsCard';
+import { useGetOrderDetails } from '@/features/orders/hooks/useOrder';
 import { ErrorState, PageContainer } from '@/shared/components';
 import { Button, Spinner } from '@/shared/ui';
+import { formatCurrency } from '@/shared/utils/format';
 
 const CheckoutSuccess = () => {
     const navigate = useNavigate();
@@ -57,9 +55,9 @@ const CheckoutSuccess = () => {
                                     Confirmando tu pago…
                                 </h1>
                                 <p className='text-text-60 max-w-sm text-sm'>
-                                    Estamos verificando el pago con Stripe.
-                                    Esto puede tardar unos segundos, no cierres
-                                    esta página.
+                                    Estamos verificando el pago con Stripe. Esto
+                                    puede tardar unos segundos, no cierres esta
+                                    página.
                                 </p>
                             </>
                         ) : (
