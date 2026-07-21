@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { ORDER_KEY } from '@/features/orders/hooks/useOrder';
+import { orderKeys } from '@/features/orders/api/orders.queries';
 
 import checkoutService from '../api/checkout.service';
 
@@ -15,7 +15,7 @@ export const useCreateCheckout = () => {
             idempotencyKey: string;
         }) => checkoutService.createCheckoutSession(orderId, idempotencyKey),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ORDER_KEY });
+            qc.invalidateQueries({ queryKey: orderKeys.all });
         },
     });
 };

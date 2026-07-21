@@ -1,42 +1,23 @@
-import {
-    useInfiniteQuery,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/features/auth';
-import { useCartStore } from '@/features/cart';
 
-import ordersService, { type OrdersFilters } from '../api/orders.service';
-import type { CreateOrderInput, OrderStatus } from '../schemas/orderSchemas';
-
-export const ORDER_KEY = ['order'];
-
-const PAGE_SIZE = 6;
+import {
+    cancelOrderMutationOptions,
+    createOrderMutationOptions,
+    getOrderDetailsQueryOptions,
+    getOrdersListQueryOptions,
+    updateOrderStatusMutationOptions,
+} from '../api/orders.queries';
+import type { OrdersFilters } from '../api/orders.service';
 
 export const useGetOrdersList = (filters: OrdersFilters = {}) => {
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
 
-    const query = useInfiniteQuery({
-        queryKey: [...ORDER_KEY, isAdmin ? 'all' : 'mine', filters],
-        queryFn: ({ pageParam }) =>
-            ordersService.getOrders(
-                {
-                    ...filters,
-                    page: pageParam,
-                    limit: PAGE_SIZE,
-                },
-                isAdmin,
-            ),
-        initialPageParam: 1,
-        getNextPageParam: lastPage => {
-            const loaded = lastPage.page * lastPage.limit;
-            return loaded < lastPage.total ? lastPage.page + 1 : undefined;
-        },
-        enabled: !!user,
-    });
+    const query = useInfiniteQuery(
+        getOrdersListQueryOptions(filters, isAdmin, !!user),
+    );
 
     const orders = query.data?.pages.flatMap(page => page.data) ?? [];
 
@@ -58,16 +39,9 @@ export const useGetOrderDetails = (
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
 
-    const query = useQuery({
-        queryKey: [...ORDER_KEY, 'detail', id, isAdmin],
-        queryFn: () => ordersService.fetchOrder(id),
-        enabled: !!id,
-        // Tras volver de Stripe el webhook puede tardar en marcar la orden como
-        // pagada; se reconsulta cada 2s mientras siga 'pending' y se detiene sola.
-        refetchInterval: pollWhilePending
-            ? query => (query.state.data?.status === 'pending' ? 2000 : false)
-            : undefined,
-    });
+    const query = useQuery(
+        getOrderDetailsQueryOptions(id, isAdmin, pollWhilePending),
+    );
 
     return {
         order: query.data,
@@ -78,39 +52,13 @@ export const useGetOrderDetails = (
 };
 
 export const useCreateOrder = () => {
-    const qc = useQueryClient();
-    return useMutation({
-        mutationFn: (data: CreateOrderInput) => ordersService.createOrder(data),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ORDER_KEY });
-            // Vacía el carrito (estado en memoria + localStorage vía persist).
-            useCartStore.getState().clearCart();
-        },
-    });
+    return useMutation(createOrderMutationOptions());
 };
 
 export const useCancelOrder = () => {
-    const qc = useQueryClient();
-    return useMutation({
-        mutationFn: (orderId: string) => ordersService.cancelOrder(orderId),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ORDER_KEY });
-        },
-    });
+    return useMutation(cancelOrderMutationOptions());
 };
 
 export const useUpdateStatusOrder = () => {
-    const qc = useQueryClient();
-    return useMutation({
-        mutationFn: ({
-            orderId,
-            status,
-        }: {
-            orderId: string;
-            status: OrderStatus;
-        }) => ordersService.updateOrderStatus({ orderId, status }),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ORDER_KEY });
-        },
-    });
+    return useMutation(updateOrderStatusMutationOptions());
 };

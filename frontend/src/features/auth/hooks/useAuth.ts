@@ -1,4 +1,5 @@
-﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import {
     mapBackendCartItemsToLocalCartItems,
@@ -6,54 +7,52 @@ import {
     useSyncCart,
 } from '@/features/cart';
 import { logger } from '@/lib/logger';
+import { queryClient } from '@/lib/queryClient';
 
-import authService from '../api/auth.service';
+import {
+    loginMutationOptions,
+    logoutMutationOptions,
+    meQueryOptions,
+    registerMutationOptions,
+} from '../api/auth.queries';
 import { useAuthStore } from '../store/authStore';
 
 export const useAuthBootsTrap = () => {
-    const setUser = useAuthStore(state => state.setUser);
-    const setAuthLoading = useAuthStore(state => state.setAuthLoading);
     const { fetchFromBackendAsync } = useSyncCart();
+    const query = useQuery(meQueryOptions());
 
-    // No se espera (fire-and-forget): el bootstrap de auth no debe bloquearse
-    // ni fallar por un error al traer el carrito. useSyncCart ya loguea el error.
-    const hydrateCartFromBackend = async () => {
-        try {
-            const cart = await fetchFromBackendAsync();
-            useCartStore
-                .getState()
-                .setCartItems(mapBackendCartItemsToLocalCartItems(cart.cartItems));
-        } catch {
-            /* empty */
+    // React Query v5 no tiene onSuccess/onSettled en useQuery, y hacer esto
+    // dentro del queryFn lo repetiría en cada refetch/retry silencioso.
+    // Reaccionamos a los cambios de `data` en su lugar.
+    useEffect(() => {
+        if (query.isPending) return;
+
+        useAuthStore.getState().setUser(query.data ?? null);
+
+        if (query.data) {
+            // No se espera (fire-and-forget): el bootstrap de auth no debe
+            // bloquearse ni fallar por un error al traer el carrito.
+            // useSyncCart ya loguea el error.
+            fetchFromBackendAsync()
+                .then(cart => {
+                    useCartStore
+                        .getState()
+                        .setCartItems(
+                            mapBackendCartItemsToLocalCartItems(cart.cartItems),
+                        );
+                })
+                .catch(() => {
+                    /* empty */
+                });
         }
-    };
 
-    const meQuery = useQuery({
-        queryKey: ['user'],
-        queryFn: async () => {
-            setAuthLoading(true);
-            try {
-                const data = await authService.me();
-                setUser(data);
-                hydrateCartFromBackend();
-                return data;
-            } catch (error) {
-                setUser(null);
-                logger.debug(error);
-                return null;
-            } finally {
-                setAuthLoading(false);
-            }
-        },
-        retry: false,
-    });
-    return { meQuery };
+        useAuthStore.getState().setAuthLoading(false);
+    }, [query.data, query.isPending, fetchFromBackendAsync]);
+
+    return query;
 };
 
 export const useAuth = () => {
-    const queryClient = useQueryClient();
-
-    const setUser = useAuthStore(state => state.setUser);
     const { syncWithBackendAsync } = useSyncCart();
 
     const syncCartOnAuth = async () => {
@@ -65,33 +64,30 @@ export const useAuth = () => {
     };
 
     const loginMutation = useMutation({
-        mutationFn: authService.login,
+        ...loginMutationOptions(),
         onSuccess: async user => {
-            setUser(user);
+            useAuthStore.getState().setUser(user);
             await syncCartOnAuth();
             logger.debug('Sync Cart on LOGIN');
         },
     });
 
     const registerMutation = useMutation({
-        mutationFn: authService.register,
+        ...registerMutationOptions(),
         onSuccess: async user => {
-            setUser(user);
+            useAuthStore.getState().setUser(user);
             await syncCartOnAuth();
             logger.debug('Sync Cart on REGISTER');
         },
     });
 
     const logoutMutation = useMutation({
-        mutationKey: ['logout'],
-        mutationFn: async () => {
-            logger.debug('Sync Cart on LOGOUT');
-            await authService.logout();
-        },
+        ...logoutMutationOptions(),
         onSuccess: () => {
-            setUser(null);
+            useAuthStore.getState().setUser(null);
             useCartStore.getState().clearCart();
             queryClient.clear();
+            logger.debug('Sync Cart on LOGOUT');
         },
     });
 

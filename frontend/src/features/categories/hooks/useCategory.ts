@@ -1,19 +1,16 @@
 ﻿import { useQuery } from '@tanstack/react-query';
 
-import categoriesService from '../api/categories.service';
+import { getCategoriesQueryOptions } from '../api/categories.queries';
 
 const useCategory = () => {
-    const {
-        data,
-        isLoading: isCategoriesLoading,
-        isError: isCategoriesError,
-    } = useQuery({
-        queryKey: ['categories'],
-        queryFn: categoriesService.getCategories,
-    });
+    const query = useQuery(getCategoriesQueryOptions());
 
-    const categories = data ?? [];
+    const categories = query.data ?? [];
 
-    return { categories, isCategoriesLoading, isCategoriesError };
+    return {
+        categories,
+        isCategoriesLoading: query.isLoading,
+        isCategoriesError: query.isError,
+    };
 };
 export default useCategory;
