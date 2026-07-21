@@ -6,7 +6,7 @@ import { preloadProductDetails } from '@/app/routePreload';
 import { queryClient } from '@/lib/queryClient';
 
 import productsService from '../api/products.service';
-import type { Product } from '../schemas/productZodSchema';
+import type { Product } from '../schemas/productSchema';
 import ProductPrice from './details/ProductPrice';
 import ProductStockBadge from './details/ProductStockBadge';
 

@@ -17,4 +17,4 @@ export {
     useProductById,
     useProductsStock,
 } from './hooks/useProduct';
-export type { ImageForm, Product } from './schemas/productZodSchema';
+export type { ImageForm, Product } from './schemas/productSchema';

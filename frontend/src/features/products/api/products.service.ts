@@ -8,7 +8,7 @@ import {
     type ProductFilters,
     type ProductForm,
     ProductSchema,
-} from '../schemas/productZodSchema';
+} from '../schemas/productSchema';
 
 const getProducts = async (
     filters: ProductFilters = {},

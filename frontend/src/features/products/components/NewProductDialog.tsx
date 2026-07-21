@@ -14,7 +14,7 @@ import {
     type ProductForm,
     ProductFormSchema,
     productStatus,
-} from '../schemas/productZodSchema';
+} from '../schemas/productSchema';
 
 const formDefaultValues: ProductForm = {
     name: '',

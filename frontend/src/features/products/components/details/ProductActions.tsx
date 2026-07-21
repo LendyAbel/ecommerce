@@ -7,7 +7,7 @@ import { useSyncCart } from '@/features/cart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { notify } from '@/shared/store/alertStore';
 
-import type { Product } from '../../schemas/productZodSchema';
+import type { Product } from '../../schemas/productSchema';
 
 type ProductActionsProps = {
     product: Product;

@@ -9,7 +9,7 @@ import { categoryKeys } from '@/features/categories/api/categories.queries';
 import { logger } from '@/lib/logger';
 import { queryClient } from '@/lib/queryClient';
 
-import type { ProductForm } from '../schemas/productZodSchema';
+import type { ProductForm } from '../schemas/productSchema';
 import type { ProductFilters } from './products.service';
 import productsService from './products.service';
 

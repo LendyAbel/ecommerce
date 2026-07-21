@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 
-import type { Image, ProductStatus } from '../../schemas/productZodSchema';
+import type { Image, ProductStatus } from '../../schemas/productSchema';
 
 const statusConfig: Record<string, { label: string; className: string }> = {
     published: { label: 'Disponible', className: 'bg-success-20 text-success' },

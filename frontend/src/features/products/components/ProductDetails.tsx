@@ -9,7 +9,7 @@ import { Button, Modal } from '@/shared/ui';
 
 import { useDeleteProductById } from '../hooks/useProduct';
 import { useProductById } from '../hooks/useProduct';
-import type { Product } from '../schemas/productZodSchema';
+import type { Product } from '../schemas/productSchema';
 import ProductActions from './details/ProductActions';
 import ProductImageGallery from './details/ProductImageGallery';
 import ProductPrice from './details/ProductPrice';
