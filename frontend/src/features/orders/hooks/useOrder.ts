@@ -9,7 +9,8 @@ import {
     getOrdersListQueryOptions,
     updateOrderStatusMutationOptions,
 } from '../api/orders.queries';
-import type { OrdersFilters } from '../api/orders.service';
+import type { OrdersFilters } from '../schemas/orderSchemas';
+
 
 export const useGetOrdersList = (filters: OrdersFilters = {}) => {
     const { user } = useAuthStore();

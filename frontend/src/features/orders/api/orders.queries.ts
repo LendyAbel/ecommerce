@@ -7,8 +7,12 @@ import {
 import { useCartStore } from '@/features/cart/store/cartStore';
 import { queryClient } from '@/lib/queryClient';
 
-import type { CreateOrderInput, OrderStatus } from '../schemas/orderSchemas';
-import ordersService, { type OrdersFilters } from './orders.service';
+import type {
+    CreateOrderInput,
+    OrdersFilters,
+    OrderStatus,
+} from '../schemas/orderSchemas';
+import ordersService from './orders.service';
 
 const PAGE_SIZE = 6;
 
@@ -16,7 +20,7 @@ export const orderKeys = {
     all: ['order'] as const,
     list: (isAdmin: boolean, filters: OrdersFilters) =>
         [...orderKeys.all, isAdmin ? 'all' : 'mine', filters] as const,
-    detail: (id: string, isAdmin: boolean) =>
+    detail: (id: string, isAdmin = false) =>
         [...orderKeys.all, 'detail', id, isAdmin] as const,
 
     create: () => [...orderKeys.all, 'create'] as const,
@@ -44,6 +48,12 @@ export const getOrdersListQueryOptions = (
         enabled,
     });
 
+export const getprefetchQueryOptions = (id: string) =>
+    queryOptions({
+        queryKey: orderKeys.detail(id),
+        queryFn: () => ordersService.getOrderById(id),
+    });
+
 export const getOrderDetailsQueryOptions = (
     id: string,
     isAdmin: boolean,
@@ -51,7 +61,7 @@ export const getOrderDetailsQueryOptions = (
 ) =>
     queryOptions({
         queryKey: orderKeys.detail(id, isAdmin),
-        queryFn: () => ordersService.fetchOrder(id),
+        queryFn: () => ordersService.getOrderById(id),
         enabled: !!id,
         // Tras volver de Stripe el webhook puede tardar en marcar la orden como
         // pagada; se reconsulta cada 2s mientras siga 'pending' y se detiene sola.

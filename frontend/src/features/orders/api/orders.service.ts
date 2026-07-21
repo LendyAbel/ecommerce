@@ -1,30 +1,17 @@
 import { apiClient } from '@/lib/api/client';
+import { validateResponse } from '@/lib/api/validateResponse';
 
-import type {
-    CreateOrderInput,
-    Order,
-    OrderStatus,
-    OrderSummary,
+import {
+    type CreateOrderInput,
+    type Order,
+    OrderSchema,
+    type OrdersFilters,
+    type PaginatedOrders,
+    PaginatedOrdersSchema,
+    type UpdateStatusInput,
 } from '../schemas/orderSchemas';
 
-const BASE_ENPOINT = '/orders';
-
-export type OrdersFilters = {
-    page?: number;
-    limit?: number;
-};
-
-export type PaginatedOrders = {
-    data: OrderSummary[];
-    total: number;
-    page: number;
-    limit: number;
-};
-
-type UpdateStatusInput = {
-    orderId: string;
-    status: OrderStatus;
-};
+const BASE_ENDPOINT = '/orders';
 
 const getOrders = async (
     filters: OrdersFilters,
@@ -35,39 +22,47 @@ const getOrders = async (
     if (filters.page) params.page = String(filters.page);
     if (filters.limit) params.limit = String(filters.limit);
 
-    const endpoint = isAdmin ? `${BASE_ENPOINT}/all` : BASE_ENPOINT;
+    const endpoint = isAdmin ? `${BASE_ENDPOINT}/all` : BASE_ENDPOINT;
     const res = await apiClient.get(endpoint, { params });
-    return res.data;
+    return validateResponse(PaginatedOrdersSchema, res.data, 'GET /orders/all');
 };
 
-const fetchOrder = async (orderId: string): Promise<Order> => {
-    const res = await apiClient.get(`${BASE_ENPOINT}/${orderId}`);
-    return res.data;
+const getOrderById = async (orderId: string): Promise<Order> => {
+    const res = await apiClient.get(`${BASE_ENDPOINT}/${orderId}`);
+    return validateResponse(OrderSchema, res.data, `GET /orders/${orderId}`);
 };
 
 const createOrder = async (data: CreateOrderInput): Promise<Order> => {
-    const res = await apiClient.post(BASE_ENPOINT, data);
-    return res.data;
+    const res = await apiClient.post(BASE_ENDPOINT, data);
+    return validateResponse(OrderSchema, res.data, 'POST /orders/');
 };
 
 const cancelOrder = async (orderId: string): Promise<Order> => {
-    const res = await apiClient.patch(`${BASE_ENPOINT}/${orderId}/cancel`);
-    return res.data;
+    const res = await apiClient.patch(`${BASE_ENDPOINT}/${orderId}/cancel`);
+    return validateResponse(
+        OrderSchema,
+        res.data,
+        `PATCH /orders/${orderId}/cancel`,
+    );
 };
 
 const updateOrderStatus = async ({
     orderId,
     status,
 }: UpdateStatusInput): Promise<Order> => {
-    const res = await apiClient.patch(`${BASE_ENPOINT}/${orderId}/status`, {
+    const res = await apiClient.patch(`${BASE_ENDPOINT}/${orderId}/status`, {
         status,
     });
-    return res.data;
+    return validateResponse(
+        OrderSchema,
+        res.data,
+        `GET /orders/${orderId}/status`,
+    );
 };
 
 export default {
     getOrders,
-    fetchOrder,
+    getOrderById,
     createOrder,
     cancelOrder,
     updateOrderStatus,

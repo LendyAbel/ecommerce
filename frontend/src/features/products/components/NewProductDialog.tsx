@@ -9,10 +9,10 @@ import MultipleSelectInput from '@/shared/ui/MultipleSelectInput';
 import SingleSelectInput from '@/shared/ui/SingleSelectInput';
 import TextFieldInput from '@/shared/ui/TextFieldInput';
 
-import {useAddNewProduct} from '../hooks/useProduct';
+import { useAddNewProduct } from '../hooks/useProduct';
 import {
     type ProductForm,
-    productFormSchema,
+    ProductFormSchema,
     productStatus,
 } from '../schemas/productZodSchema';
 
@@ -44,7 +44,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
 
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
-        validators: { onBlur: productFormSchema, onSubmit: productFormSchema },
+        validators: { onBlur: ProductFormSchema, onSubmit: ProductFormSchema },
         onSubmit: async ({ value }) => {
             await addNewProduct(value);
             onClose();

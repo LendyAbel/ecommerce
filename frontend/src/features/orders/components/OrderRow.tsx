@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 
 import { queryClient } from '@/lib/queryClient';
 
-import ordersService from '../api/orders.service';
+import { getprefetchQueryOptions } from '../api/orders.queries';
 import type { OrderSummary } from '../schemas/orderSchemas';
 import { formatCurrency, formatOrderDate } from '../utils/orderStatus';
 import OrderStatusBadge from './OrderStatusBadge';
@@ -21,10 +21,7 @@ const OrderRow = ({ order }: OrderRowProps) => {
     const navigate = useNavigate();
 
     const prefetchDetail = useCallback(() => {
-        queryClient.prefetchQuery({
-            queryKey: ['order', 'detail', order.id],
-            queryFn: () => ordersService.fetchOrder(order.id),
-        });
+        queryClient.prefetchQuery(getprefetchQueryOptions(order.id));
     }, [order.id]);
 
     return (

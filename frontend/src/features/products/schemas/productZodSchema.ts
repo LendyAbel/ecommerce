@@ -16,7 +16,7 @@ export const productStatus = ['published', 'draft', 'discontinued'] as const;
 export const statusSchema = z.enum(productStatus, 'Obligatorio');
 export type ProductStatus = z.infer<typeof statusSchema>;
 
-export const productSchema = z.object({
+export const ProductSchema = z.object({
     id: z.uuid(),
     sku: z
         .string()
@@ -61,9 +61,9 @@ export const productSchema = z.object({
         .optional(),
     images: z.array(imageSchema).optional(),
 });
-export type Product = z.infer<typeof productSchema>;
+export type Product = z.infer<typeof ProductSchema>;
 
-export const productFormSchema = productSchema
+export const ProductFormSchema = ProductSchema
     .omit({ id: true, images: true, mainCategory: true, categories: true })
     .extend({
         mainCategory: categoryFormSchema.min(1, 'Obligatorio'),
@@ -75,4 +75,25 @@ export const productFormSchema = productSchema
                 'Marca una principal',
             ),
     });
-export type ProductForm = z.infer<typeof productFormSchema>;
+export type ProductForm = z.infer<typeof ProductFormSchema>;
+
+export const sortBy = ['price_asc', 'price_desc', 'newest', 'oldest'] as const;
+export const SortBySchema = z.enum(sortBy);
+export type SortBy = z.infer<typeof SortBySchema>;
+
+export const ProductFiltersSchema = z.object({
+    search: z.string().optional(),
+    category: z.string().optional(),
+    sortBy: SortBySchema.optional(),
+    page: z.number().optional(),
+    limit: z.number().optional(),
+});
+export type ProductFilters = z.infer<typeof ProductFiltersSchema>;
+
+export const PaginatedProductsSchema = z.object({
+    data: ProductSchema.array(),
+    total: z.number(),
+    page: z.number(),
+    limit: z.number(),
+});
+export type PaginatedProducts = z.infer<typeof PaginatedProductsSchema>;

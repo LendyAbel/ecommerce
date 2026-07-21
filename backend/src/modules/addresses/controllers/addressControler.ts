@@ -9,7 +9,7 @@ import addressServices from '../services/addressServices';
 
 export const listAddresses = async (req: Request, res: Response) => {
     const addresses = await addressServices.listAddresses(req.user!.userId);
-    res.status(200).json({ addresses });
+    res.status(200).json( addresses );
 };
 
 export const createAddress = async (req: Request, res: Response) => {

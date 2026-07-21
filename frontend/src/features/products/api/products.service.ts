@@ -1,23 +1,14 @@
 ﻿import { apiClient } from '@/lib/api/client';
+import { validateResponse } from '@/lib/api/validateResponse';
 
-import type { Product, ProductForm } from '../schemas/productZodSchema';
-
-export type SortBy = 'price_asc' | 'price_desc' | 'newest' | 'oldest';
-
-export type ProductFilters = {
-    search?: string;
-    category?: string;
-    sortBy?: SortBy;
-    page?: number;
-    limit?: number;
-};
-
-export type PaginatedProducts = {
-    data: Product[];
-    total: number;
-    page: number;
-    limit: number;
-};
+import {
+    type PaginatedProducts,
+    PaginatedProductsSchema,
+    type Product,
+    type ProductFilters,
+    type ProductForm,
+    ProductSchema,
+} from '../schemas/productZodSchema';
 
 const getProducts = async (
     filters: ProductFilters = {},
@@ -29,22 +20,22 @@ const getProducts = async (
     if (filters.page) params.page = String(filters.page);
     if (filters.limit) params.limit = String(filters.limit);
     const res = await apiClient.get('/products', { params });
-    return res.data;
+    return validateResponse(PaginatedProductsSchema, res.data, 'GET /products');
 };
 
 const getProductById = async (id: string): Promise<Product> => {
     const res = await apiClient.get(`/products/${id}`);
-    return res.data;
+    return validateResponse(ProductSchema, res.data, `GET /products/${id}`);
 };
 
 const addNewProduct = async (product: ProductForm): Promise<Product> => {
     const res = await apiClient.post('/products', product);
-    return res.data;
+    return validateResponse(ProductSchema, res.data, 'POST /products/');
 };
 
 const deleteProductById = async (id: string): Promise<Product> => {
     const res = await apiClient.delete(`/products/${id}`);
-    return res.data;
+    return validateResponse(ProductSchema, res.data, `DELETE /products/${id}`);
 };
 
 export default {

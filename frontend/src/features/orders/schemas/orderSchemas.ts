@@ -101,3 +101,23 @@ export const CreateOrderSchema = z.object({
     billingAddress: AddressInputSchema.optional(),
 });
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
+
+export const PaginatedOrdersSchema = z.object({
+    data: OrderSummarySchema.array(),
+    total: z.number(),
+    page: z.number(),
+    limit: z.number(),
+});
+export type PaginatedOrders = z.infer<typeof PaginatedOrdersSchema>;
+
+export const OrdersFiltersSchema = z.object({
+    page: z.number().optional(),
+    limit: z.number().optional(),
+});
+export type OrdersFilters = z.infer<typeof OrdersFiltersSchema>;
+
+export const UpdateStatusInputSchema = z.object({
+    orderId: z.string(),
+    status: OrderStatusSchema,
+});
+export type UpdateStatusInput = z.infer<typeof UpdateStatusInputSchema>;
