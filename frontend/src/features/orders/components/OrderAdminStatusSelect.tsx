@@ -13,7 +13,7 @@ import {
 import { ORDER_STATUS_CONFIG } from '@/features/orders/utils/orderStatus';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
-import { sxInputStyle } from '@/shared/utils/styles';
+import { sxInputStyle } from '@/shared/utils/muiStyles';
 
 interface OrderAdminStatusSelectProps {
     order: Order;

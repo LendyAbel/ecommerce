@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 
 import type { SortBy } from '@/features/products/schemas/productSchema';
-import { sxInputStyle } from '@/shared/utils/styles';
+import { sxInputStyle } from '@/shared/utils/muiStyles';
 
 type ProductFiltersProps = {
     searchQuery: string;

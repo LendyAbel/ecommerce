@@ -4,7 +4,7 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import type { AnyFieldApi } from '@tanstack/react-form';
 import { type JSX, useState } from 'react';
 
-import { sxInputStyle } from '@/shared/utils/styles';
+import { sxInputStyle } from '@/shared/utils/muiStyles';
 type TextFieldInputProps = {
     field: AnyFieldApi;
     label: string;
