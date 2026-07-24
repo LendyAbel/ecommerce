@@ -10,6 +10,7 @@ import { useAuthStore } from '@/features/auth/store/authStore';
 import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import type { LocalCartItem } from '@/features/cart/types/cartTypes';
+import { ApiError } from '@/lib/api/client';
 import { useDebounce } from '@/shared/hooks';
 import { notify } from '@/shared/store/alertStore';
 import { Card } from '@/shared/ui';
@@ -50,7 +51,15 @@ const CartItemCard = memo(function CartItemCard({ item }: CartItemCardProps) {
     const handleRemove = async () => {
         removeItem(product.id);
         if (user) {
-            await removeItemInBackend(product.id);
+            try {
+                await removeItemInBackend(product.id);
+            } catch (error) {
+                notify.error(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'No se pudo eliminar el producto del carrito. Inténtalo de nuevo.',
+                );
+            }
         }
     };
 
@@ -64,10 +73,18 @@ const CartItemCard = memo(function CartItemCard({ item }: CartItemCardProps) {
         lastSyncQuantityRef.current = debounceQuantity;
 
         if (user) {
-            await updateItemInBackend({
-                productId: product.id,
-                quantity: debounceQuantity,
-            });
+            try {
+                await updateItemInBackend({
+                    productId: product.id,
+                    quantity: debounceQuantity,
+                });
+            } catch (error) {
+                notify.error(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'No se pudo actualizar la cantidad. Inténtalo de nuevo.',
+                );
+            }
         }
     }, [debounceQuantity, product.id, user, updateItem, updateItemInBackend]);
 

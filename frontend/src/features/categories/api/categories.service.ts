@@ -1,4 +1,4 @@
-﻿import type { Category } from '@/features/categories/schemas/categorySchema';
+﻿import type { Category } from '@/features/categories/schemas/categorySchemas';
 import { apiClient } from '@/lib/api/client';
 
 const getCategories = async (): Promise<Category[]> => {

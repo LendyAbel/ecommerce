@@ -1,23 +1,23 @@
 import z from 'zod';
 
 import {
-    categoryFormSchema,
-    categorySchema,
-} from '@/features/categories/schemas/categorySchema';
+    CategoryFormSchema,
+    CategorySchema,
+} from '@/features/categories/schemas/categorySchemas';
 
-export const imageSchema = z.object({
+export const ImageSchema = z.object({
     id: z.string(),
     url: z.url('URL no válida'),
     isMain: z.boolean(),
 });
-export type Image = z.infer<typeof imageSchema>;
+export type Image = z.infer<typeof ImageSchema>;
 
-export const imageFormSchema = imageSchema.omit({ id: true });
-export type ImageForm = z.infer<typeof imageFormSchema>;
+export const ImageFormSchema = ImageSchema.omit({ id: true });
+export type ImageForm = z.infer<typeof ImageFormSchema>;
 
 export const productStatus = ['published', 'draft', 'discontinued'] as const;
-export const statusSchema = z.enum(productStatus, 'Obligatorio');
-export type ProductStatus = z.infer<typeof statusSchema>;
+export const StatusSchema = z.enum(productStatus, 'Obligatorio');
+export type ProductStatus = z.infer<typeof StatusSchema>;
 
 export const ProductSchema = z.object({
     id: z.uuid(),
@@ -44,7 +44,7 @@ export const ProductSchema = z.object({
         .number('Obligatorio')
         .min(0, 'No puede ser negativo')
         .max(100, 'Máximo 100%'),
-    status: statusSchema,
+    status: StatusSchema,
     shortDescription: z
         .string()
         .trim()
@@ -55,24 +55,24 @@ export const ProductSchema = z.object({
         .trim()
         .max(2000, 'Máximo 2000 caracteres')
         .optional(),
-    mainCategory: categorySchema.required(),
-    categories: z.array(categorySchema).optional(),
+    mainCategory: CategorySchema.required(),
+    categories: z.array(CategorySchema).optional(),
     stock: z
         .number('Debe ser un número')
         .int('Debe ser un número entero')
         .min(0, 'No puede ser negativo')
         .optional(),
-    images: z.array(imageSchema).optional(),
+    images: z.array(ImageSchema).optional(),
 });
 export type Product = z.infer<typeof ProductSchema>;
 
 export const ProductFormSchema = ProductSchema
     .omit({ id: true, images: true, mainCategory: true, categories: true })
     .extend({
-        mainCategory: categoryFormSchema.min(1, 'Obligatorio'),
-        categories: z.array(categoryFormSchema),
+        mainCategory: CategoryFormSchema.min(1, 'Obligatorio'),
+        categories: z.array(CategoryFormSchema),
         images: z
-            .array(imageFormSchema)
+            .array(ImageFormSchema)
             .refine(
                 images => images.length === 0 || images.some(img => img.isMain),
                 'Marca una principal',

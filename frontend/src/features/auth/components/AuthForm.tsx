@@ -55,7 +55,7 @@ function AuthForm<TValues extends Record<string, string>>({
             setServerError(null);
             try {
                 await onAuthenticate(value);
-                notify.info(successMessage);
+                notify.success(successMessage);
                 navigate('/products');
             } catch (error) {
                 setServerError(

@@ -2,7 +2,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import { useState } from 'react';
 
-import { useDeleteAddress, useGetAddresses } from '@/features/addresses/hooks/useAddresses';
+import { useAddresses, useDeleteAddress } from '@/features/addresses/hooks/useAddresses';
 import type { Address } from '@/features/addresses/schemas/addressSchemas';
 import { ApiError } from '@/lib/api/client';
 import { EmptyState, ErrorState } from '@/shared/components';
@@ -19,7 +19,7 @@ import AddressListSkeleton from './AddressListSkeleton';
  * que las tarjetas se mantengan presentacionales.
  */
 const AddressBook = () => {
-    const { data: addresses, isLoading, isError, refetch } = useGetAddresses();
+    const { data: addresses, isLoading, isError, refetch } = useAddresses();
     const deleteAddress = useDeleteAddress();
 
     // Diálogo de formulario: `null` = cerrado, `'new'` = crear, Address = editar.
@@ -36,7 +36,7 @@ const AddressBook = () => {
         try {
             await deleteAddress.mutateAsync(toDelete.id);
             setToDelete(null);
-            notify.info('Dirección eliminada');
+            notify.success('Dirección eliminada');
         } catch (error) {
             notify.error(
                 error instanceof ApiError

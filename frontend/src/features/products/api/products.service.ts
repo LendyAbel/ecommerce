@@ -5,7 +5,7 @@
     type ProductFilters,
     type ProductForm,
     ProductSchema,
-} from '@/features/products/schemas/productSchema';
+} from '@/features/products/schemas/productSchemas';
 import { apiClient } from '@/lib/api/client';
 import { validateResponse } from '@/lib/api/validateResponse';
 
@@ -27,7 +27,7 @@ const getProductById = async (id: string): Promise<Product> => {
     return validateResponse(ProductSchema, res.data, `GET /products/${id}`);
 };
 
-const addNewProduct = async (product: ProductForm): Promise<Product> => {
+const createProduct = async (product: ProductForm): Promise<Product> => {
     const res = await apiClient.post('/products', product);
     return validateResponse(ProductSchema, res.data, 'POST /products/');
 };
@@ -40,6 +40,6 @@ const deleteProductById = async (id: string): Promise<Product> => {
 export default {
     getProducts,
     getProductById,
-    addNewProduct,
+    createProduct,
     deleteProductById,
 };

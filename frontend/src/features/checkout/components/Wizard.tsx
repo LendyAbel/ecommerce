@@ -3,16 +3,13 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import {
+    useAddresses,
     useCreateAddress,
-    useGetAddresses,
 } from '@/features/addresses/hooks/useAddresses';
 import type { AddressFormInput } from '@/features/addresses/schemas/addressSchemas';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import type { CheckoutAddress } from '@/features/checkout/types/checkoutTypes';
-import {
-    useCreateOrder,
-    useGetOrderDetails,
-} from '@/features/orders/hooks/useOrder';
+import { useCreateOrder, useOrder } from '@/features/orders/hooks/useOrder';
 import type { Order } from '@/features/orders/schemas/orderSchemas';
 import { ApiError } from '@/lib/api/client';
 import { EmptyState, ErrorState } from '@/shared/components';
@@ -36,7 +33,7 @@ const Wizard = () => {
     const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
 
     const { data: addresses = [], isLoading: addressesLoading } =
-        useGetAddresses();
+        useAddresses();
     const createAddress = useCreateAddress();
     const createOrder = useCreateOrder();
 
@@ -45,7 +42,7 @@ const Wizard = () => {
     // Modo «reanudar»: se entra con ?orderId=... desde una orden pendiente. Se
     // carga la orden y se salta directo al paso 3 (sin pasar por 1 y 2).
     const { order: resumedOrder, isError: errorResumeOrder } =
-        useGetOrderDetails(resumeOrderId);
+        useOrder(resumeOrderId);
     const isResuming = !!resumeOrderId;
 
     // Orden a mostrar en el paso 3: la recién creada o la reanudada.

@@ -7,16 +7,16 @@ import {
 import { useState } from 'react';
 
 import {
-    addNewProductMutationOptions,
+    createProductMutationOptions,
     deleteProductMutationOptions,
     detailProductQueryOptions,
     featureProductQueryOptions,
     getProductQueryOptions,
 } from '@/features/products/api/products.queries';
-import type { ProductFilters } from '@/features/products/schemas/productSchema';
+import type { ProductFilters } from '@/features/products/schemas/productSchemas';
 
 /* Quieries */
-export const useGetProducts = (filters: ProductFilters = {}) => {
+export const useProducts = (filters: ProductFilters = {}) => {
     const query = useInfiniteQuery(getProductQueryOptions(filters));
 
     // Aplana las páginas en una sola lista para la rejilla.
@@ -26,8 +26,8 @@ export const useGetProducts = (filters: ProductFilters = {}) => {
     return {
         products,
         total,
-        isProductsLoading: query.isLoading,
-        isProductsError: query.isError,
+        isLoading: query.isLoading,
+        isError: query.isError,
         fetchNextPage: query.fetchNextPage,
         hasNextPage: query.hasNextPage,
         isFetchingNextPage: query.isFetchingNextPage,
@@ -39,26 +39,26 @@ export const useFeaturedProducts = (limit = 4) => {
 
     return {
         featured: query.data?.data ?? [],
-        isFeaturedLoading: query.isLoading,
-        isFeaturedError: query.isError,
+        isLoading: query.isLoading,
+        isError: query.isError,
     };
 };
 
-export const useProductById = (id: string) => {
+export const useProduct = (id: string) => {
     const query = useQuery(detailProductQueryOptions(id));
 
     const product = query.data ?? null;
 
     return {
         product,
-        isProductLoading: query.isLoading,
-        isProductError: query.isError,
+        isLoading: query.isLoading,
+        isError: query.isError,
     };
 };
 
 /**
  * Trae el stock actual de un conjunto de productos (p. ej. las líneas de una
- * orden) en paralelo. Usa la misma queryKey que `useProductById` para
+ * orden) en paralelo. Usa la misma queryKey que `useProduct` para
  * compartir caché y evitar refetches duplicados.
  */
 export const useProductsStock = (productIds: (string | null | undefined)[]) => {
@@ -82,19 +82,19 @@ export const useProductsStock = (productIds: (string | null | undefined)[]) => {
 };
 
 /* Mutaciones */
-export const useAddNewProduct = () => {
-    const mutation = useMutation(addNewProductMutationOptions());
+export const useCreateProduct = () => {
+    const mutation = useMutation(createProductMutationOptions());
     return {
-        addNewProduct: mutation.mutateAsync,
+        createProduct: mutation.mutateAsync,
         isPending: mutation.isPending,
         isError: mutation.isError,
     };
 };
 
-export const useDeleteProductById = () => {
+export const useDeleteProduct = () => {
     const mutation = useMutation(deleteProductMutationOptions());
     return {
-        deleteProductById: mutation.mutateAsync,
+        deleteProduct: mutation.mutateAsync,
         isPending: mutation.isPending,
         isSuccess: mutation.isSuccess,
     };

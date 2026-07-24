@@ -1,4 +1,4 @@
-﻿import type { Product } from '@/features/products/schemas/productSchema';
+﻿import type { Product } from '@/features/products/schemas/productSchemas';
 
 export type LocalCartItem = {
     quantity: number;

@@ -48,7 +48,7 @@ export const getOrdersListQueryOptions = (
         enabled,
     });
 
-export const getprefetchQueryOptions = (id: string) =>
+export const prefetchOrderDetailQueryOptions = (id: string) =>
     queryOptions({
         queryKey: orderKeys.detail(id),
         queryFn: () => ordersService.getOrderById(id),

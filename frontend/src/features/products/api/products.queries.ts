@@ -9,7 +9,7 @@ import { categoryKeys } from '@/features/categories/api/categories.queries';
 import type {
     ProductFilters,
     ProductForm,
-} from '@/features/products/schemas/productSchema';
+} from '@/features/products/schemas/productSchemas';
 import { logger } from '@/lib/logger';
 import { queryClient } from '@/lib/queryClient';
 
@@ -22,7 +22,7 @@ export const productKeys = {
     feature: (limit: number) => [...productKeys.all, 'feature', limit] as const,
     detail: (id: string) => [...productKeys.all, 'detail', id] as const,
 
-    new: () => [...productKeys.all, 'new'] as const,
+    create: () => [...productKeys.all, 'create'] as const,
     delete: () => [...productKeys.all, 'delete'] as const,
 };
 const PAGE_SIZE = 6;
@@ -57,11 +57,11 @@ export const detailProductQueryOptions = (id: string) =>
         enabled: !!id,
     });
 
-export const addNewProductMutationOptions = () =>
+export const createProductMutationOptions = () =>
     mutationOptions({
-        mutationKey: productKeys.new(),
+        mutationKey: productKeys.create(),
         mutationFn: (newProductData: ProductForm) =>
-            productsService.addNewProduct(newProductData),
+            productsService.createProduct(newProductData),
         onSuccess: async () => {
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: productKeys.all }),

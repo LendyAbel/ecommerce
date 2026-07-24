@@ -21,7 +21,7 @@ const OrderUserActions = ({ order }: OrderUserActionsProps) => {
         try {
             await cancelOrder.mutateAsync(order.id);
             setConfirmCancel(false);
-            notify.info('Pedido cancelado');
+            notify.success('Pedido cancelado');
         } catch (error) {
             notify.error(
                 error instanceof ApiError

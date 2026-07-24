@@ -1,20 +1,20 @@
 import { useMemo, useState } from 'react';
 
 import { useAuthStore } from '@/features/auth/store/authStore';
-import useCategory from '@/features/categories/hooks/useCategory';
+import { useCategories } from '@/features/categories/hooks/useCategory';
 import AddProductButton from '@/features/products/components/AddProductButton';
 import NewProductDialog from '@/features/products/components/NewProductDialog';
 import ProductCard from '@/features/products/components/ProductCard';
 import ProductFilters from '@/features/products/components/ProductFilters';
 import ProductCardSkeleton from '@/features/products/components/skeletons/ProductCardSkeleton';
 import {
-    useGetProducts,
     useNewProductDialog,
+    useProducts,
 } from '@/features/products/hooks/useProduct';
 import type {
     Product,
     SortBy,
-} from '@/features/products/schemas/productSchema';
+} from '@/features/products/schemas/productSchemas';
 import { EmptyState, ErrorState, PageContainer } from '@/shared/components';
 import { useDebounce } from '@/shared/hooks';
 import { Button } from '@/shared/ui';
@@ -28,12 +28,12 @@ const Products = () => {
 
     const {
         products,
-        isProductsError,
-        isProductsLoading,
+        isError,
+        isLoading,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = useGetProducts({
+    } = useProducts({
         search: debouncedSearch,
         category: selectedCategory,
         sortBy,
@@ -41,7 +41,7 @@ const Products = () => {
     const userRole = useAuthStore(state => state.user?.role);
     const newProductDialog = useNewProductDialog();
 
-    const { categories } = useCategory();
+    const { categories } = useCategories();
     // Memoizado para no crear un array nuevo en cada render (p.ej. al teclear),
     // lo que rompería la memoización de ProductFilters / Select.
     const categoriesList = useMemo(
@@ -49,7 +49,7 @@ const Products = () => {
         [categories],
     );
 
-    if (isProductsLoading) {
+    if (isLoading) {
         return (
             <PageContainer maxWidth='6xl'>
                 <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
@@ -61,7 +61,7 @@ const Products = () => {
         );
     }
 
-    if (isProductsError) {
+    if (isError) {
         return (
             <PageContainer maxWidth='6xl'>
                 <ErrorState message='No pudimos cargar los productos. Inténtalo de nuevo en unos instantes.' />

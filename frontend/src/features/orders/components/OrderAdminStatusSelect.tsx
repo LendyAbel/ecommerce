@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import { useState } from 'react';
 
-import { useUpdateStatusOrder } from '@/features/orders/hooks/useOrder';
+import { useUpdateOrderStatus } from '@/features/orders/hooks/useOrder';
 import {
     type Order,
     type OrderStatus,
@@ -20,7 +20,7 @@ interface OrderAdminStatusSelectProps {
 }
 
 const OrderAdminStatusSelect = ({ order }: OrderAdminStatusSelectProps) => {
-    const updateStatus = useUpdateStatusOrder();
+    const updateStatus = useUpdateOrderStatus();
     const [status, setStatus] = useState<OrderStatus | ''>(order?.status ?? '');
     const [confirmStatusChange, setConfirmStatusChange] = useState(false);
 
@@ -28,7 +28,7 @@ const OrderAdminStatusSelect = ({ order }: OrderAdminStatusSelectProps) => {
         if (!order || status === '') return;
         await updateStatus.mutateAsync({ orderId: order.id, status });
         setConfirmStatusChange(false);
-        notify.info('Status modificado');
+        notify.success('Status modificado');
     };
 
     const handleCancelChange = () => {

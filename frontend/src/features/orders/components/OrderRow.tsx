@@ -1,7 +1,7 @@
 import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
-import { getprefetchQueryOptions } from '@/features/orders/api/orders.queries';
+import { prefetchOrderDetailQueryOptions } from '@/features/orders/api/orders.queries';
 import type { OrderSummary } from '@/features/orders/schemas/orderSchemas';
 import { queryClient } from '@/lib/queryClient';
 import { formatCurrency, formatOrderDate } from '@/shared/utils/format';
@@ -14,14 +14,14 @@ type OrderRowProps = {
 
 /**
  * Fila de la lista de pedidos. Al mostrar intención (hover/focus) precarga el
- * detalle reutilizando la misma key/fetcher que `useGetOrderDetails`, de modo
+ * detalle reutilizando la misma key/fetcher que `useOrder`, de modo
  * que abrir el pedido es instantáneo (el `staleTime` global evita el refetch).
  */
 const OrderRow = ({ order }: OrderRowProps) => {
     const navigate = useNavigate();
 
     const prefetchDetail = useCallback(() => {
-        queryClient.prefetchQuery(getprefetchQueryOptions(order.id));
+        queryClient.prefetchQuery(prefetchOrderDetailQueryOptions(order.id));
     }, [order.id]);
 
     return (

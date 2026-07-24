@@ -3,8 +3,8 @@ import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
 import { preloadProductDetails } from '@/app/routePreload';
-import productsService from '@/features/products/api/products.service';
-import type { Product } from '@/features/products/schemas/productSchema';
+import { detailProductQueryOptions } from '@/features/products/api/products.queries';
+import type { Product } from '@/features/products/schemas/productSchemas';
 import { queryClient } from '@/lib/queryClient';
 
 import ProductPrice from './details/ProductPrice';
@@ -20,14 +20,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
         product.images?.find(i => i.isMain)?.url ?? product.images?.[0]?.url;
 
     // Al mostrar intención (hover/focus) precargamos el chunk del detalle y
-    // sus datos, reutilizando la misma key/fetcher que `useProductById`. Así la
+    // sus datos, reutilizando la misma key/fetcher que `useProduct`. Así la
     // navegación al detalle es instantánea (staleTime global evita refetch).
     const prefetchDetails = useCallback(() => {
         preloadProductDetails();
-        queryClient.prefetchQuery({
-            queryKey: ['product', product.id],
-            queryFn: () => productsService.getProductById(product.id),
-        });
+        queryClient.prefetchQuery(detailProductQueryOptions(product.id));
     }, [product.id]);
 
     return (

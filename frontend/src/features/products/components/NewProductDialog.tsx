@@ -1,13 +1,13 @@
 import { Alert } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 
-import useCategory from '@/features/categories/hooks/useCategory';
-import { useAddNewProduct } from '@/features/products/hooks/useProduct';
+import { useCategories } from '@/features/categories/hooks/useCategory';
+import { useCreateProduct } from '@/features/products/hooks/useProduct';
 import {
     type ProductForm,
     ProductFormSchema,
     productStatus,
-} from '@/features/products/schemas/productSchema';
+} from '@/features/products/schemas/productSchemas';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 import ImagesInput from '@/shared/ui/ImagesInput';
@@ -37,15 +37,15 @@ type NewProductDialogProps = {
 };
 
 const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
-    const { categories } = useCategory();
+    const { categories } = useCategories();
 
-    const { addNewProduct, isPending, isError } = useAddNewProduct();
+    const { createProduct, isPending, isError } = useCreateProduct();
 
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
         validators: { onBlur: ProductFormSchema, onSubmit: ProductFormSchema },
         onSubmit: async ({ value }) => {
-            await addNewProduct(value);
+            await createProduct(value);
             onClose();
             reset();
             notify.success('Producto añadido correctamente');

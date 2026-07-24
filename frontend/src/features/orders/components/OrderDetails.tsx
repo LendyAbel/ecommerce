@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 
-import { useGetOrderDetails } from '@/features/orders/hooks/useOrder';
+import { useOrder } from '@/features/orders/hooks/useOrder';
 import { ORDER_STATUS_CONFIG } from '@/features/orders/utils/orderStatus';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
 import { formatCurrency, formatOrderDateTime } from '@/shared/utils/format';
@@ -15,7 +15,7 @@ import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
 
 const OrderDetails = () => {
     const { id } = useParams();
-    const { order, isAdmin, isLoading, isError } = useGetOrderDetails(id!);
+    const { order, isAdmin, isLoading, isError } = useOrder(id!);
 
     return (
         <PageContainer maxWidth='3xl'>

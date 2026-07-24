@@ -5,7 +5,8 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
 import { useCartStore } from '@/features/cart/store/cartStore';
-import type { Product } from '@/features/products/schemas/productSchema';
+import type { Product } from '@/features/products/schemas/productSchemas';
+import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 
 type ProductActionsProps = {
@@ -17,7 +18,7 @@ const ProductActions = ({ product }: ProductActionsProps) => {
     const { user } = useAuthStore();
     const { addItemToBackend } = useSyncCart();
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         const added = addItem({ product });
 
         if (!added) {
@@ -26,7 +27,16 @@ const ProductActions = ({ product }: ProductActionsProps) => {
         }
 
         if (user) {
-            addItemToBackend({ productId: product.id, quantity: 1 });
+            try {
+                await addItemToBackend({ productId: product.id, quantity: 1 });
+            } catch (error) {
+                notify.error(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'No se pudo añadir el producto al carrito. Inténtalo de nuevo.',
+                );
+                return;
+            }
         }
         notify.success('Producto añadido al carrito');
     };

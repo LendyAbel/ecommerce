@@ -1,6 +1,9 @@
 import z from 'zod';
 
-import { AddressSchema } from '@/features/addresses/schemas/addressSchemas';
+import {
+    AddressFormSchema,
+    AddressSchema,
+} from '@/features/addresses/schemas/addressSchemas';
 
 // --- Estados ---
 export const orderStatusValues = [
@@ -65,28 +68,14 @@ export const OrderSchema = z.object({
 });
 export type Order = z.infer<typeof OrderSchema>;
 
-// --- Input para crear una orden (payload al backend) ---
-// Dirección escrita en el checkout y usada solo para esta orden (no se guarda
-// en la libreta). Coincide con AddressInputSchema del backend.
-export const AddressInputSchema = z.object({
-    fullName: z.string().min(1),
-    phone: z.string().optional(),
-    line1: z.string().min(1),
-    line2: z.string().optional(),
-    city: z.string().min(1),
-    state: z.string().optional(),
-    postalCode: z.string().min(1),
-    country: z.string().min(1),
-});
-export type AddressInput = z.infer<typeof AddressInputSchema>;
-
-// Cada dirección llega como id de la libreta O como dirección inline, no ambas.
+// Cada dirección llega como id de la libreta O como dirección inline (misma
+// forma que `AddressFormSchema` de la libreta, no se guarda), no ambas.
 // Si no se envían datos de facturación, el backend factura a la de envío.
 export const CreateOrderSchema = z.object({
     shippingAddressId: z.uuid().optional(),
-    shippingAddress: AddressInputSchema.optional(),
+    shippingAddress: AddressFormSchema.optional(),
     billingAddressId: z.uuid().optional(),
-    billingAddress: AddressInputSchema.optional(),
+    billingAddress: AddressFormSchema.optional(),
 });
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 

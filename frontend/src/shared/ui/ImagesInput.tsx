@@ -12,7 +12,7 @@ import {
 import type { AnyFieldApi } from '@tanstack/react-form';
 import z from 'zod';
 
-import type { ImageForm } from '@/features/products/schemas/productSchema';
+import type { ImageForm } from '@/features/products/schemas/productSchemas';
 import { sxButtonStyle, sxInputStyle } from '@/shared/utils/muiStyles';
 
 type ImagesInputProps = {

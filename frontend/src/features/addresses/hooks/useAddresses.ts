@@ -8,7 +8,7 @@ import {
 } from '@/features/addresses/api/adresses.queries';
 import { useAuthStore } from '@/features/auth/store/authStore';
 
-export const useGetAddresses = () => {
+export const useAddresses = () => {
     const { user } = useAuthStore();
     return useQuery(getAddressesQueryOptions(!!user));
 };

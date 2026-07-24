@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { User } from '@/features/auth/schemas/userSchema';
+import type { User } from '@/features/auth/schemas/userSchemas';
 
 type AuthStore = {
     user: User | null;

@@ -3,10 +3,10 @@ import { useNavigate, useParams } from 'react-router';
 
 import { useAuthStore } from '@/features/auth/store/authStore';
 import {
-    useDeleteProductById,
-    useProductById,
+    useDeleteProduct,
+    useProduct,
 } from '@/features/products/hooks/useProduct';
-import type { Product } from '@/features/products/schemas/productSchema';
+import type { Product } from '@/features/products/schemas/productSchemas';
 import { ApiError } from '@/lib/api/client';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
@@ -20,10 +20,10 @@ import ProductDetailsSkeleton from './skeletons/ProductDetailsSkeleton';
 
 const ProductDetails = () => {
     const { id } = useParams();
-    const { product, isProductError, isProductLoading } = useProductById(id!);
+    const { product, isError, isLoading } = useProduct(id!);
     const userRole = useAuthStore(state => state.user?.role);
     const images = product?.images ?? [];
-    const { deleteProductById, isPending } = useDeleteProductById();
+    const { deleteProduct, isPending } = useDeleteProduct();
     const navigate = useNavigate();
 
     const [toDelete, setToDelete] = useState<Product | null>(null);
@@ -32,10 +32,10 @@ const ProductDetails = () => {
         if (!toDelete) return;
 
         try {
-            await deleteProductById(id!);
+            await deleteProduct(id!);
             setToDelete(null);
             navigate('/products');
-            notify.info('Producto eliminado');
+            notify.success('Producto eliminado');
         } catch (error) {
             notify.error(
                 error instanceof ApiError
@@ -45,7 +45,7 @@ const ProductDetails = () => {
         }
     };
 
-    if (isProductLoading) {
+    if (isLoading) {
         return (
             <PageContainer maxWidth='5xl'>
                 <BackLink backLink='/products' backPageName='Productos' />
@@ -54,7 +54,7 @@ const ProductDetails = () => {
         );
     }
 
-    if (isProductError || !product) {
+    if (isError || !product) {
         return (
             <PageContainer maxWidth='5xl'>
                 <BackLink backLink='/products' backPageName='Productos' />

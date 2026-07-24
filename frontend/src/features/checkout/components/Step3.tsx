@@ -7,6 +7,7 @@ import { getOrCreateIdempotencyKey } from '@/features/checkout/utils';
 import OrderItemsCard from '@/features/orders/components/OrderItemsCard';
 import type { Order } from '@/features/orders/schemas/orderSchemas';
 import { useProductsStock } from '@/features/products/hooks/useProduct';
+import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { Button } from '@/shared/ui';
 import { formatCurrency } from '@/shared/utils/format';
@@ -34,11 +35,19 @@ const Step3 = ({ order }: Step3Props) => {
             notify.error('No hay suficiente stock disponible');
             return;
         }
-        const { url } = await createCheckout.mutateAsync({
-            orderId: order.id,
-            idempotencyKey,
-        });
-        window.location.href = url;
+        try {
+            const { url } = await createCheckout.mutateAsync({
+                orderId: order.id,
+                idempotencyKey,
+            });
+            window.location.href = url;
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo iniciar el pago. Inténtalo de nuevo.',
+            );
+        }
     };
 
     return (

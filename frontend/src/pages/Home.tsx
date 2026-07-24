@@ -7,7 +7,7 @@ import { useFeaturedProducts } from '@/features/products/hooks/useProduct';
 
 const Home = () => {
     const user = useAuthStore(state => state.user);
-    const { featured, isFeaturedLoading } = useFeaturedProducts(4);
+    const { featured, isLoading } = useFeaturedProducts(4);
 
     return (
         <div className='bg-bg'>
@@ -53,7 +53,7 @@ const Home = () => {
                 </h2>
 
                 <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4'>
-                    {isFeaturedLoading
+                    {isLoading
                         ? Array.from({ length: 4 }).map((_, i) => (
                               <ProductCardSkeleton key={i} />
                           ))
@@ -62,7 +62,7 @@ const Home = () => {
                           ))}
                 </div>
 
-                {!isFeaturedLoading && featured.length > 0 && (
+                {!isLoading && featured.length > 0 && (
                     <div className='mt-8 text-center'>
                         <NavLink
                             to='/products'

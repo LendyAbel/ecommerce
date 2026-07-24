@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 
-import { useGetOrdersList } from '@/features/orders/hooks/useOrder';
+import { useOrders } from '@/features/orders/hooks/useOrder';
 import { Button } from '@/shared/ui';
 
 import OrderRow from './OrderRow';
@@ -16,7 +16,7 @@ const OrdersList = () => {
         hasNextPage,
         fetchNextPage,
         isFetchingNextPage,
-    } = useGetOrdersList({});
+    } = useOrders({});
 
     if (isLoading) return <OrdersListSkeleton />;
 

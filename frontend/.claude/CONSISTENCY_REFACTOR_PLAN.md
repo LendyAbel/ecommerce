@@ -102,7 +102,7 @@ registro con backend levantado comprobando cookie y GET /cart único en Network.
 
 ## Fase 2 — Capa de datos consistente (React Query + servicios)
 
-### ⬜ 2.1 Query keys centralizadas por feature (factory + `queryOptions`)
+### ✅ 2.1 Query keys centralizadas por feature (factory + `queryOptions`)
 Hoy conviven: `PRODUCT_KEY = ['products']` exportado, `['product', id]` literal,
 `['products','featured']` literal, `ORDER_KEY = ['order']` local, `KEY = ['addresses']`
 local, `['user']`, `['categories']`. Además `ProductCard.prefetchDetails` y
@@ -123,14 +123,14 @@ se desincroniza en silencio.
 - Hooks y prefetch consumen las mismas options: `queryClient.prefetchQuery(productDetailOptions(id))`.
 - Repetir para orders, addresses, categories y user. Invalidaciones vía `xKeys.all`.
 
-### ⬜ 2.2 `useSyncCart`: no suscribirse a estado que solo usan callbacks
+### ✅ 2.2 `useSyncCart`: no suscribirse a estado que solo usan callbacks
 `const { cart } = useCartStore()` suscribe el hook (y a quien lo use: `Navbar` vía `useAuth`,
 `Cart`…) a cada cambio del carrito solo para leerlo dentro de `mutationFn`
 (`rerender-defer-reads`). Además el closure puede capturar un cart desactualizado.
 - Leer dentro de la mutación: `useCartStore.getState().cart.cartItems`.
 - Mantener solo `setCartItems` como suscripción (es una función estable).
 
-### ⬜ 2.3 Unificar convención de hooks de datos
+### ✅ 2.3 Unificar convención de hooks de datos
 Conviven tres estilos: `useProducts` (default export, nombres `isProductsLoading`),
 `useGetAddresses`/`useCreateAddress` (named, devuelven la query entera),
 `useGetOrdersList` (named, objeto renombrado). Elegir **una** convención y aplicarla:
@@ -140,7 +140,7 @@ Conviven tres estilos: `useProducts` (default export, nombres `isProductsLoading
 - Actualizar consumidores. Eliminar renombres tipo `isProductsLoading` → usar `isLoading`
   en el punto de uso.
 
-### ⬜ 2.4 Unificar servicios API
+### ✅ 2.4 Unificar servicios API
 - Corregir typo `BASE_ENPOINT` → `BASE_ENDPOINT` (`orders.service.ts`).
 - Naming uniforme de métodos: `getX`/`getXById`/`createX`/`updateX`/`deleteX`
   (hoy `fetchOrder` vs `getProductById` vs `addNewProduct`).
@@ -152,15 +152,17 @@ Conviven tres estilos: `useProducts` (default export, nombres `isProductsLoading
   products/orders devuelven el recurso directo. Elegir "recurso directo" y ajustar
   `addressControler.listAddresses` + `addresses.service.ts` del frontend.
 
-### ⬜ 2.5 Verificación de fase
+### ✅ 2.5 Verificación de fase
 Build + lint + Network: un solo GET por recurso al navegar, prefetch en hover sigue
 funcionando (Products → detalle instantáneo), invalidaciones correctas al crear/borrar.
+
+`npm run build` y `npm run lint` en verde tras unificar hooks/servicios (2026-07-24).
 
 ---
 
 ## Fase 3 — Consistencia de escritura de código
 
-### ⬜ 3.1 Política única de imports
+### ✅ 3.1 Política única de imports
 Mezcla actual: `@/features/...` absolutos (products, auth, shared) vs relativos
 `../api/...` (addresses, orders, checkout). Además, se importa a veces del barrel
 (`@/features/auth`) y a veces deep (`@/features/auth/store/authStore`) para lo mismo.
@@ -171,7 +173,10 @@ Mezcla actual: `@/features/...` absolutos (products, auth, shared) vs relativos
 - Hacerlo cumplir con ESLint: `no-restricted-imports` (patrón `../*`) — ya está
   `simple-import-sort`; añadir la regla y pasar `--fix` + ajuste manual.
 
-### ⬜ 3.2 Naming uniforme de schemas y tipos
+Ya cumplido: `eslint.config.js` tiene `no-restricted-imports` bloqueando `../` y los
+barrels de features (`^@/features/[^/]+/?$`); grep de `'../` en `src` = 0 coincidencias.
+
+### ✅ 3.2 Naming uniforme de schemas y tipos
 - Archivos: `productZodSchema.ts` / `categoryZodSchema.ts` vs `orderSchemas.ts` /
   `addressSchemas.ts` / `userSchema.ts` → renombrar todos a `<feature>Schemas.ts`.
 - Identificadores: `productSchema` (camel) vs `OrderSchema`/`AddressSchema` (Pascal) →
@@ -183,7 +188,15 @@ Mezcla actual: `@/features/...` absolutos (products, auth, shared) vs relativos
 - `BadgeVariant` está redefinido en `orders/utils/orderStatus.ts` → exportarlo desde
   `shared/ui/Badge.tsx` e importarlo.
 
-### ⬜ 3.3 Formateadores compartidos (precio/fecha)
+Aplicado (2026-07-24): archivos renombrados a `<feature>Schemas.ts` (`userSchemas.ts`,
+`categorySchemas.ts`, `productSchemas.ts`; `addressSchemas.ts`/`orderSchemas.ts` ya lo
+cumplían). Identificadores unificados a **PascalCase para instancias** (`CategorySchema`,
+`ImageSchema`, `StatusSchema`, etc. — se invirtió la recomendación original del plan porque
+la mayoría del código ya usaba Pascal: 20 instancias Pascal vs 5 camel antes del cambio).
+`orderSchemas.ts` ya no define `AddressInputSchema`: reutiliza `AddressFormSchema` de
+`features/addresses` (misma forma exacta). `BadgeVariant` ya se importaba desde `Badge.tsx`.
+
+### ✅ 3.3 Formateadores compartidos (precio/fecha)
 Tres formatos de precio conviven y **se ven distintos en pantalla**:
 - `Cart.tsx` → `toLocaleString('es-ES', { currency: 'EUR' })`
 - `ProductPrice.tsx` → `parseFloat(...).toFixed(2) + ' €'`
@@ -195,29 +208,45 @@ Crear `shared/utils/format.ts` con `formatCurrency`, `formatDate`, `formatDateTi
 usarlo en Cart, ProductPrice, Step2/3, OrderRow, OrderItemsCard, etc. Un solo formato de
 precio en toda la app.
 
-### ⬜ 3.4 Reubicar utilidades mal colocadas
+### ✅ 3.4 Reubicar utilidades mal colocadas
 `shared/utils/utils.ts` mezcla estilos MUI (`sxInputStyle`, `sxButtonStyle`) con un hook
 (`useDebounce`). Separar:
 - `shared/hooks/useDebounce.ts`
 - `shared/ui/muiStyles.ts` (o junto a los inputs que los usan)
 
-### ⬜ 3.5 Convención de notificaciones
+Ya separados: `shared/hooks/useDebounce.ts` y `shared/utils/muiStyles.ts`.
+
+### ✅ 3.5 Convención de notificaciones
 Mensajes inconsistentes: login exitoso → `notify.info`, dirección creada → `notify.success`,
 vaciar carrito → `notify.warning`, producto eliminado → `notify.info`. Definir y aplicar:
 - `success` = operación completada (login, registro, crear/editar/eliminar con éxito).
 - `info` = neutral informativo. `warning` = acción destructiva reversible o aviso.
 - `error` = fallo (siempre desde el catch, con mensaje de `ApiError`).
 
-### ⬜ 3.6 Actualizar `CLAUDE.md` (raíz del repo)
+Aplicado (2026-07-24): `AuthForm` (login/registro), `OrderUserActions` (cancelar pedido) y
+`OrderAdminStatusSelect` (cambio de estado) pasaron de `notify.info` a `notify.success`.
+`CartResumen` (vaciar carrito) pasó de `notify.success` a `notify.warning` (destructivo
+reversible). Además se añadió `try/catch` + `notify.error` donde faltaba feedback de fallo:
+`Step3.handlePay` (creación de sesión de Stripe), `CartItemCard.handleRemove/handleUpdate`
+(sync de carrito con backend) y `ProductActions.handleAddToCart` (además, `notify.success`
+ahora se dispara solo tras confirmar con el backend, no antes).
+
+### ✅ 3.6 Actualizar `CLAUDE.md` (raíz del repo)
 La sección de arquitectura describe la estructura antigua (`src/store`, `src/services`,
 `src/hooks`, ProtectedRoute "guards /cart") y omite los módulos cart/orders/addresses del
 backend y las páginas orders/checkout/addresses. Reescribir el árbol de frontend
 (feature-based) y backend, rutas actuales, y documentar las convenciones decididas en
 este plan (imports, hooks, keys, notify, formatters).
 
-### ⬜ 3.7 Verificación de fase
+El árbol de arquitectura ya estaba al día. Añadida la sección "Frontend conventions" en
+`CLAUDE.md` con el resumen de imports, hooks de datos, query keys, schemas, formatters,
+notificaciones y manejo de errores en mutaciones (2026-07-24).
+
+### ✅ 3.7 Verificación de fase
 `npm run lint` sin errores con las reglas nuevas; `npm run build`; grep de `../` en imports
 = 0 (fuera de mismos directorios); revisar que la UI muestra un único formato de precio.
+
+`npm run build` y `npm run lint` en verde tras 3.2-3.6 (2026-07-24).
 
 ---
 

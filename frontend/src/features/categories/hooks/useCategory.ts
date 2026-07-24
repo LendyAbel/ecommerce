@@ -1,16 +1,15 @@
-﻿import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { getCategoriesQueryOptions } from '@/features/categories/api/categories.queries';
 
-const useCategory = () => {
+export const useCategories = () => {
     const query = useQuery(getCategoriesQueryOptions());
 
     const categories = query.data ?? [];
 
     return {
         categories,
-        isCategoriesLoading: query.isLoading,
-        isCategoriesError: query.isError,
+        isLoading: query.isLoading,
+        isError: query.isError,
     };
 };
-export default useCategory;

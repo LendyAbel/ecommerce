@@ -10,7 +10,7 @@ import {
     ToggleButtonGroup,
 } from '@mui/material';
 
-import type { SortBy } from '@/features/products/schemas/productSchema';
+import type { SortBy } from '@/features/products/schemas/productSchemas';
 import { sxInputStyle } from '@/shared/utils/muiStyles';
 
 type ProductFiltersProps = {

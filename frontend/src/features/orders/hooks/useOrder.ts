@@ -11,7 +11,7 @@ import {
 import type { OrdersFilters } from '@/features/orders/schemas/orderSchemas';
 
 
-export const useGetOrdersList = (filters: OrdersFilters = {}) => {
+export const useOrders = (filters: OrdersFilters = {}) => {
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
 
@@ -32,7 +32,7 @@ export const useGetOrdersList = (filters: OrdersFilters = {}) => {
     };
 };
 
-export const useGetOrderDetails = (
+export const useOrder = (
     id: string,
     { pollWhilePending = false }: { pollWhilePending?: boolean } = {},
 ) => {
@@ -59,6 +59,6 @@ export const useCancelOrder = () => {
     return useMutation(cancelOrderMutationOptions());
 };
 
-export const useUpdateStatusOrder = () => {
+export const useUpdateOrderStatus = () => {
     return useMutation(updateOrderStatusMutationOptions());
 };

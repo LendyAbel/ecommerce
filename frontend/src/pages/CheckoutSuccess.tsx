@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 
 import { clearIdempotencyKey } from '@/features/checkout/utils';
 import OrderItemsCard from '@/features/orders/components/OrderItemsCard';
-import { useGetOrderDetails } from '@/features/orders/hooks/useOrder';
+import { useOrder } from '@/features/orders/hooks/useOrder';
 import { ErrorState, PageContainer } from '@/shared/components';
 import { Button, Spinner } from '@/shared/ui';
 import { formatCurrency } from '@/shared/utils/format';
@@ -14,7 +14,7 @@ const CheckoutSuccess = () => {
     const [params] = useSearchParams();
     const orderId = params.get('orderId') ?? '';
 
-    const { order, isLoading, isError } = useGetOrderDetails(orderId, {
+    const { order, isLoading, isError } = useOrder(orderId, {
         pollWhilePending: true,
     });
 

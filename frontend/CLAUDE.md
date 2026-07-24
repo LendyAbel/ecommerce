@@ -146,6 +146,17 @@ Note: barrel `index.ts` files exist **only** under `shared/` (`shared/ui`, `shar
 
 **Key dependencies**: React 19, MUI 7 + Emotion, Tailwind v4 (`@tailwindcss/vite`, no separate config file), `react-router` v7 (unified package, not `react-router-dom`), `@tanstack/react-query` v5, `@tanstack/react-form` (not React Hook Form), `zustand` v5, `zod` v4, `axios`, `motion` (Framer Motion successor), `@stripe/react-stripe-js` + `@stripe/stripe-js`. ESLint uses flat config with `eslint-plugin-simple-import-sort`; Prettier has `prettier-plugin-tailwindcss`.
 
+### Frontend conventions
+
+- **Imports**: alias `@/` for anything outside the current folder (enforced by ESLint `no-restricted-imports`, pattern `../`); `./` only within the same folder. Always import a feature's concrete module (e.g. `@/features/cart/store/cartStore`), never a feature barrel — only `shared/*` has barrels.
+- **Data hooks**: named exports, one hook per query/mutation, no renamed React Query fields (`isLoading`/`isError` as-is). Queries: `useX`/`useX(id)` (e.g. `useProducts`, `useProduct(id)`, `useOrders`, `useOrder(id)`, `useAddresses`, `useCategories`). Mutations: `useCreateX`/`useUpdateX`/`useDeleteX`/`useCancelX`.
+- **Query keys**: each feature's `api/<feature>.queries.ts` exports a `xKeys` factory plus `queryOptions()`/`mutationOptions()` builders; hooks and prefetch calls (`queryClient.prefetchQuery(...)`) always consume the same options, never a hand-written key/fetcher.
+- **Schemas**: files named `<feature>Schemas.ts`; schema instances in PascalCase (`ProductSchema`, `AddressSchema`), inferred types share the base name without the `Schema` suffix (`type Product = z.infer<typeof ProductSchema>`). Reuse a schema across features instead of redefining it (e.g. orders reuses `AddressFormSchema` from `features/addresses`).
+- **Formatting**: `formatCurrency`/`formatOrderDate`/`formatOrderDateTime` from `shared/utils/format.ts` — no ad-hoc `toLocaleString`/`toFixed`/`Intl.*` elsewhere.
+- **Notifications** (`shared/store/alertStore.ts`): `success` = completed action (login, register, create/edit/delete/cancel); `info` = neutral heads-up; `warning` = reversible destructive action (e.g. clearing the cart); `error` = failure, raised from a `catch` with the `ApiError` message.
+- **Mutation handlers**: always `try { await mutateAsync(...) } catch (e) { notify.error(e instanceof ApiError ? e.message : '...') }` — never a fire-and-forget `mutateAsync` call in an event handler.
+- **Navigation**: `Link`/`NavLink` to go to a route (never a `div`/`button` + `navigate()`); `navigate()` only as a side effect after an action completes.
+
 ### Database Schema (Prisma)
 
 Schema files under `backend/prisma/schema/`: `User`, `Product`, `Image` (cascade-deleted with product), `Category`, `Cart`/`CartItem`, `Order`/`OrderItem` (with Stripe session fields), `Address`. Products and Categories have a many-to-many relation; Products also have a `mainCategory` FK. Orders and Addresses support soft delete. Prisma client generator uses `provider = "prisma-client"` and outputs to `prisma/generated/prisma/` (not the default location).

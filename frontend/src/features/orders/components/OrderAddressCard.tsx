@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import type { Address } from '@/features/orders/schemas/orderSchemas';
+import type { Address } from '@/features/addresses/schemas/addressSchemas';
 
 type OrderAddressCardProps = {
     title: string;

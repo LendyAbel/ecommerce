@@ -1,10 +1,10 @@
 import z from 'zod';
 
-export const categorySchema = z.object({
+export const CategorySchema = z.object({
     id: z.string(),
     name: z.string().min(1),
 });
-export type Category = z.infer<typeof categorySchema>;
+export type Category = z.infer<typeof CategorySchema>;
 
-export const categoryFormSchema = z.string();
-export type CategoryForm = z.infer<typeof categoryFormSchema>;
+export const CategoryFormSchema = z.string();
+export type CategoryForm = z.infer<typeof CategoryFormSchema>;
