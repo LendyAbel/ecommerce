@@ -25,7 +25,7 @@ const PageContainer = ({
     children,
     ...rest
 }: PageContainerProps) => (
-    <div className='bg-bg min-h-[calc(100vh-48px)]'>
+    <div className='bg-bg min-h-[calc(100vh-48px)]' >
         <div
             className={`animate-fade-in mx-auto w-[90%] py-8 ${maxWidthClass[maxWidth]} ${className}`}
             {...rest}

@@ -1,7 +1,10 @@
+import InventoryIcon from '@mui/icons-material/Inventory';
 import { useNavigate } from 'react-router';
 
 import { useOrders } from '@/features/orders/hooks/useOrder';
+import { EmptyState, ErrorState } from '@/shared/components';
 import { Button } from '@/shared/ui';
+import LoadMoreButton from '@/shared/ui/LoadMoreButton';
 
 import OrderRow from './OrderRow';
 import OrdersListSkeleton from './skeletons/OrdersListSkeleton';
@@ -16,41 +19,47 @@ const OrdersList = () => {
         hasNextPage,
         fetchNextPage,
         isFetchingNextPage,
+        refetch,
     } = useOrders({});
 
     if (isLoading) return <OrdersListSkeleton />;
 
     if (isError) {
         return (
-            <div className='border-error-20 bg-error-20/40 text-error rounded-2xl border p-6 text-center'>
-                No pudimos cargar los pedidos. Inténtalo de nuevo en unos
-                instantes.
-            </div>
+            <ErrorState
+                message='No pudimos cargar los pedidos. Inténtalo de nuevo en unos instantes.'
+                action={
+                    <Button variant='outline' onClick={() => refetch()}>
+                        Reintentar
+                    </Button>
+                }
+            />
         );
     }
 
     if (orders.length === 0) {
         return (
-            <div className='border-border bg-surface flex flex-col items-center gap-3 rounded-2xl border border-dashed p-10 text-center'>
-                <h2 className='text-text font-display text-lg font-bold'>
-                    {isAdmin
-                        ? 'Todavía no hay pedidos'
-                        : 'Aún no tienes pedidos'}
-                </h2>
-                <p className='text-text-60 max-w-sm text-sm'>
-                    {isAdmin
+            <EmptyState
+                icon={<InventoryIcon fontSize='large' />}
+                title={
+                    isAdmin ? 'Todavía no hay pedidos' : 'Aún no tienes pedidos'
+                }
+                message={
+                    isAdmin
                         ? 'Cuando los clientes realicen compras, aparecerán aquí.'
-                        : 'Cuando hagas tu primera compra, podrás seguir su estado desde aquí.'}
-                </p>
-                {!isAdmin && (
-                    <Button
-                        className='mt-1'
-                        onClick={() => navigate('/products')}
-                    >
-                        Explorar productos
-                    </Button>
-                )}
-            </div>
+                        : 'Cuando hagas tu primera compra, podrás seguir su estado desde aquí.'
+                }
+                action={
+                    !isAdmin && (
+                        <Button
+                            className='mt-1'
+                            onClick={() => navigate('/products')}
+                        >
+                            Explorar productos
+                        </Button>
+                    )
+                }
+            />
         );
     }
 
@@ -69,17 +78,11 @@ const OrdersList = () => {
                     </li>
                 ))}
             </ul>
-            {hasNextPage && (
-                <div className='mt-8 flex justify-center'>
-                    <Button
-                        variant='outline'
-                        loading={isFetchingNextPage}
-                        onClick={() => fetchNextPage()}
-                    >
-                        Cargar más
-                    </Button>
-                </div>
-            )}
+            <LoadMoreButton
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                onClick={() => fetchNextPage()}
+            />
         </>
     );
 };

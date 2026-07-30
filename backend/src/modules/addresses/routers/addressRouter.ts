@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { authenticate } from '../../../middlewares/authMiddleware';
-import * as addressController from '../controllers/addressControler';
+import * as addressController from '../controllers/addressController';
 
 const router = express.Router();
 router.use(authenticate);

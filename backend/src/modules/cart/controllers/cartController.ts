@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { getParam } from '../../../lib/utils';
-import { AddItemSchema, UpdateItemSchema } from '../schemas/cartZodSchema';
+import { AddItemSchema, UpdateItemSchema } from '../schemas/cartSchemas';
 import cartServices from '../services/cartServices';
 
 export const getCart = async (req: Request, res: Response) => {

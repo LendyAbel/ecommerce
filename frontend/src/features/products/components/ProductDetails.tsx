@@ -8,9 +8,14 @@ import {
 } from '@/features/products/hooks/useProduct';
 import type { Product } from '@/features/products/schemas/productSchemas';
 import { ApiError } from '@/lib/api/client';
-import { BackLink, ErrorState, PageContainer } from '@/shared/components';
+import {
+    BackLink,
+    ConfirmDialog,
+    ErrorState,
+    PageContainer,
+} from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
-import { Button, Modal } from '@/shared/ui';
+import { Button } from '@/shared/ui';
 
 import ProductActions from './details/ProductActions';
 import ProductImageGallery from './details/ProductImageGallery';
@@ -20,7 +25,7 @@ import ProductDetailsSkeleton from './skeletons/ProductDetailsSkeleton';
 
 const ProductDetails = () => {
     const { id } = useParams();
-    const { product, isError, isLoading } = useProduct(id!);
+    const { product, isError, isLoading, refetch } = useProduct(id!);
     const userRole = useAuthStore(state => state.user?.role);
     const images = product?.images ?? [];
     const { deleteProduct, isPending } = useDeleteProduct();
@@ -58,7 +63,14 @@ const ProductDetails = () => {
         return (
             <PageContainer maxWidth='5xl'>
                 <BackLink backLink='/products' backPageName='Productos' />
-                <ErrorState message='No pudimos cargar este producto. Inténtalo de nuevo en unos instantes.' />
+                <ErrorState
+                    message='No pudimos cargar este producto. Inténtalo de nuevo en unos instantes.'
+                    action={
+                        <Button variant='outline' onClick={() => refetch()}>
+                            Reintentar
+                        </Button>
+                    }
+                />
             </PageContainer>
         );
     }
@@ -131,40 +143,24 @@ const ProductDetails = () => {
                             >
                                 Eliminar producto
                             </Button>
-                            <Modal
+                            <ConfirmDialog
                                 open={toDelete != null}
-                                onClose={() => setToDelete(null)}
-                                title='Eliminar producto'
-                            >
-                                <div className='px-6 pt-2 pb-6'>
+                                title='Eliminar Producto'
+                                message={
                                     <p className='text-text-60 text-sm'>
                                         ¿Seguro que quieres eliminar este
-                                        producto? Esta acción no se puede
-                                        deshacer.
+                                        producto?
+                                        <span className='text-error'>
+                                            {' '}
+                                            Esta acción no se puede deshacer.
+                                        </span>
                                     </p>
-                                    {toDelete && (
-                                        <p className='text-text mt-3 text-sm font-medium'>
-                                            {toDelete.brand} — {toDelete.name},{' '}
-                                            {toDelete.shortDescription}{' '}
-                                        </p>
-                                    )}
-                                    <div className='mt-6 flex justify-end gap-3'>
-                                        <Button
-                                            variant='outline'
-                                            onClick={() => setToDelete(null)}
-                                        >
-                                            Cancelar
-                                        </Button>
-                                        <Button
-                                            variant='danger'
-                                            loading={isPending}
-                                            onClick={handleConfirmDelete}
-                                        >
-                                            Eliminar
-                                        </Button>
-                                    </div>
-                                </div>
-                            </Modal>
+                                }
+                                confirmLabel='Eliminar Producto'
+                                loading={isPending}
+                                onConfirm={handleConfirmDelete}
+                                onClose={() => setToDelete(null)}
+                            />
                         </>
                     )}
                 </div>

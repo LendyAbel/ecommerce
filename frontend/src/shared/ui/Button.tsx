@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import Spinner from './Spinner';
 
-type ButtonVariant =
+export type ButtonVariant =
     | 'primary'
     | 'secondary'
     | 'accent'
@@ -19,6 +19,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
     loading?: boolean;
     /** Icono opcional a la izquierda del texto (se oculta mientras `loading`). */
     leftIcon?: ReactNode;
+    /** Botón cuadrado sin texto: fuerza ancho = alto según `size` y quita el padding. */
+    iconOnly?: boolean;
 };
 
 const variantClass: Record<ButtonVariant, string> = {
@@ -50,6 +52,7 @@ const Button = ({
     fullWidth = false,
     loading = false,
     leftIcon,
+    iconOnly = false,
     disabled,
     className = '',
     children,
@@ -61,6 +64,7 @@ const Button = ({
         variantClass[variant],
         sizeClass[size],
         fullWidth ? 'btn-full' : '',
+        iconOnly ? 'btn-icon' : '',
         className,
     ]
         .filter(Boolean)

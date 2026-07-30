@@ -1,5 +1,5 @@
-import { Alert } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
+import { useState } from 'react';
 
 import { useCategories } from '@/features/categories/hooks/useCategory';
 import { useCreateProduct } from '@/features/products/hooks/useProduct';
@@ -8,6 +8,7 @@ import {
     ProductFormSchema,
     productStatus,
 } from '@/features/products/schemas/productSchemas';
+import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 import ImagesInput from '@/shared/ui/ImagesInput';
@@ -39,16 +40,26 @@ type NewProductDialogProps = {
 const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
     const { categories } = useCategories();
 
-    const { createProduct, isPending, isError } = useCreateProduct();
+    const { createProduct, isPending } = useCreateProduct();
+    const [serverError, setServerError] = useState<string | null>(null);
 
     const { Field, reset, handleSubmit } = useForm({
         defaultValues: formDefaultValues,
         validators: { onBlur: ProductFormSchema, onSubmit: ProductFormSchema },
         onSubmit: async ({ value }) => {
-            await createProduct(value);
-            onClose();
-            reset();
-            notify.success('Producto añadido correctamente');
+            setServerError(null);
+            try {
+                await createProduct(value);
+                onClose();
+                reset();
+                notify.success('Producto añadido correctamente');
+            } catch (error) {
+                setServerError(
+                    error instanceof ApiError
+                        ? error.message
+                        : 'Error al guardar el producto. Inténtalo de nuevo.',
+                );
+            }
         },
     });
 
@@ -59,6 +70,7 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
 
     const handleCancel = () => {
         reset();
+        setServerError(null);
         onClose();
     };
 
@@ -170,12 +182,10 @@ const NewProductDialog = ({ isOpen, onClose }: NewProductDialogProps) => {
                     </Field>
                 </div>
 
-                {isError && (
-                    <div className='mx-6'>
-                        <Alert severity='error'>
-                            Error al guardar el producto
-                        </Alert>
-                    </div>
+                {serverError && (
+                    <p className='text-error mx-6 text-xs font-medium'>
+                        {serverError}
+                    </p>
                 )}
 
                 <div className='mt-2 flex justify-end gap-3 px-6'>

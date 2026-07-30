@@ -99,6 +99,7 @@ const TEAM = [
 const About = () => {
     return (
         <div className='bg-bg'>
+            <title>Sobre Nosotros · Voltora</title>
             {/* ── Hero ── */}
             <section className='relative flex min-h-105 flex-col items-center justify-center overflow-hidden px-6 py-20 text-center'>
                 <div

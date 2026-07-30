@@ -8,3 +8,4 @@ export const UserSchema = z.object({
     email: z.email(),
     role: UserRoleSchema,
 });
+export type User = z.infer<typeof UserSchema>;

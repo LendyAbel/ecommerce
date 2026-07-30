@@ -9,7 +9,7 @@ import { Button, Card } from '@/shared/ui';
 import { formatCurrency } from '@/shared/utils/format';
 
 const CartResumen = () => {
-    const { user } = useAuthStore();
+    const user = useAuthStore(state => state.user);
     const { clearCartInBackend } = useSyncCart();
 
     const navigate = useNavigate();

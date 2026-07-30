@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { AppError } from '../../../lib/AppError';
 import { config } from '../../../lib/config';
 import usersServices from '../../users/services/usersServices';
-import { LoginSchema, RegisterSchema } from '../schemas/authZodSchema';
+import { LoginSchema, RegisterSchema } from '../schemas/authSchemas';
 import authServices from '../services/authServices';
 
 const COOKIE_OPTIONS = {

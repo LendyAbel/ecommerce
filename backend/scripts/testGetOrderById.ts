@@ -1,6 +1,6 @@
 // import { OrderStatus } from '../generated/prisma/enums';
 import { prisma } from '../src/lib/prisma';
-import orderServices from '../src/modules/orders/services/orderServices';
+import orderServices from '../src/modules/orders/services/ordersServices';
 
 
 const ORDER_ID = '684637fd-6590-4b5e-a557-942d674a7612';

@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
 @import 'tailwindcss';
 
 /* ─────────────────────────────────────────────
@@ -345,6 +344,20 @@ video {
 }
 .btn-full {
     width: 100%;
+}
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: var(--radius-full);
+}
+.btn-icon.btn-sm {
+    width: 2rem;
+    height: 2rem;
+}
+.btn-icon.btn-lg {
+    width: 2.75rem;
+    height: 2.75rem;
 }
 
 /* ── Inputs ── */

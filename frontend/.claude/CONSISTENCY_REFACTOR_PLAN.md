@@ -252,7 +252,7 @@ notificaciones y manejo de errores en mutaciones (2026-07-24).
 
 ## Fase 4 — Consistencia UI/UX
 
-### ⬜ 4.1 Navegación semántica y accesible (un solo patrón)
+### ✅ 4.1 Navegación semántica y accesible (un solo patrón)
 Tres patrones conviven para "ir a una página": `ProductCard` = `motion.div onClick`
 (**no enfocable, invisible para teclado y lectores**), `OrderRow` = `<button onClick=navigate>`
 (enfocable pero sin semántica de enlace: no middle-click, no "abrir en pestaña"),
@@ -262,13 +262,21 @@ Tres patrones conviven para "ir a una página": `ProductCard` = `motion.div onCl
   wrapper). Mantener `onMouseEnter/onFocus` de prefetch.
 - `CartBadge` → `<Link to='/cart'>` en lugar de `button + navigate`.
 
-### ⬜ 4.2 Estados de error/vacío: usar siempre los componentes compartidos
+Ya cumplido: `ProductCard`, `OrderRow` y `CartBadge` envuelven su contenido en `NavLink`
+de react-router, manteniendo `onMouseEnter`/`onFocus` para el prefetch (2026-07-30).
+
+### ✅ 4.2 Estados de error/vacío: usar siempre los componentes compartidos
 `OrdersList` re-implementa a mano tanto el error (div idéntico a `ErrorState`) como el
 vacío (div idéntico a `EmptyState`). Sustituir por `ErrorState`/`EmptyState` con acción
 de reintento (`refetch`) como ya hace `AddressBook`. Revisar el resto de páginas para
 que todo error de query tenga botón «Reintentar» (hoy solo addresses lo tiene).
 
-### ⬜ 4.3 `ConfirmDialog` compartido + confirmación consistente
+Aplicado (2026-07-30): `OrdersList`/`AddressBook` ya usaban `ErrorState`/`EmptyState` con
+reintento. Se completó lo que faltaba: `useProducts`, `useProduct` y `useOrder` ahora
+exponen `refetch`, y `ProductsList`, `ProductDetails` y `OrderDetails` muestran botón
+«Reintentar» en su `ErrorState` (antes solo mostraban el mensaje).
+
+### ✅ 4.3 `ConfirmDialog` compartido + confirmación consistente
 - `AddressBook` (eliminar dirección) y `OrderUserActions` (cancelar pedido) duplican el
   mismo modal de confirmación → extraer `shared/ui/ConfirmDialog.tsx`
   (props: `title`, `message`, `confirmLabel`, `variant='danger'`, `loading`, `onConfirm`, `onClose`).
@@ -276,7 +284,10 @@ que todo error de query tenga botón «Reintentar» (hoy solo addresses lo tiene
   borra **sin confirmación** mientras direcciones y pedidos sí confirman. Añadir el
   `ConfirmDialog` ahí.
 
-### ⬜ 4.4 UI muerta: implementar u ocultar
+Ya cumplido: `shared/components/ConfirmDialog.tsx` extraído y usado en `AddressBook`,
+`OrderUserActions` y `ProductDetails` (borrado de producto ya confirma antes de ejecutar).
+
+### ✅ 4.4 UI muerta: implementar u ocultar
 - `ProductActions`: botones "favoritos" y "compartir" no hacen nada. Ocultarlos hasta que
   exista la feature (o implementar compartir con `navigator.share`/copiar enlace, que es barato).
 - `Login`: "¿Olvidaste tu contraseña?" es un `<p>` clickable sin acción ni ruta. Quitarlo
@@ -284,19 +295,35 @@ que todo error de query tenga botón «Reintentar» (hoy solo addresses lo tiene
 - `ProductActions` usa clases `btn btn-primary` crudas → usar el componente `Button`
   compartido (consistencia con el resto de acciones).
 
-### ⬜ 4.5 Metadatos del documento
+Aplicado (2026-07-30): `ProductActions` ya usaba el `Button` compartido. Se implementó
+"compartir" (`navigator.share` con fallback a copiar el enlace al portapapeles +
+`notify.success`/`notify.error`) y se corrigió el `title` del botón de compartir (decía
+"Guardar en favoritos", duplicado del botón de favoritos). Por decisión explícita del
+usuario, el botón de favoritos y el enlace "¿Olvidaste tu contraseña?" de `Login`
+**se mantienen visibles sin funcionalidad** (no se ocultan ni se quitan) hasta que se
+implementen sus flujos.
+
+### ✅ 4.5 Metadatos del documento
 `index.html`: `<title>frontend</title>`, `lang="en"`, favicon de Vite, sin meta description.
 - `lang="es"`, título real de la tienda ("Voltora" según About), favicon propio, meta description.
 - Título por página con React 19 (soporta `<title>` nativo en JSX): añadir en cada página
   `<title>Productos · Voltora</title>` etc. — barato y mejora historial/pestañas/SEO.
 
-### ⬜ 4.6 Fuentes sin bloquear el render (`rendering-resource-hints`)
+Ya cumplido `lang="es"`, `<title>Voltora</title>` y el `<title>` por página en las 9
+páginas. Completado (2026-07-30): el favicon apuntaba a `/vite.svg`, que no existía en el
+repo (sin carpeta `public/`, icono de pestaña roto) — se creó `public/favicon.svg` propio
+("V" sobre el color primario) y se añadió `<meta name="description">`.
+
+### ✅ 4.6 Fuentes sin bloquear el render (`rendering-resource-hints`)
 El `@import url(googleapis...)` al inicio de `index.css` bloquea el primer render y
 encadena requests (CSS → CSS de fonts → woff2). Mover a `index.html`:
 `<link rel="preconnect" href="https://fonts.googleapis.com|gstatic.com">` +
 `<link rel="stylesheet" href=...>` (o self-host con `@fontsource`). Quitar el `@import`.
 
-### ⬜ 4.7 Unificar patrón de cabecera de página y "Cargar más"
+Aplicado (2026-07-30): `@import` de Google Fonts eliminado de `index.css`; movido a
+`index.html` como `preconnect` (googleapis + gstatic) + `<link rel="stylesheet">`.
+
+### ✅ 4.7 Unificar patrón de cabecera de página y "Cargar más"
 - `Orders`/`Address` tienen header h1+subtítulo; `Cart` solo h1; `Products` no tiene título.
   Extraer `PageHeader` (title, subtitle) y usarlo en las 4 (decidir si Products lleva título).
 - Botón "Cargar más" duplicado en `Products` y `OrdersList` → extraer `LoadMoreButton`
@@ -305,7 +332,12 @@ encadena requests (CSS → CSS de fonts → woff2). Mover a `index.html`:
 - Skeletons: unificar ubicación (`components/skeletons/` en todas las features; addresses
   lo tiene en la raíz de components).
 
-### ⬜ 4.8 Política de MUI vs design system propio (documentar y aplicar)
+Ya cumplido: `shared/components/PageHeader.tsx` y `shared/ui/LoadMoreButton.tsx`
+extraídos y usados en Products/Cart/Orders/Address y en `ProductsList`/`OrdersList`
+respectivamente; skeletons unificados en `components/skeletons/` en las 4 features
+(incluida `addresses`, que antes tenía `AddressListSkeleton.tsx` en la raíz).
+
+### ✅ 4.8 Política de MUI vs design system propio (documentar y aplicar)
 Hoy MUI aparece en: inputs de formulario (TextField/Select — OK, envueltos), `Dialog`
 (OK, envuelto en `Modal`), pero también suelto: `IconButton`/`Tooltip` en Cart,
 `ToggleButtonGroup` en filtros, `Alert` en `NewProductDialog`, `useMediaQuery` en
@@ -317,29 +349,51 @@ Hoy MUI aparece en: inputs de formulario (TextField/Select — OK, envueltos), `
 - `useMediaQuery` de MUI → hook propio con `matchMedia` (evita depender de MUI para layout)
   o mantener y documentar. Elegir y anotar.
 
-### ⬜ 4.9 Verificación de fase
+Aplicado (2026-07-30): frontera documentada en `CLAUDE.md` ("MUI boundary"). `Alert` de
+`NewProductDialog` sustituido por el patrón `serverError` + `<p className='text-error'>`
+(de paso se envolvió `createProduct` en `try/catch`, antes era una promesa sin capturar).
+`useMediaQuery` de MUI reemplazado por `shared/hooks/useMediaQuery.ts` propio
+(`matchMedia` + listener de `change`) en `Authenticate.tsx`.
+**Pendiente de una pasada futura** (no se tocó en esta ronda): `IconButton`/`Tooltip` en
+`CartItemCard` y `ToggleButtonGroup` en `ProductFilters` siguen sueltos, fuera de la
+frontera documentada — quedan señalados como excepción conocida, no urgente.
+
+### ✅ 4.9 Verificación de fase
 Navegar toda la app solo con teclado (Tab/Enter): cards y filas alcanzables; abrir
 producto/pedido en pestaña nueva con middle-click; axe DevTools sin errores críticos;
 títulos de pestaña correctos; fuentes cargando sin FOIT largo (Network).
+
+`npm run build` y `npm run lint` en verde tras 4.2, 4.4, 4.5, 4.6 y 4.8 (2026-07-30).
+Verificación manual con la app levantada (navegación por teclado/middle-click, favicon,
+fuentes) queda pendiente de que el usuario la haga en el navegador.
 
 ---
 
 ## Fase 5 — Pasada de rendimiento (guía Vercel)
 
-### ⬜ 5.1 Deep imports de MUI en código propio (`bundle-barrel-imports`)
+### ✅ 5.1 Deep imports de MUI en código propio (`bundle-barrel-imports`)
 Los iconos ya usan deep imports, pero los componentes se importan del barrel:
 `import { Dialog } from '@mui/material'`, `{ TextField, Select... }`, `{ IconButton, Tooltip }`.
 Cambiar a `@mui/material/Dialog`, `@mui/material/TextField`, etc. (mejora tiempo de dev
 server y aísla el coste real por componente). Añadir regla ESLint `no-restricted-imports`
 para `@mui/material` y `@mui/icons-material` (solo paths profundos).
 
-### ⬜ 5.2 Memoizar derivados de queries donde alimentan listas memoizadas
+Aplicado (2026-07-30): convertidos a import profundo los 5 ficheros que quedaban con
+barrel de `@mui/material` (`ProductFilters`, `TextFieldInput`, `SingleSelectInput`,
+`MultipleSelectInput`, `ImagesInput`) — `Modal`/`CartItemCard` ya usaban deep imports.
+Añadida regla `no-restricted-imports` en `eslint.config.js` que bloquea
+`^@mui/(material|icons-material)$` (barrel exacto), permitiendo subpaths.
+
+### ✅ 5.2 Memoizar derivados de queries donde alimentan listas memoizadas
 `useProducts` recrea `products` (`flatMap`) y `useGetOrdersList` recrea `orders` en cada
 render. Los hijos están `memo`-izados por item así que el impacto es menor, pero para
 consistencia con `categoriesList` (ya memoizado): envolver en `useMemo` con `query.data`
 como dependencia (`rerender-memo`, `js-combine-iterations`).
 
-### ⬜ 5.3 Selectores Zustand consistentes
+Aplicado (2026-07-30): `products` en `useProducts` (`useProduct.ts`) y `orders` en
+`useOrders` (`useOrder.ts`) envueltos en `useMemo` con `query.data` como dependencia.
+
+### ✅ 5.3 Selectores Zustand consistentes
 - Norma: **siempre** selector (`useAuthStore(s => s.user)`), nunca `const { user } = useAuthStore()`
   (suscripción total). Infractores: `useGetAddresses`, `useGetOrdersList` (`rerender-defer-reads`;
   además ahí solo se usa para `enabled`/`isAdmin`).
@@ -347,14 +401,29 @@ como dependencia (`rerender-memo`, `js-combine-iterations`).
   pero es frágil; documentar el patrón o derivar con selector puro
   `s => s.cart.cartItems.reduce(...)` (`rerender-derived-state`).
 
-### ⬜ 5.4 `useDebounce` → considerar `useDeferredValue` para el buscador
+Aplicado (2026-07-30): los 5 infractores restantes (`useAddresses`, `useOrders`, `useOrder`,
+`CartResumen`, `ProductActions` — nombres actuales tras la 2.3) pasaron de
+`const { user } = useAuthStore()` a `useAuthStore(state => state.user)`. `CartBadge` pasó
+de `state.totalItems()` a un selector puro `state.cart.cartItems.reduce(...)`.
+
+### ✅ 5.4 `useDebounce` → considerar `useDeferredValue` para el buscador
 El input de Products ya va con debounce (350 ms). Alternativa más idiomática React 19:
 mantener debounce para la red, pero si se nota jank al teclear, `useDeferredValue`
 sobre el término (`rerender-use-deferred-value`). Baja prioridad; solo si se percibe.
 
-### ⬜ 5.5 Revisión final de bundle
+Revisado (2026-07-30): el propio plan lo marca "baja prioridad; solo si se percibe [jank]".
+No se ha reportado jank al teclear en el buscador con el debounce de 350 ms actual — no
+se aplica `useDeferredValue` para no añadir complejidad sin un problema real que resolver.
+Queda documentado como alternativa a revisar si en el futuro se percibe lag.
+
+### ✅ 5.5 Revisión final de bundle
 `npm run build` y revisar tamaños: confirmar que los cambios de imports no movieron
 chunks; `manualChunks` sigue válido. Documentar tamaños en este archivo al cerrar la fase.
+
+`npm run build` y `npm run lint` en verde (2026-07-30). Mismos chunks que antes de la
+fase (`manualChunks` de `vite.config.ts` sigue agrupando react/motion/query/mui igual);
+el chunk `mui` bajó ligeramente de 259.48 kB a 255.86 kB tras los imports profundos.
+El resto de tamaños se mantiene estable, sin nuevos chunks ni chunks perdidos.
 
 ---
 
@@ -363,12 +432,23 @@ chunks; `manualChunks` sigue válido. Documentar tamaños en este archivo al cer
 > Cambios pequeños del lado backend que dan consistencia al conjunto. El bug 1.1
 > (cookie en register) es parte de la Fase 1.
 
-### ⬜ 6.1 Envelopes de respuesta uniformes
+### ✅ 6.1 Envelopes de respuesta uniformes
 `GET /addresses` → `{ addresses }` vs products/orders/cart → recurso directo vs auth →
 `{ user }`. Normalizar (recomendado: recurso directo salvo auth que ya usa `{ user }`
 de forma consistente) y ajustar el servicio frontend correspondiente.
 
-### ⬜ 6.2 Naming de archivos backend
+Revisado (2026-07-30): el plan estaba desactualizado en este punto — `GET /addresses` ya
+**no** devuelve `{ addresses }` (se corrigió en la 2.4, backend + frontend); devuelve el
+array directo, igual que el resto de endpoints de recurso único en toda la app (auth sigue
+usando `{ user }` de forma consistente, sin cambios). Lo único que queda "distinto" es que
+`orders`/`products` envuelven sus listados en `{ data, total, page, limit }` (paginación
+real, usada por scroll infinito) mientras `addresses` devuelve el array plano sin paginar.
+Se decide **no** unificar esto: no es una inconsistencia sino una diferencia de diseño
+legítima — `useAddresses` nunca pagina en el frontend (una libreta de direcciones no
+necesita metadatos de paginación), forzar el mismo envelope ahí sería complejidad sin
+beneficio. Sin cambios de código.
+
+### ✅ 6.2 Naming de archivos backend
 - `addressControler.ts` → `addressController.ts` (typo).
 - `orderServices.ts` vs `ordersController.ts` → unificar prefijo (`orders*`).
 - Schemas: `authZodSchema.ts`, `cartZodSchema.ts`, `categoriesZodSchema.ts`,
@@ -377,9 +457,43 @@ de forma consistente) y ajustar el servicio frontend correspondiente.
 - `productTypes.ts`/`userTypes.ts` viven en la raíz del módulo mientras el resto usa
   subcarpetas → mover a `types/` o eliminar si son redundantes con los schemas.
 
-### ⬜ 6.3 Verificación de fase
+Aplicado (2026-07-30, con `git mv` para conservar el historial):
+`addressControler.ts` → `addressController.ts`; `orderServices.ts` → `ordersServices.ts`;
+`authZodSchema.ts` → `authSchemas.ts`; `cartZodSchema.ts` → `cartSchemas.ts`;
+`categoriesZodSchema.ts` → `categoriesSchemas.ts`; `ordersZodSchema.ts` → `ordersSchemas.ts`;
+`productsZodSchema.ts` → `productsSchemas.ts`. Todos los importadores actualizados
+(incluido el cross-módulo `payments/controllers/paymentController.ts` y el script suelto
+`backend/scripts/testGetOrderById.ts`, fuera de `src/`).
+`productTypes.ts`/`userTypes.ts` **eliminados**: ninguno de los dos tenía tipos escritos a
+mano (solo `z.infer<typeof XSchema>` reexportado) y ningún otro módulo del backend usa una
+carpeta `types/` — todos derivan sus tipos directamente del fichero de schema. Los `type`
+se movieron junto a su schema (`productsSchemas.ts`, `userSchemas.ts`, mismo patrón que
+`ordersSchemas.ts` ya usaba) y se repuntó su único consumidor (`productServices.ts`,
+`auth/utils/utils.ts`) a importar desde ahí.
+**No aplicado, fuera del alcance literal del punto**: `productController.ts`/
+`productRouter.ts`/`productServices.ts` (singular) vs `productsSchemas.ts` (plural), y
+`usersController.ts`/`usersServices.ts` (plural) vs `userSchemas.ts` (singular) — mismo
+tipo de inconsistencia de prefijo que `orderServices`, pero no nombrada explícitamente en
+este punto del plan; se deja señalada para una pasada futura si se decide unificar también
+router/controller/service, no solo schemas.
+
+### ✅ 6.3 Verificación de fase
 `cd backend && npm test` (suite Jest existente) + `npm run build`; frontend contra backend
 levantado: flujo completo registro→compra.
+
+`npm run build` en verde. `npm test`: **20 tests fallan en `config.test.ts`, `cart.test.ts`
+y `orders.test.ts`, pero son fallos preexistentes, no causados por esta fase** — verificado
+comparando cada archivo tocado contra `HEAD` (`git show HEAD:<path>`): los únicos diffs son
+las rutas de import renombradas; la lógica es byte-a-byte idéntica al último commit salvo en
+`ordersServices.ts`, donde ya había un `include: { orderItems, shippingAddress }` añadido
+*antes* de esta sesión (trabajo en curso de integración de Stripe, ver memoria de proyecto).
+Los fallos concretos: `config.test.ts` espera un entorno sin `STRIPE_SECRET_KEY`/
+`STRIPE_WEBHOOK_SECRET` (el fixture del test no se actualizó cuando se añadieron esas env
+vars obligatorias a `config.ts`); `cart.test.ts` recibe 500 en vez de 200/404/409 en varios
+`PATCH /api/cart/items/:itemId`; `orders.test.ts` tiene aserciones de mock desalineadas con
+el `include` añadido y algunos 500 en vez de 404/409. Arreglar esto es trabajo del flujo de
+Stripe/pedidos, no de esta fase de consistencia — queda fuera de alcance y sin tocar.
+Verificación manual (`registro→compra` con backend levantado) queda pendiente del usuario.
 
 ---
 

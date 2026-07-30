@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import { useOrder } from '@/features/orders/hooks/useOrder';
 import { ORDER_STATUS_CONFIG } from '@/features/orders/utils/orderStatus';
 import { BackLink, ErrorState, PageContainer } from '@/shared/components';
+import { Button } from '@/shared/ui';
 import { formatCurrency, formatOrderDateTime } from '@/shared/utils/format';
 
 import OrderAddressCard from './OrderAddressCard';
@@ -15,7 +16,7 @@ import OrderDetailsSkeleton from './skeletons/OrderDetailsSkeleton';
 
 const OrderDetails = () => {
     const { id } = useParams();
-    const { order, isAdmin, isLoading, isError } = useOrder(id!);
+    const { order, isAdmin, isLoading, isError, refetch } = useOrder(id!);
 
     return (
         <PageContainer maxWidth='3xl'>
@@ -24,7 +25,14 @@ const OrderDetails = () => {
             {isLoading ? (
                 <OrderDetailsSkeleton />
             ) : isError || !order ? (
-                <ErrorState message='No encontramos este pedido o no pudimos cargarlo.' />
+                <ErrorState
+                    message='No encontramos este pedido o no pudimos cargarlo.'
+                    action={
+                        <Button variant='outline' onClick={() => refetch()}>
+                            Reintentar
+                        </Button>
+                    }
+                />
             ) : (
                 <div className='flex flex-col gap-6'>
                     {/* Cabecera */}

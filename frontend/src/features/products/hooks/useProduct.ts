@@ -4,7 +4,7 @@ import {
     useQueries,
     useQuery,
 } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
     createProductMutationOptions,
@@ -19,8 +19,12 @@ import type { ProductFilters } from '@/features/products/schemas/productSchemas'
 export const useProducts = (filters: ProductFilters = {}) => {
     const query = useInfiniteQuery(getProductQueryOptions(filters));
 
-    // Aplana las páginas en una sola lista para la rejilla.
-    const products = query.data?.pages.flatMap(page => page.data) ?? [];
+    // Aplana las páginas en una sola lista para la rejilla. Memoizado para no
+    // crear un array nuevo en cada render (los hijos están memo-izados por item).
+    const products = useMemo(
+        () => query.data?.pages.flatMap(page => page.data) ?? [],
+        [query.data],
+    );
     const total = query.data?.pages[0]?.total ?? 0;
 
     return {
@@ -31,6 +35,7 @@ export const useProducts = (filters: ProductFilters = {}) => {
         fetchNextPage: query.fetchNextPage,
         hasNextPage: query.hasNextPage,
         isFetchingNextPage: query.isFetchingNextPage,
+        refetch: query.refetch,
     };
 };
 
@@ -53,6 +58,7 @@ export const useProduct = (id: string) => {
         product,
         isLoading: query.isLoading,
         isError: query.isError,
+        refetch: query.refetch,
     };
 };
 

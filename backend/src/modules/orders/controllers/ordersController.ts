@@ -5,8 +5,8 @@ import {
     OrderIdParamSchema,
     OrdersQuerySchema,
     OrderStatusSchema,
-} from '../schemas/ordersZodSchema';
-import orderServices from '../services/orderServices';
+} from '../schemas/ordersSchemas';
+import orderServices from '../services/ordersServices';
 
 export const listOrders = async (req: Request, res: Response) => {
     const filters = OrdersQuerySchema.parse(req.query);

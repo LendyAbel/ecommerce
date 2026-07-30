@@ -42,6 +42,11 @@ export default defineConfig([
                             message:
                                 'No importes el barrel de una feature. Importa directamente el módulo (p. ej. "@/features/cart/store/cartStore").',
                         },
+                        {
+                            regex: '^@mui/(material|icons-material)$',
+                            message:
+                                'No importes del barrel de MUI. Usa el import profundo (p. ej. "@mui/material/Dialog", "@mui/icons-material/Close").',
+                        },
                     ],
                 },
             ],

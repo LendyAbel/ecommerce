@@ -1,5 +1,5 @@
 import Close from '@mui/icons-material/Close';
-import { Dialog } from '@mui/material';
+import  Dialog  from '@mui/material/Dialog';
 import type { ReactNode } from 'react';
 
 type ModalProps = {

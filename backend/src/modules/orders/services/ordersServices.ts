@@ -7,7 +7,7 @@ import {
     CreateOrderInput,
     OrdersQuery,
     OrderStatus,
-} from '../schemas/ordersZodSchema';
+} from '../schemas/ordersSchemas';
 
 // Congela una dirección inline (de un solo uso) para guardarla en la orden.
 const freezeInputAddress = (a: AddressInput) => ({
@@ -188,6 +188,7 @@ const updateStatusOrder = async (
     return await prisma.order.update({
         where: { id: orderId },
         data: { status: statusUpdate },
+        include: { orderItems: true, shippingAddress: true },
     });
 };
 
@@ -205,6 +206,7 @@ const cancelOwnOrder = async (orderId: string, userId: string) => {
     return await prisma.order.update({
         where: { id: orderId },
         data: { status: 'cancelled' },
+        include: { orderItems: true, shippingAddress: true },
     });
 };
 

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import { config } from '../../../lib/config';
-import { User } from '../../users/userTypes';
+import { User } from '../../users/schemas/userSchemas';
 
 type getTokenType = {
     userId: User['id'];

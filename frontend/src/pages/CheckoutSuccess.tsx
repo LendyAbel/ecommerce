@@ -26,6 +26,7 @@ const CheckoutSuccess = () => {
 
     return (
         <PageContainer maxWidth='3xl'>
+            <title>Pedido Tramitado · Voltora</title>
             {!orderId || isError ? (
                 <ErrorState
                     message='No encontramos este pedido o no pudimos cargarlo.'

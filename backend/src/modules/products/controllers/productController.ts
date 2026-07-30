@@ -6,7 +6,7 @@ import {
     ProductCreateSchema,
     ProductQuerySchema,
     ProductUpdateSchema,
-} from '../schemas/productsZodSchema';
+} from '../schemas/productsSchemas';
 import productServices from '../services/productServices';
 
 export const getAllProducts = async (req: Request, res: Response) => {

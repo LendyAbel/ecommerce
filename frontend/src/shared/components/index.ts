@@ -1,5 +1,6 @@
 export { default as Alerts } from './Alerts';
 export { default as BackLink } from './BackLink';
+export { default as ConfirmDialog } from './ConfirmDialog';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as GeneralLoader } from './GeneralLoader';
 export { default as PageContainer } from './PageContainer';

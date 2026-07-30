@@ -14,7 +14,7 @@ import { queryClient } from '@/lib/queryClient';
 
 import ordersService from './orders.service';
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 20;
 
 export const orderKeys = {
     all: ['order'] as const,

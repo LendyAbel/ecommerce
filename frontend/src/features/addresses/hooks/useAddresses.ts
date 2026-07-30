@@ -9,7 +9,7 @@ import {
 import { useAuthStore } from '@/features/auth/store/authStore';
 
 export const useAddresses = () => {
-    const { user } = useAuthStore();
+    const user = useAuthStore(state => state.user);
     return useQuery(getAddressesQueryOptions(!!user));
 };
 

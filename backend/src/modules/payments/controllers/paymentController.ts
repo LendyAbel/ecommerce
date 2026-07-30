@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { OrderIdParamSchema } from '../../orders/schemas/ordersZodSchema';
+import { OrderIdParamSchema } from '../../orders/schemas/ordersSchemas';
 import paymentService from '../services/paymentService';
 
 export const createCheckoutSession = async (req: Request, res: Response) => {

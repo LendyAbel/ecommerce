@@ -2,16 +2,19 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import { useState } from 'react';
 
-import { useAddresses, useDeleteAddress } from '@/features/addresses/hooks/useAddresses';
+import {
+    useAddresses,
+    useDeleteAddress,
+} from '@/features/addresses/hooks/useAddresses';
 import type { Address } from '@/features/addresses/schemas/addressSchemas';
 import { ApiError } from '@/lib/api/client';
-import { EmptyState, ErrorState } from '@/shared/components';
+import { ConfirmDialog, EmptyState, ErrorState } from '@/shared/components';
 import { notify } from '@/shared/store/alertStore';
 import { Button, Modal } from '@/shared/ui';
 
 import AddressCard from './AddressCard';
 import AddressForm from './AddressForm';
-import AddressListSkeleton from './AddressListSkeleton';
+import AddressListSkeleton from './skeletons/AddressListSkeleton';
 
 /**
  * Libreta de direcciones del usuario: lista las direcciones y orquesta los
@@ -117,39 +120,23 @@ const AddressBook = () => {
             </Modal>
 
             {/* Confirmar borrado */}
-            <Modal
+            <ConfirmDialog
                 open={toDelete !== null}
-                onClose={() => setToDelete(null)}
-                title='Eliminar dirección'
-            >
-                <div className='px-6 pt-2 pb-6'>
+                title='Eliminar direccion'
+                message={
                     <p className='text-text-60 text-sm'>
-                        ¿Seguro que quieres eliminar esta dirección? Esta acción
-                        no se puede deshacer.
+                        ¿Seguro que quieres eliminar esta dirección?
+                        <span className='text-error'>
+                            {' '}
+                            Esta acción no se puede deshacer.
+                        </span>
                     </p>
-                    {toDelete && (
-                        <p className='text-text mt-3 text-sm font-medium'>
-                            {toDelete.fullName} — {toDelete.line1},{' '}
-                            {toDelete.postalCode} {toDelete.city}
-                        </p>
-                    )}
-                    <div className='mt-6 flex justify-end gap-3'>
-                        <Button
-                            variant='outline'
-                            onClick={() => setToDelete(null)}
-                        >
-                            Cancelar
-                        </Button>
-                        <Button
-                            variant='danger'
-                            loading={deleteAddress.isPending}
-                            onClick={handleConfirmDelete}
-                        >
-                            Eliminar
-                        </Button>
-                    </div>
-                </div>
-            </Modal>
+                }
+                confirmLabel='Eliminar'
+                loading={deleteAddress.isPending}
+                onConfirm={handleConfirmDelete}
+                onClose={() => setToDelete(null)}
+            />
         </>
     );
 };

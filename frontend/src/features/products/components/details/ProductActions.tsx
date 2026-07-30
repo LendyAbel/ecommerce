@@ -8,6 +8,7 @@ import { useCartStore } from '@/features/cart/store/cartStore';
 import type { Product } from '@/features/products/schemas/productSchemas';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
+import { Button } from '@/shared/ui';
 
 type ProductActionsProps = {
     product: Product;
@@ -15,17 +16,28 @@ type ProductActionsProps = {
 
 const ProductActions = ({ product }: ProductActionsProps) => {
     const addItem = useCartStore(state => state.addItem);
-    const { user } = useAuthStore();
-    const { addItemToBackend } = useSyncCart();
+    const user = useAuthStore(state => state.user);
+    const { addItemToBackend, addItemIsLoading } = useSyncCart();
 
-    const handleAddToCart = async () => {
-        const added = addItem({ product });
-
-        if (!added) {
-            notify.error('No hay suficiente stock disponible');
+    const handleShare = async () => {
+        const url = window.location.href;
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: product.name, url });
+            } catch {
+                // El usuario canceló el diálogo nativo de compartir: no es un error.
+            }
             return;
         }
+        try {
+            await navigator.clipboard.writeText(url);
+            notify.success('Enlace copiado al portapapeles');
+        } catch {
+            notify.error('No se pudo copiar el enlace');
+        }
+    };
 
+    const handleAddToCart = async () => {
         if (user) {
             try {
                 await addItemToBackend({ productId: product.id, quantity: 1 });
@@ -38,36 +50,43 @@ const ProductActions = ({ product }: ProductActionsProps) => {
                 return;
             }
         }
+
+        const added = addItem({ product });
+
+        if (!added) {
+            notify.error('No hay suficiente stock disponible');
+            return;
+        }
         notify.success('Producto añadido al carrito');
     };
 
     return (
         <div className='flex items-center gap-3 pt-2'>
-            <button
-                type='button'
+            <Button
+                size='lg'
+                leftIcon={<ShoppingCartOutlinedIcon fontSize='small' />}
                 disabled={product.stock === 0}
                 onClick={handleAddToCart}
-                className='btn btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-40'
+                className='flex-1'
+                loading={addItemIsLoading}
             >
-                <ShoppingCartOutlinedIcon fontSize='small' />
-                Añadir al carrito
-            </button>
-
-            <button
-                type='button'
+                Añadir al Carrito
+            </Button>
+            <Button
                 title='Guardar en favoritos'
-                className='border-border text-text-60 hover:border-primary hover:text-primary flex size-11 items-center justify-center rounded-xl border transition-all duration-200'
-            >
-                <FavoriteBorderIcon fontSize='small' />
-            </button>
-
-            <button
-                type='button'
+                variant='outline'
+                size='lg'
+                iconOnly
+                leftIcon={<FavoriteBorderIcon fontSize='small' />}
+            />
+            <Button
                 title='Compartir'
-                className='border-border text-text-60 hover:border-primary hover:text-primary flex size-11 items-center justify-center rounded-xl border transition-all duration-200'
-            >
-                <ShareOutlinedIcon fontSize='small' />
-            </button>
+                variant='outline'
+                size='lg'
+                iconOnly
+                onClick={handleShare}
+                leftIcon={<ShareOutlinedIcon fontSize='small' />}
+            />
         </div>
     );
 };

@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router';
 import { useCancelOrder } from '@/features/orders/hooks/useOrder';
 import type { Order } from '@/features/orders/schemas/orderSchemas';
 import { ApiError } from '@/lib/api/client';
+import { ConfirmDialog } from '@/shared/components/';
 import { notify } from '@/shared/store/alertStore';
-import { Button, Modal } from '@/shared/ui';
+import { Button } from '@/shared/ui';
 
 interface OrderUserActionsProps {
     order: Order;
@@ -39,33 +40,23 @@ const OrderUserActions = ({ order }: OrderUserActionsProps) => {
             <Button variant='danger' onClick={() => setConfirmCancel(true)}>
                 Cancelar pedido
             </Button>
-            <Modal
+            <ConfirmDialog
                 open={confirmCancel}
-                onClose={() => setConfirmCancel(false)}
                 title='Cancelar pedido'
-            >
-                <div className='px-6 pt-2 pb-6'>
+                message={
                     <p className='text-text-60 text-sm'>
-                        ¿Seguro que quieres cancelar este pedido? Esta acción no
-                        se puede deshacer.
+                        ¿Seguro que quieres cancelar este pedido?
+                        <span className='text-error'>
+                            {' '}
+                            Esta acción no se puede deshacer.
+                        </span>
                     </p>
-                    <div className='mt-6 flex justify-end gap-3'>
-                        <Button
-                            variant='outline'
-                            onClick={() => setConfirmCancel(false)}
-                        >
-                            Volver
-                        </Button>
-                        <Button
-                            variant='danger'
-                            loading={cancelOrder.isPending}
-                            onClick={handleCancel}
-                        >
-                            Cancelar pedido
-                        </Button>
-                    </div>
-                </div>
-            </Modal>
+                }
+                confirmLabel='Cancelar Pedido'
+                loading={cancelOrder.isPending}
+                onConfirm={handleCancel}
+                onClose={() => setConfirmCancel(false)}
+            />
         </>
     );
 };

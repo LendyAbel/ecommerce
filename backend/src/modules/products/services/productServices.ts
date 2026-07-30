@@ -2,7 +2,11 @@ import { Prisma } from '../../../../prisma/generated/prisma/client';
 import { prisma } from '../../../lib/prisma';
 import { serializeProduct } from '../../../lib/serializers';
 import { normalizeName } from '../../../lib/utils';
-import { ProductCrateInput, ProductQuery, ProductUpdateInput } from '../productTypes';
+import {
+    ProductCrateInput,
+    ProductQuery,
+    ProductUpdateInput,
+} from '../schemas/productsSchemas';
 
 const productInclude = {
     images: true,

@@ -156,6 +156,7 @@ Note: barrel `index.ts` files exist **only** under `shared/` (`shared/ui`, `shar
 - **Notifications** (`shared/store/alertStore.ts`): `success` = completed action (login, register, create/edit/delete/cancel); `info` = neutral heads-up; `warning` = reversible destructive action (e.g. clearing the cart); `error` = failure, raised from a `catch` with the `ApiError` message.
 - **Mutation handlers**: always `try { await mutateAsync(...) } catch (e) { notify.error(e instanceof ApiError ? e.message : '...') }` — never a fire-and-forget `mutateAsync` call in an event handler.
 - **Navigation**: `Link`/`NavLink` to go to a route (never a `div`/`button` + `navigate()`); `navigate()` only as a side effect after an action completes.
+- **MUI boundary**: MUI is only for complex inputs wrapped in `shared/ui` (`TextField`, `Select`, `Dialog` → wrapped as `Modal`) and icons (`@mui/icons-material/X`, deep import). Anything else gets the app's own design system: form/server errors use the `serverError` + `<p className='text-error'>` pattern (see `AuthForm`, `NewProductDialog`), not MUI's `Alert`. `useMediaQuery` uses the app's own `shared/hooks/useMediaQuery` (plain `matchMedia`), not MUI's.
 
 ### Database Schema (Prisma)
 

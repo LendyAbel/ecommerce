@@ -86,6 +86,7 @@ const UserMenu = () => {
                         <NavLink
                             key={to}
                             to={to}
+                            end
                             role='menuitem'
                             onClick={close}
                             onMouseEnter={() => preloadRoute(to)}

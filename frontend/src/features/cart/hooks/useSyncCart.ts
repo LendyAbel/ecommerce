@@ -44,6 +44,7 @@ export const useSyncCart = () => {
 
     return {
         addItemToBackend: addMutation.mutateAsync,
+        addItemIsLoading: addMutation.isPending,
         updateItemInBackend: updateMutation.mutateAsync,
         removeItemInBackend: removeMutation.mutateAsync,
         clearCartInBackend: clearMutation.mutateAsync,

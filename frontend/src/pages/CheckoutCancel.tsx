@@ -11,6 +11,7 @@ const CheckoutCancel = () => {
 
     return (
         <PageContainer maxWidth='3xl'>
+            <title>Pedido Cancelado · Voltora</title>
             <div className='border-border bg-surface flex flex-col items-center gap-2 rounded-2xl border p-8 text-center'>
                 <CancelOutlinedIcon
                     className='text-error'

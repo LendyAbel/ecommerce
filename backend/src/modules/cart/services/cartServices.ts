@@ -2,7 +2,7 @@ import { Prisma } from '../../../../prisma/generated/prisma/client';
 import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
 import { serializeCart } from '../../../lib/serializers';
-import { AddItemInput, UpdateItemInput } from '../schemas/cartZodSchema';
+import { AddItemInput, UpdateItemInput } from '../schemas/cartSchemas';
 
 const cartInclude = {
     cartItems: {

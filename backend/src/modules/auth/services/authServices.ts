@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 
 import { AppError } from '../../../lib/AppError';
 import { prisma } from '../../../lib/prisma';
-import { LoginInput, RegisterInput } from '../schemas/authZodSchema';
+import { LoginInput, RegisterInput } from '../schemas/authSchemas';
 import { getToken } from '../utils/utils';
 
 const SALT_ROUNDS = 10;

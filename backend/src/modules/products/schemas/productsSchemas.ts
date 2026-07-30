@@ -4,6 +4,7 @@ export const ImageInputSchema = z.object({
     url: z.url({ error: 'Imagen URL no valid' }),
     isMain: z.boolean({ error: 'isMain must be a boolean' }),
 });
+export type ImagenInput = z.infer<typeof ImageInputSchema>;
 
 // Refined on the array (not the object) so ProductCreateSchema stays a ZodObject
 // and `.partial()` keeps working for the update schema. Empty arrays pass.
@@ -14,6 +15,7 @@ export const ImagesArraySchema = z
     });
 
 export const ProductStatusSchema = z.enum(['published', 'discontinued', 'draft']);
+export type ProductStatus = z.infer<typeof ProductStatusSchema>;
 
 // Base field validators WITHOUT create-time defaults. The defaults live only on
 // ProductCreateSchema; the update schema reuses these raw shapes so that PATCH
@@ -56,8 +58,10 @@ export const ProductCreateSchema = z.object({
     categories: productFields.categories.default([]),
     images: productFields.images.default([]),
 });
+export type ProductCrateInput = z.infer<typeof ProductCreateSchema>;
 
 export const ProductUpdateSchema = z.object(productFields).partial();
+export type ProductUpdateInput = z.infer<typeof ProductUpdateSchema>;
 
 export const ProductQuerySchema = z.object({
     search: z.string().trim().optional(),
@@ -66,3 +70,4 @@ export const ProductQuerySchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(20),
 });
+export type ProductQuery = z.infer<typeof ProductQuerySchema>;

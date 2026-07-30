@@ -1,14 +1,12 @@
 import SearchIcon from '@mui/icons-material/Search';
-import {
-    FormControl,
-    InputAdornment,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-    ToggleButton,
-    ToggleButtonGroup,
-} from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import type { SortBy } from '@/features/products/schemas/productSchemas';
 import { sxInputStyle } from '@/shared/utils/muiStyles';

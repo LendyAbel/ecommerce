@@ -1,22 +1,22 @@
 import { useAuthStore } from '@/features/auth/store/authStore';
 import OrdersList from '@/features/orders/components/OrdersList';
 import { PageContainer } from '@/shared/components';
+import PageHeader from '@/shared/components/PageHeader';
 
 const Orders = () => {
     const isAdmin = useAuthStore(state => state.user?.role === 'admin');
 
     return (
         <PageContainer maxWidth='3xl'>
-            <header className='mb-6'>
-                <h1 className='text-text font-display text-2xl font-extrabold'>
-                    {isAdmin ? 'Pedidos' : 'Mis pedidos'}
-                </h1>
-                <p className='text-text-60 text-sm'>
-                    {isAdmin
+            <title>Pedidos · Voltora</title>
+            <PageHeader
+                title={isAdmin ? 'Pedidos' : 'Mis pedidos'}
+                subtitle={
+                    isAdmin
                         ? 'Todos los pedidos realizados en la tienda.'
-                        : 'Consulta el estado y el detalle de tus compras.'}
-                </p>
-            </header>
+                        : 'Consulta el estado y el detalle de tus compras.'
+                }
+            />
 
             <OrdersList />
         </PageContainer>
