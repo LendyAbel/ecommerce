@@ -5,7 +5,7 @@ import PageHeader from '@/shared/components/PageHeader';
 const WishListPage = () => {
     return (
         <PageContainer maxWidth='3xl'>
-            <title>Pedidos · Voltora</title>
+            <title>Lista de deseados · Voltora</title>
             <PageHeader
                 title='Lista de deseados'
                 subtitle='Guarda tus favoritos y compra luego'

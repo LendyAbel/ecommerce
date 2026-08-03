@@ -1,3 +1,4 @@
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
@@ -6,6 +7,11 @@ import { useAuthStore } from '@/features/auth/store/authStore';
 import { useSyncCart } from '@/features/cart/hooks/useSyncCart';
 import { useCartStore } from '@/features/cart/store/cartStore';
 import type { Product } from '@/features/products/schemas/productSchemas';
+import {
+    useAddWishItem,
+    useRemoveWishItem,
+    useWishlist,
+} from '@/features/wishlist/hooks/useWishlist';
 import { ApiError } from '@/lib/api/client';
 import { notify } from '@/shared/store/alertStore';
 import { Button } from '@/shared/ui';
@@ -15,9 +21,17 @@ type ProductActionsProps = {
 };
 
 const ProductActions = ({ product }: ProductActionsProps) => {
-    const addItem = useCartStore(state => state.addItem);
+    const addItemToLocalCart = useCartStore(state => state.addItem);
     const user = useAuthStore(state => state.user);
     const { addItemToBackend, addItemIsLoading } = useSyncCart();
+
+    const { data: wishlist } = useWishlist();
+    const addToWishlist = useAddWishItem();
+    const removeFromWishlist = useRemoveWishItem();
+
+    const isWished =
+        wishlist?.wishItems.some(item => item.productId === product.id) ??
+        false;
 
     const handleShare = async () => {
         const url = window.location.href;
@@ -51,13 +65,34 @@ const ProductActions = ({ product }: ProductActionsProps) => {
             }
         }
 
-        const added = addItem({ product });
+        const added = addItemToLocalCart({ product });
 
         if (!added) {
             notify.error('No hay suficiente stock disponible');
             return;
         }
         notify.success('Producto añadido al carrito');
+    };
+
+    const handleToggleWishlist = async () => {
+        if (!user) {
+            notify.info('Inicia sesión para guardar productos en favoritos');
+            return;
+        }
+
+        try {
+            if (isWished) {
+                await removeFromWishlist.mutateAsync(product.id);
+            } else {
+                await addToWishlist.mutateAsync(product.id);
+            }
+        } catch (error) {
+            notify.error(
+                error instanceof ApiError
+                    ? error.message
+                    : 'No se pudo actualizar la lista de deseados. Inténtalo de nuevo.',
+            );
+        }
     };
 
     return (
@@ -73,11 +108,24 @@ const ProductActions = ({ product }: ProductActionsProps) => {
                 Añadir al Carrito
             </Button>
             <Button
-                title='Guardar en favoritos'
+                title={
+                    isWished ? 'Quitar de favoritos' : 'Guardar en favoritos'
+                }
                 variant='outline'
                 size='lg'
                 iconOnly
-                leftIcon={<FavoriteBorderIcon fontSize='small' />}
+                onClick={handleToggleWishlist}
+                leftIcon={
+                    isWished ? (
+                        <FavoriteIcon
+                            fontSize='small'
+                            sx={{ color: 'var(--color-error)' }}
+                        />
+                    ) : (
+                        <FavoriteBorderIcon fontSize='small' />
+                    )
+                }
+                loading={addToWishlist.isPending || removeFromWishlist.isPending}
             />
             <Button
                 title='Compartir'
