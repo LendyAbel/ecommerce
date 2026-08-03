@@ -17,6 +17,7 @@ import ordersRouter from './modules/orders/routers/ordersRouter';
 import webhookRouter from './modules/payments/routers/webhookRouter';
 import productsRouter from './modules/products/routers/productRouter';
 import usersRouter from './modules/users/routers/usersRouter';
+import wishlistRouter from './modules/wishlist/routers/wishlistRouter';
 const app = express();
 
 const FRONTEND_URL = config.FRONTEND_URL;
@@ -57,6 +58,7 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/addresses', addressesRouter);
+app.use('/api/wishlist', wishlistRouter);
 
 app.use(errorHandler);
 

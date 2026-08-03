@@ -392,7 +392,9 @@ export const ModelName = {
   OrderItem: 'OrderItem',
   Product: 'Product',
   Image: 'Image',
-  User: 'User'
+  User: 'User',
+  WishList: 'WishList',
+  WishItem: 'WishItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -408,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "address" | "cart" | "cartItem" | "category" | "order" | "orderItem" | "product" | "image" | "user"
+    modelProps: "address" | "cart" | "cartItem" | "category" | "order" | "orderItem" | "product" | "image" | "user" | "wishList" | "wishItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1078,6 +1080,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WishList: {
+      payload: Prisma.$WishListPayload<ExtArgs>
+      fields: Prisma.WishListFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WishListFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WishListFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>
+        }
+        findFirst: {
+          args: Prisma.WishListFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WishListFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>
+        }
+        findMany: {
+          args: Prisma.WishListFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>[]
+        }
+        create: {
+          args: Prisma.WishListCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>
+        }
+        createMany: {
+          args: Prisma.WishListCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WishListCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>[]
+        }
+        delete: {
+          args: Prisma.WishListDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>
+        }
+        update: {
+          args: Prisma.WishListUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>
+        }
+        deleteMany: {
+          args: Prisma.WishListDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WishListUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WishListUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>[]
+        }
+        upsert: {
+          args: Prisma.WishListUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishListPayload>
+        }
+        aggregate: {
+          args: Prisma.WishListAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWishList>
+        }
+        groupBy: {
+          args: Prisma.WishListGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WishListGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WishListCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WishListCountAggregateOutputType> | number
+        }
+      }
+    }
+    WishItem: {
+      payload: Prisma.$WishItemPayload<ExtArgs>
+      fields: Prisma.WishItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WishItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WishItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>
+        }
+        findFirst: {
+          args: Prisma.WishItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WishItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>
+        }
+        findMany: {
+          args: Prisma.WishItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>[]
+        }
+        create: {
+          args: Prisma.WishItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>
+        }
+        createMany: {
+          args: Prisma.WishItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WishItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>[]
+        }
+        delete: {
+          args: Prisma.WishItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>
+        }
+        update: {
+          args: Prisma.WishItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.WishItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WishItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WishItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.WishItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WishItemPayload>
+        }
+        aggregate: {
+          args: Prisma.WishItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWishItem>
+        }
+        groupBy: {
+          args: Prisma.WishItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WishItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WishItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WishItemCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1235,6 +1385,24 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const WishListScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId'
+} as const
+
+export type WishListScalarFieldEnum = (typeof WishListScalarFieldEnum)[keyof typeof WishListScalarFieldEnum]
+
+
+export const WishItemScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  wishlistId: 'wishlistId',
+  createdAt: 'createdAt'
+} as const
+
+export type WishItemScalarFieldEnum = (typeof WishItemScalarFieldEnum)[keyof typeof WishItemScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1504,6 +1672,8 @@ export type GlobalOmitConfig = {
   product?: Prisma.ProductOmit
   image?: Prisma.ImageOmit
   user?: Prisma.UserOmit
+  wishList?: Prisma.WishListOmit
+  wishItem?: Prisma.WishItemOmit
 }
 
 /* Types for Logging */

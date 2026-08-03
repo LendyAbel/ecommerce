@@ -59,7 +59,9 @@ export const ModelName = {
   OrderItem: 'OrderItem',
   Product: 'Product',
   Image: 'Image',
-  User: 'User'
+  User: 'User',
+  WishList: 'WishList',
+  WishItem: 'WishItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -196,6 +198,24 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const WishListScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId'
+} as const
+
+export type WishListScalarFieldEnum = (typeof WishListScalarFieldEnum)[keyof typeof WishListScalarFieldEnum]
+
+
+export const WishItemScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  wishlistId: 'wishlistId',
+  createdAt: 'createdAt'
+} as const
+
+export type WishItemScalarFieldEnum = (typeof WishItemScalarFieldEnum)[keyof typeof WishItemScalarFieldEnum]
 
 
 export const SortOrder = {

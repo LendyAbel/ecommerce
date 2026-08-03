@@ -18,9 +18,10 @@ model Product {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  images    Image[]
-  cartItem  CartItem[]
-  orderItem OrderItem[]
+  images       Image[]
+  cartItem     CartItem[]
+  orderItem    OrderItem[]
+  wishlistItem WishItem[]
 
   categories Category[] @relation("ProductCategories")
 

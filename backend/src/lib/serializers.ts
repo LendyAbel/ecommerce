@@ -4,6 +4,7 @@
 
 type WithPrice = { price: unknown };
 type CartLike = { cartItems: { product: WithPrice }[] };
+type WishlistLike = { wishItems: { product: WithPrice }[] };
 
 export const serializeProduct = <T extends WithPrice>(product: T) => ({
     ...product,
@@ -13,6 +14,14 @@ export const serializeProduct = <T extends WithPrice>(product: T) => ({
 export const serializeCart = <T extends CartLike>(cart: T) => ({
     ...cart,
     cartItems: cart.cartItems.map(item => ({
+        ...item,
+        product: serializeProduct(item.product),
+    })),
+});
+
+export const serializeWishlist = <T extends WishlistLike>(wishlist: T) => ({
+    ...wishlist,
+    wishItems: wishlist.wishItems.map(item => ({
         ...item,
         product: serializeProduct(item.product),
     })),

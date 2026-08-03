@@ -62,3 +62,13 @@ export type Image = Prisma.ImageModel
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model WishList
+ * 
+ */
+export type WishList = Prisma.WishListModel
+/**
+ * Model WishItem
+ * 
+ */
+export type WishItem = Prisma.WishItemModel

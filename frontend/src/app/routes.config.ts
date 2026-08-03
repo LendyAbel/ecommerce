@@ -50,4 +50,9 @@ export const appRoutes: AppRouteConfig[] = [
         import: () => import('@/pages/CheckoutCancel'),
         protected: true,
     },
+    {
+        path: '/wishlist',
+        import: () => import('@/pages/WishListPage'),
+        protected: true,
+    },
 ];

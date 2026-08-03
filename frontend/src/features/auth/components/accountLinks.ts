@@ -1,3 +1,4 @@
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
@@ -19,4 +20,5 @@ export const ACCOUNT_LINKS: MenuLink[] = [
         label: 'Mis direcciones',
         Icon: LocationOnOutlinedIcon,
     },
+    { to: '/wishlist', label: 'Deseados', Icon: FavoriteBorderIcon },
 ];
