@@ -1,4 +1,10 @@
-﻿import type { LoginForm, RegisterForm, User } from '@/features/auth/schemas/userSchemas';
+﻿import type {
+    ChangePasswordForm,
+    LoginForm,
+    RegisterForm,
+    UpdateProfileForm,
+    User,
+} from '@/features/auth/schemas/userSchemas';
 import { apiClient } from '@/lib/api/client';
 
 const login = async (data: LoginForm): Promise<User | null> => {
@@ -20,9 +26,27 @@ const me = async (): Promise<User | null> => {
     return res.data.user;
 };
 
+const updateProfile = async (data: UpdateProfileForm): Promise<User | null> => {
+    const res = await apiClient.patch('/auth/me', data);
+    return res.data.user;
+};
+
+const changePassword = async (
+    data: Omit<ChangePasswordForm, 'confirmNewPassword'>,
+): Promise<void> => {
+    await apiClient.patch('/auth/me/password', data);
+};
+
+const deleteAccount = async (): Promise<void> => {
+    await apiClient.delete('/auth/me');
+};
+
 export default {
     login,
     register,
     logout,
     me,
+    updateProfile,
+    changePassword,
+    deleteAccount,
 };

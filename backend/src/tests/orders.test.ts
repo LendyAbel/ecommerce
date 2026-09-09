@@ -11,6 +11,7 @@ jest.mock('../lib/prisma', () => {
             findMany: jest.fn(),
             findFirst: jest.fn(),
             findUnique: jest.fn(),
+            count: jest.fn(),
             create: jest.fn(),
             update: jest.fn(),
         },
@@ -18,7 +19,7 @@ jest.mock('../lib/prisma', () => {
             findUnique: jest.fn(),
         },
         address: {
-            findMany: jest.fn(),
+            findFirst: jest.fn(),
         },
         product: {
             update: jest.fn(),
@@ -28,10 +29,14 @@ jest.mock('../lib/prisma', () => {
         },
         $transaction: jest.fn(),
     };
-    // Run interactive transactions against the same mock client.
-    prismaMock.$transaction.mockImplementation(
-        (cb: (tx: typeof prismaMock) => unknown) => cb(prismaMock),
-    );
+    // Run interactive (callback) transactions against the same mock client;
+    // run batch (array) transactions as a plain Promise.all.
+    const runTransaction = (
+        arg:
+            | ((tx: typeof prismaMock) => unknown)
+            | Promise<unknown>[],
+    ) => (typeof arg === 'function' ? arg(prismaMock) : Promise.all(arg));
+    prismaMock.$transaction.mockImplementation(runTransaction);
     return { prisma: prismaMock };
 });
 
@@ -101,23 +106,27 @@ const mockOrder = {
 // --- Tests ---
 describe('Orders', () => {
     // resetMocks wipes the factory implementation before each test, so re-wire
-    // $transaction to run interactive callbacks against the mock client.
+    // $transaction to run interactive (callback) transactions against the mock
+    // client, and batch (array) transactions as a plain Promise.all.
     beforeEach(() => {
         (prisma.$transaction as jest.Mock).mockImplementation(
-            (cb: (tx: typeof prisma) => unknown) => cb(prisma),
+            (arg: ((tx: typeof prisma) => unknown) | Promise<unknown>[]) =>
+                typeof arg === 'function' ? arg(prisma) : Promise.all(arg),
         );
     });
 
     describe('GET /api/orders', () => {
         it('should return the orders of the authenticated user with status 200', async () => {
             (prisma.order.findMany as jest.Mock).mockResolvedValue([mockOrder]);
+            (prisma.order.count as jest.Mock).mockResolvedValue(1);
 
             const res = await request(app)
                 .get('/api/orders')
                 .set('Cookie', `token=${customerToken()}`);
 
             expect(res.status).toBe(200);
-            expect(res.body).toHaveLength(1);
+            expect(res.body.data).toHaveLength(1);
+            expect(res.body.total).toBe(1);
             expect(prisma.order.findMany).toHaveBeenCalledWith(
                 expect.objectContaining({ where: { userId: USER_ID } }),
             );
@@ -133,6 +142,7 @@ describe('Orders', () => {
     describe('GET /api/orders/all', () => {
         it('should return all orders for an admin with status 200', async () => {
             (prisma.order.findMany as jest.Mock).mockResolvedValue([mockOrder]);
+            (prisma.order.count as jest.Mock).mockResolvedValue(1);
 
             const res = await request(app)
                 .get('/api/orders/all')
@@ -229,13 +239,12 @@ describe('Orders', () => {
     describe('POST /api/orders', () => {
         const validBody = { shippingAddressId: SHIPPING_ADDRESS_ID };
 
-        it('should create an order, decrement stock and clear the cart', async () => {
+        it('should create an order in pending status and clear the cart', async () => {
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
-            (prisma.address.findMany as jest.Mock).mockResolvedValue([
+            (prisma.address.findFirst as jest.Mock).mockResolvedValue(
                 mockAddress,
-            ]);
+            );
             (prisma.order.create as jest.Mock).mockResolvedValue(mockOrder);
-            (prisma.product.update as jest.Mock).mockResolvedValue(mockProduct);
             (prisma.cartItem.deleteMany as jest.Mock).mockResolvedValue({
                 count: 1,
             });
@@ -247,13 +256,9 @@ describe('Orders', () => {
 
             expect(res.status).toBe(201);
             expect(res.body).toMatchObject({ id: ORDER_ID });
-            // Stock decremented for the purchased item.
-            expect(prisma.product.update).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    where: { id: PRODUCT_ID },
-                    data: { stock: { decrement: 2 } },
-                }),
-            );
+            // Stock is only decremented once payment is confirmed (Stripe
+            // webhook), not at order creation.
+            expect(prisma.product.update).not.toHaveBeenCalled();
             // Cart emptied after the order is placed.
             expect(prisma.cartItem.deleteMany).toHaveBeenCalledWith({
                 where: { cartId: CART_ID },
@@ -262,11 +267,10 @@ describe('Orders', () => {
 
         it('should compute totalAmount as price * quantity for every item', async () => {
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
-            (prisma.address.findMany as jest.Mock).mockResolvedValue([
+            (prisma.address.findFirst as jest.Mock).mockResolvedValue(
                 mockAddress,
-            ]);
+            );
             (prisma.order.create as jest.Mock).mockResolvedValue(mockOrder);
-            (prisma.product.update as jest.Mock).mockResolvedValue(mockProduct);
             (prisma.cartItem.deleteMany as jest.Mock).mockResolvedValue({
                 count: 1,
             });
@@ -284,11 +288,10 @@ describe('Orders', () => {
 
         it('should fall back to the shipping address when no billing address is given', async () => {
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
-            (prisma.address.findMany as jest.Mock).mockResolvedValue([
+            (prisma.address.findFirst as jest.Mock).mockResolvedValue(
                 mockAddress,
-            ]);
+            );
             (prisma.order.create as jest.Mock).mockResolvedValue(mockOrder);
-            (prisma.product.update as jest.Mock).mockResolvedValue(mockProduct);
             (prisma.cartItem.deleteMany as jest.Mock).mockResolvedValue({
                 count: 1,
             });
@@ -339,7 +342,7 @@ describe('Orders', () => {
         it('should return 404 when the shipping address does not belong to the user', async () => {
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
             // Address book lookup returns nothing for this user.
-            (prisma.address.findMany as jest.Mock).mockResolvedValue([]);
+            (prisma.address.findFirst as jest.Mock).mockResolvedValue(null);
 
             const res = await request(app)
                 .post('/api/orders')
@@ -347,16 +350,16 @@ describe('Orders', () => {
                 .send(validBody);
 
             expect(res.status).toBe(404);
-            expect(res.body).toHaveProperty('error', 'Addresses not found');
+            expect(res.body).toHaveProperty('error', 'Address not found');
             expect(prisma.order.create).not.toHaveBeenCalled();
         });
 
         it('should return 404 when the billing address is missing from the address book', async () => {
             (prisma.cart.findUnique as jest.Mock).mockResolvedValue(mockCart);
-            // Only the shipping address is found, billing one is absent.
-            (prisma.address.findMany as jest.Mock).mockResolvedValue([
-                mockAddress,
-            ]);
+            // Shipping address resolves, billing one (looked up second) is absent.
+            (prisma.address.findFirst as jest.Mock)
+                .mockResolvedValueOnce(mockAddress)
+                .mockResolvedValueOnce(null);
 
             const res = await request(app)
                 .post('/api/orders')
@@ -367,7 +370,7 @@ describe('Orders', () => {
                 });
 
             expect(res.status).toBe(404);
-            expect(res.body).toHaveProperty('error', 'Addresses not found');
+            expect(res.body).toHaveProperty('error', 'Address not found');
         });
 
         it('should return 409 when there is not enough stock', async () => {
@@ -377,9 +380,9 @@ describe('Orders', () => {
                     { ...mockCartItem, quantity: 99, product: mockProduct },
                 ],
             });
-            (prisma.address.findMany as jest.Mock).mockResolvedValue([
+            (prisma.address.findFirst as jest.Mock).mockResolvedValue(
                 mockAddress,
-            ]);
+            );
 
             const res = await request(app)
                 .post('/api/orders')
@@ -430,49 +433,17 @@ describe('Orders', () => {
             expect(prisma.order.update).toHaveBeenCalledWith({
                 where: { id: ORDER_ID },
                 data: { status: 'shipped' },
+                include: { orderItems: true, shippingAddress: true },
             });
-            // No stock changes for a non-cancel transition.
-            expect(prisma.product.update).not.toHaveBeenCalled();
         });
 
-        it('should restore stock for active products when cancelling an order', async () => {
+        // Stock is decremented at payment-confirmation time (Stripe webhook),
+        // not at order creation, so updateStatusOrder has no stock to restore
+        // when an admin cancels an order — even a previously 'paid' one.
+        it('should not touch product stock when cancelling a paid order', async () => {
             (prisma.order.findUnique as jest.Mock).mockResolvedValue({
                 ...mockOrder,
                 status: 'paid',
-                orderItems: [
-                    { productId: PRODUCT_ID, quantity: 2 },
-                    // Item from a deleted product: productId null must be skipped.
-                    { productId: null, quantity: 5 },
-                ],
-            });
-            (prisma.product.update as jest.Mock).mockResolvedValue(mockProduct);
-            (prisma.order.update as jest.Mock).mockResolvedValue({
-                ...mockOrder,
-                status: 'cancelled',
-            });
-
-            const res = await request(app)
-                .patch(`/api/orders/${ORDER_ID}/status`)
-                .set('Cookie', `token=${adminToken()}`)
-                .send({ status: 'cancelled' });
-
-            expect(res.status).toBe(200);
-            // Only the active product's stock is restored.
-            expect(prisma.product.update).toHaveBeenCalledTimes(1);
-            expect(prisma.product.update).toHaveBeenCalledWith({
-                where: { id: PRODUCT_ID },
-                data: { stock: { increment: 2 } },
-            });
-            expect(prisma.order.update).toHaveBeenCalledWith({
-                where: { id: ORDER_ID },
-                data: { status: 'cancelled' },
-            });
-        });
-
-        it('should not restore stock when the order is already cancelled', async () => {
-            (prisma.order.findUnique as jest.Mock).mockResolvedValue({
-                ...mockOrder,
-                status: 'cancelled',
                 orderItems: [{ productId: PRODUCT_ID, quantity: 2 }],
             });
             (prisma.order.update as jest.Mock).mockResolvedValue({
@@ -487,6 +458,11 @@ describe('Orders', () => {
 
             expect(res.status).toBe(200);
             expect(prisma.product.update).not.toHaveBeenCalled();
+            expect(prisma.order.update).toHaveBeenCalledWith({
+                where: { id: ORDER_ID },
+                data: { status: 'cancelled' },
+                include: { orderItems: true, shippingAddress: true },
+            });
         });
 
         it('should return 404 when the order does not exist', async () => {

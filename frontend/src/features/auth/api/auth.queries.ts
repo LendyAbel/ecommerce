@@ -9,6 +9,9 @@ const authKeys = {
     login: () => [...authKeys.user, 'login'] as const,
     register: () => [...authKeys.user, 'register'] as const,
     logout: () => [...authKeys.user, 'logout'] as const,
+    updateProfile: () => [...authKeys.user, 'update-profile'] as const,
+    changePassword: () => [...authKeys.user, 'change-password'] as const,
+    deleteAccount: () => [...authKeys.user, 'delete-account'] as const,
 };
 
 // Solo hace fetch y cachea; sin side-effects sobre stores aquí (ver useAuthBootsTrap).
@@ -42,4 +45,22 @@ export const logoutMutationOptions = () =>
     mutationOptions({
         mutationKey: authKeys.logout(),
         mutationFn: () => authService.logout(),
+    });
+
+export const updateProfileMutationOptions = () =>
+    mutationOptions({
+        mutationKey: authKeys.updateProfile(),
+        mutationFn: authService.updateProfile,
+    });
+
+export const changePasswordMutationOptions = () =>
+    mutationOptions({
+        mutationKey: authKeys.changePassword(),
+        mutationFn: authService.changePassword,
+    });
+
+export const deleteAccountMutationOptions = () =>
+    mutationOptions({
+        mutationKey: authKeys.deleteAccount(),
+        mutationFn: () => authService.deleteAccount(),
     });

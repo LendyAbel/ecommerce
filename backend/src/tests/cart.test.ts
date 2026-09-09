@@ -11,7 +11,7 @@ jest.mock('../lib/prisma', () => {
             findUnique: jest.fn(),
         },
         cartItem: {
-            findUnique: jest.fn(),
+            findFirst: jest.fn(),
             upsert: jest.fn(),
             update: jest.fn(),
             delete: jest.fn(),
@@ -248,11 +248,11 @@ describe('Cart', () => {
         });
     });
 
-    describe('PATCH /api/cart/items/:itemId', () => {
+    describe('PATCH /api/cart/items/:productId', () => {
         it('should update item quantity', async () => {
-            (prisma.cartItem.findUnique as jest.Mock).mockResolvedValue({
+            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue({
                 ...mockCartItem,
-                cart: { userId: USER_ID },
+                product: { stock: 10 },
             });
             (prisma.cartItem.update as jest.Mock).mockResolvedValue({
                 ...mockCartItem,
@@ -262,26 +262,30 @@ describe('Cart', () => {
             const token = customerToken();
 
             const res = await request(app)
-                .patch(`/api/cart/items/${ITEM_ID}`)
+                .patch(`/api/cart/items/${PRODUCT_ID}`)
                 .set('Cookie', `token=${token}`)
                 .send({ quantity: 5 });
 
             expect(res.status).toBe(200);
+            expect(prisma.cartItem.findFirst).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: { productId: PRODUCT_ID, cart: { userId: USER_ID } },
+                }),
+            );
             expect(prisma.cartItem.update).toHaveBeenCalledWith(
                 expect.objectContaining({ data: { quantity: 5 } }),
             );
         });
 
         it('should return 409 when new quantity exceeds stock', async () => {
-            (prisma.cartItem.findUnique as jest.Mock).mockResolvedValue({
+            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue({
                 ...mockCartItem,
-                cart: { userId: USER_ID },
                 product: { stock: 3 },
             });
             const token = customerToken();
 
             const res = await request(app)
-                .patch(`/api/cart/items/${ITEM_ID}`)
+                .patch(`/api/cart/items/${PRODUCT_ID}`)
                 .set('Cookie', `token=${token}`)
                 .send({ quantity: 5 });
 
@@ -290,58 +294,10 @@ describe('Cart', () => {
             expect(prisma.cartItem.update).not.toHaveBeenCalled();
         });
 
-        it('should return 404 when item does not belong to user', async () => {
-            (prisma.cartItem.findUnique as jest.Mock).mockResolvedValue({
+        it('should remove the item when quantity is set to 0', async () => {
+            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue({
                 ...mockCartItem,
-                cart: { userId: 'different-user-id' },
-            });
-            const token = customerToken();
-
-            const res = await request(app)
-                .patch(`/api/cart/items/${ITEM_ID}`)
-                .set('Cookie', `token=${token}`)
-                .send({ quantity: 5 });
-
-            expect(res.status).toBe(404);
-        });
-
-        it('should return 404 when item does not exist', async () => {
-            (prisma.cartItem.findUnique as jest.Mock).mockResolvedValue(null);
-            const token = customerToken();
-
-            const res = await request(app)
-                .patch(`/api/cart/items/${ITEM_ID}`)
-                .set('Cookie', `token=${token}`)
-                .send({ quantity: 3 });
-
-            expect(res.status).toBe(404);
-        });
-
-        it('should return 400 when quantity is less than 1', async () => {
-            const token = customerToken();
-
-            const res = await request(app)
-                .patch(`/api/cart/items/${ITEM_ID}`)
-                .set('Cookie', `token=${token}`)
-                .send({ quantity: 0 });
-
-            expect(res.status).toBe(400);
-        });
-
-        it('should return 401 when not authenticated', async () => {
-            const res = await request(app)
-                .patch(`/api/cart/items/${ITEM_ID}`)
-                .send({ quantity: 3 });
-
-            expect(res.status).toBe(401);
-        });
-    });
-
-    describe('DELETE /api/cart/items/:itemId', () => {
-        it('should remove an item from the cart', async () => {
-            (prisma.cartItem.findUnique as jest.Mock).mockResolvedValue({
-                ...mockCartItem,
-                cart: { userId: USER_ID },
+                product: { stock: 10 },
             });
             (prisma.cartItem.delete as jest.Mock).mockResolvedValue(
                 mockCartItem,
@@ -353,24 +309,82 @@ describe('Cart', () => {
             const token = customerToken();
 
             const res = await request(app)
-                .delete(`/api/cart/items/${ITEM_ID}`)
-                .set('Cookie', `token=${token}`);
+                .patch(`/api/cart/items/${PRODUCT_ID}`)
+                .set('Cookie', `token=${token}`)
+                .send({ quantity: 0 });
 
             expect(res.status).toBe(200);
             expect(prisma.cartItem.delete).toHaveBeenCalledWith({
                 where: { id: ITEM_ID },
             });
+            expect(prisma.cartItem.update).not.toHaveBeenCalled();
         });
 
-        it('should return 404 when item does not belong to user', async () => {
-            (prisma.cartItem.findUnique as jest.Mock).mockResolvedValue({
-                ...mockCartItem,
-                cart: { userId: 'another-user' },
+        it('should return 404 when the product is not in the user cart', async () => {
+            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue(null);
+            const token = customerToken();
+
+            const res = await request(app)
+                .patch(`/api/cart/items/${PRODUCT_ID}`)
+                .set('Cookie', `token=${token}`)
+                .send({ quantity: 5 });
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 400 when quantity is negative', async () => {
+            const token = customerToken();
+
+            const res = await request(app)
+                .patch(`/api/cart/items/${PRODUCT_ID}`)
+                .set('Cookie', `token=${token}`)
+                .send({ quantity: -1 });
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 401 when not authenticated', async () => {
+            const res = await request(app)
+                .patch(`/api/cart/items/${PRODUCT_ID}`)
+                .send({ quantity: 3 });
+
+            expect(res.status).toBe(401);
+        });
+    });
+
+    describe('DELETE /api/cart/items/:productId', () => {
+        it('should remove an item from the cart', async () => {
+            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue(
+                mockCartItem,
+            );
+            (prisma.cartItem.delete as jest.Mock).mockResolvedValue(
+                mockCartItem,
+            );
+            (prisma.cart.findUnique as jest.Mock).mockResolvedValue({
+                ...mockCart,
+                cartItems: [],
             });
             const token = customerToken();
 
             const res = await request(app)
-                .delete(`/api/cart/items/${ITEM_ID}`)
+                .delete(`/api/cart/items/${PRODUCT_ID}`)
+                .set('Cookie', `token=${token}`);
+
+            expect(res.status).toBe(200);
+            expect(prisma.cartItem.findFirst).toHaveBeenCalledWith({
+                where: { productId: PRODUCT_ID, cart: { userId: USER_ID } },
+            });
+            expect(prisma.cartItem.delete).toHaveBeenCalledWith({
+                where: { id: ITEM_ID },
+            });
+        });
+
+        it('should return 404 when the product is not in the user cart', async () => {
+            (prisma.cartItem.findFirst as jest.Mock).mockResolvedValue(null);
+            const token = customerToken();
+
+            const res = await request(app)
+                .delete(`/api/cart/items/${PRODUCT_ID}`)
                 .set('Cookie', `token=${token}`);
 
             expect(res.status).toBe(404);
@@ -378,7 +392,7 @@ describe('Cart', () => {
 
         it('should return 401 when not authenticated', async () => {
             const res = await request(app).delete(
-                `/api/cart/items/${ITEM_ID}`,
+                `/api/cart/items/${PRODUCT_ID}`,
             );
 
             expect(res.status).toBe(401);

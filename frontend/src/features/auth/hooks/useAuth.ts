@@ -2,10 +2,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import {
+    changePasswordMutationOptions,
+    deleteAccountMutationOptions,
     loginMutationOptions,
     logoutMutationOptions,
     meQueryOptions,
     registerMutationOptions,
+    updateProfileMutationOptions,
 } from '@/features/auth/api/auth.queries';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import {
@@ -90,12 +93,36 @@ export const useAuth = () => {
         },
     });
 
+    const updateProfileMutation = useMutation({
+        ...updateProfileMutationOptions(),
+        onSuccess: user => {
+            useAuthStore.getState().setUser(user);
+        },
+    });
+
+    const changePasswordMutation = useMutation(changePasswordMutationOptions());
+
+    const deleteAccountMutation = useMutation({
+        ...deleteAccountMutationOptions(),
+        onSuccess: () => {
+            useAuthStore.getState().setUser(null);
+            useCartStore.getState().clearCart();
+            queryClient.clear();
+        },
+    });
+
     return {
         login: loginMutation.mutateAsync,
         register: registerMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
+        updateProfile: updateProfileMutation.mutateAsync,
+        changePassword: changePasswordMutation.mutateAsync,
+        deleteAccount: deleteAccountMutation.mutateAsync,
         isLoginPending: loginMutation.isPending,
         isRegisterPending: registerMutation.isPending,
         isLogoutPending: logoutMutation.isPending,
+        isUpdateProfilePending: updateProfileMutation.isPending,
+        isChangePasswordPending: changePasswordMutation.isPending,
+        isDeleteAccountPending: deleteAccountMutation.isPending,
     };
 };

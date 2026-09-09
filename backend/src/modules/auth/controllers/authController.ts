@@ -3,7 +3,12 @@ import { Request, Response } from 'express';
 import { AppError } from '../../../lib/AppError';
 import { config } from '../../../lib/config';
 import usersServices from '../../users/services/usersServices';
-import { LoginSchema, RegisterSchema } from '../schemas/authSchemas';
+import {
+    ChangePasswordSchema,
+    LoginSchema,
+    RegisterSchema,
+    UpdateProfileSchema,
+} from '../schemas/authSchemas';
 import authServices from '../services/authServices';
 
 const COOKIE_OPTIONS = {
@@ -49,4 +54,20 @@ export const deleteMe = async (req: Request, res: Response) => {
     await usersServices.softDeleteUser(req.user.userId);
     res.clearCookie('token', COOKIE_OPTIONS);
     res.status(204).send();
+};
+
+export const updateMe = async (req: Request, res: Response) => {
+    if (!req.user) throw new AppError('Authentication required', 401);
+
+    const data = UpdateProfileSchema.parse(req.body);
+    const { user } = await authServices.updateProfile(req.user.userId, data);
+    res.status(200).json({ user });
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+    if (!req.user) throw new AppError('Authentication required', 401);
+
+    const data = ChangePasswordSchema.parse(req.body);
+    await authServices.changePassword(req.user.userId, data);
+    res.status(200).json({ message: 'Password updated' });
 };

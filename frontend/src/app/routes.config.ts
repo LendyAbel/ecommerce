@@ -31,6 +31,11 @@ export const appRoutes: AppRouteConfig[] = [
         protected: true,
     },
     {
+        path: '/account',
+        import: () => import('@/pages/Account'),
+        protected: true,
+    },
+    {
         path: '/account/addresses',
         import: () => import('@/pages/Address'),
         protected: true,

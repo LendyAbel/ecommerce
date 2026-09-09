@@ -10,6 +10,7 @@ jest.mock('../lib/prisma', () => ({
             create: jest.fn(),
             findUnique: jest.fn(),
             findFirst: jest.fn(),
+            update: jest.fn(),
         },
     },
 }));
@@ -208,6 +209,92 @@ describe('Auth', () => {
                 .set('Cookie', `token=${token}`);
 
             expect(res.status).toBe(404);
+        });
+    });
+
+    describe('PATCH /api/auth/me', () => {
+        it('should update name/email and return the updated user', async () => {
+            const updated = { ...mockUser, name: 'New Name', email: 'new@example.com' };
+            (prisma.user.update as jest.Mock).mockResolvedValue(updated);
+            const token = validToken();
+
+            const res = await request(app)
+                .patch('/api/auth/me')
+                .set('Cookie', `token=${token}`)
+                .send({ name: 'New Name', email: 'new@example.com' });
+
+            expect(res.status).toBe(200);
+            expect(res.body.user).toMatchObject({
+                name: 'New Name',
+                email: 'new@example.com',
+            });
+            expect(res.body.user).not.toHaveProperty('password');
+        });
+
+        it('should return 401 when no cookie is present', async () => {
+            const res = await request(app)
+                .patch('/api/auth/me')
+                .send({ name: 'New Name', email: 'new@example.com' });
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 400 when email is invalid', async () => {
+            const token = validToken();
+
+            const res = await request(app)
+                .patch('/api/auth/me')
+                .set('Cookie', `token=${token}`)
+                .send({ name: 'New Name', email: 'not-an-email' });
+
+            expect(res.status).toBe(400);
+        });
+    });
+
+    describe('PATCH /api/auth/me/password', () => {
+        it('should change the password when current password is correct', async () => {
+            (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+                ...mockUser,
+                password: 'hashed_password',
+            });
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+            (prisma.user.update as jest.Mock).mockResolvedValue(mockUser);
+            const token = validToken();
+
+            const res = await request(app)
+                .patch('/api/auth/me/password')
+                .set('Cookie', `token=${token}`)
+                .send({ currentPassword: 'password123', newPassword: 'newpassword123' });
+
+            expect(res.status).toBe(200);
+            expect(bcrypt.hash).toHaveBeenCalledWith('newpassword123', 10);
+        });
+
+        it('should return 401 when current password is wrong', async () => {
+            (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+                ...mockUser,
+                password: 'hashed_password',
+            });
+            (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+            const token = validToken();
+
+            const res = await request(app)
+                .patch('/api/auth/me/password')
+                .set('Cookie', `token=${token}`)
+                .send({ currentPassword: 'wrong-password', newPassword: 'newpassword123' });
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 400 when new password is too short', async () => {
+            const token = validToken();
+
+            const res = await request(app)
+                .patch('/api/auth/me/password')
+                .set('Cookie', `token=${token}`)
+                .send({ currentPassword: 'password123', newPassword: 'short' });
+
+            expect(res.status).toBe(400);
         });
     });
 });
