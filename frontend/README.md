@@ -117,7 +117,11 @@ React Router v7 con `createBrowserRouter`; las rutas se declaran en `app/routes.
 
 ## Deploy
 
-Build estático (`npm run build` → `dist/`), pensado para servirse desde un host de sitios estáticos (Netlify, Vercel, etc.) detrás de un backend desplegado por separado. Puntos a tener en cuenta:
+Desplegado en **Netlify** como sitio estático (`npm run build` → `dist/`), con el backend en Fly.io (ver [`../backend/README.md`](../backend/README.md)).
 
-- Configurar un rewrite `/* → /index.html` en el host estático (rutas de React Router en cliente).
-- El cookie de sesión del backend usa `SameSite=Lax`: si frontend y backend quedan en dominios distintos, hay que proxyear `/api/*` hacia el backend desde el propio host del frontend (o servir ambos bajo subdominios del mismo dominio raíz) para que la cookie viaje.
+- **Base directory** del sitio en Netlify: `frontend` (el repo es un monorepo) — sin esto Netlify no encuentra `netlify.toml` ni corre el build, y termina publicando el código fuente sin compilar.
+- **`netlify.toml`** define el build (`npm run build` / publish `dist`) y dos reglas de redirect, en este orden (Netlify evalúa de arriba a abajo):
+  1. `/api/*` → proxy hacia `https://<tu-backend>.fly.dev/api/:splat` (`force = true`). Necesario porque el cookie de sesión del backend usa `SameSite=Lax` y frontend/backend viven en dominios distintos (`.netlify.app` vs `.fly.dev`): sin este proxy same-origin, el navegador nunca enviaría el cookie en las llamadas a la API.
+  2. `/* → /index.html` — fallback de SPA para las rutas de React Router.
+- Variable de entorno a configurar en Netlify (Site settings → Environment variables): `VITE_STRIPE_PUBLISHABLE_KEY`. (`VITE_API_URL` no se usa en el código — `apiClient` llama siempre a la ruta relativa `/api`, que el proxy de arriba redirige al backend real).
+- El webhook de Stripe apunta directo al backend (`https://<tu-backend>.fly.dev/api/webhooks/stripe`), nunca a través de Netlify.

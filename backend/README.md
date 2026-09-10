@@ -113,11 +113,13 @@ Registro: hashea la contraseña con bcrypt. Login: verifica credenciales y emite
 
 ### Flujo de pagos
 
-El frontend llama a `POST /api/orders/:orderId/checkout-session` (con header `Idempotency-Key`) para obtener la `url` de una sesión de Stripe Checkout, y redirige el navegador ahí. Stripe confirma el pago llamando a `POST /api/webhooks` (montado *antes* de `express.json()` para poder verificar la firma sobre el raw body) y el backend actualiza el estado de la orden.
+El frontend llama a `POST /api/orders/:orderId/checkout-session` (con header `Idempotency-Key`) para obtener la `url` de una sesión de Stripe Checkout, y redirige el navegador ahí. Stripe confirma el pago llamando a `POST /api/webhooks/stripe` (montado *antes* de `express.json()` para poder verificar la firma sobre el raw body) y el backend actualiza el estado de la orden.
 
 ### Middlewares de seguridad
 
 En `app.ts`, en este orden: `httpLogger` → `helmet()` → `cors({ origin: FRONTEND_URL, credentials: true })` → `compression()` → router de webhooks (raw body) → `express.json({ limit: '1mb' })` → `cookieParser()` → health check → rate limiters → routers de dominio → `errorHandler`.
+
+`app.set('trust proxy', N)` está fijado al número de proxies de confianza delante de la app (en producción: Netlify + el proxy interno de Fly), para que `express-rate-limit` lea `X-Forwarded-For` correctamente y no agrupe a todos los usuarios bajo una misma IP. Usar `true` en vez de un número concreto permitiría a un cliente falsificar el header y saltarse el rate limit.
 
 ## Tests
 
@@ -129,11 +131,15 @@ Tests de integración con Jest + Supertest sobre la app de Express (`src/app.ts`
 
 ## Deploy
 
-Pensado para correr como servicio Node persistente (Render, Railway, Fly.io, etc.), no como funciones serverless, por las conexiones de Prisma y el manejo de raw body del webhook de Stripe:
+Desplegado en **Fly.io** como contenedor Docker (servicio Node persistente, no funciones serverless — necesario por las conexiones de Prisma y el manejo de raw body del webhook de Stripe), con **Neon** como Postgres gestionado.
+
+- **`Dockerfile`** (multi-stage): instala todas las dependencias (incluidas devDependencies, necesarias para `prisma migrate deploy` en el release), corre `npx prisma generate` (con un `DATABASE_URL` dummy solo para ese paso — `prisma.config.ts` exige que exista la variable aunque `generate` no llegue a conectarse) y `npm run build`; la imagen final corre `node dist/src/index.js`. Instala `openssl` (ausente en `node:22-slim`) porque el motor de migraciones de Prisma lo necesita.
+- **`fly.toml`**: expone el puerto 3001 con healthcheck contra `/health`, y usa `release_command = "npx prisma migrate deploy"` para aplicar migraciones automáticamente antes de que la nueva versión reciba tráfico.
+- **Secrets** (nunca en `fly.toml`, que sí se commitea): `DATABASE_URL`, `JWT_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `FRONTEND_URL` (la URL del frontend en Netlify).
+- El webhook de Stripe se registra apuntando a `https://<tu-app>.fly.dev/api/webhooks/stripe` — la ruta real montada (`/api/webhooks` + `/stripe` del router), fácil de equivocar.
 
 ```bash
-npm run build
-npm run start
+fly deploy                          # build + deploy + migraciones
+fly secrets set DATABASE_URL="..." JWT_SECRET="..." STRIPE_SECRET_KEY="..." STRIPE_WEBHOOK_SECRET="..." FRONTEND_URL="https://tu-frontend.netlify.app"
+fly logs -a <tu-app>                # logs en vivo
 ```
-
-Antes de exponerlo en producción: configurar todas las variables de entorno de la tabla de arriba, ejecutar `npx prisma migrate deploy` contra la base de datos de producción, y registrar la URL pública `/api/webhooks` en el dashboard de Stripe.
