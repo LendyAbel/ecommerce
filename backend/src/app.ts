@@ -20,6 +20,12 @@ import usersRouter from './modules/users/routers/usersRouter';
 import wishlistRouter from './modules/wishlist/routers/wishlistRouter';
 const app = express();
 
+// La app siempre corre detrás de proxies de confianza (Netlify -> Fly), nunca
+// recibe conexiones directas de un cliente. Sin esto, express-rate-limit no
+// puede leer X-Forwarded-For y termina agrupando a todos los usuarios bajo la
+// misma IP (la del proxy), compartiendo el límite de intentos entre todos.
+app.set('trust proxy', true);
+
 const FRONTEND_URL = config.FRONTEND_URL;
 
 app.use(httpLogger);
