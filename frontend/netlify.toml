@@ -1,0 +1,22 @@
+# Deploy split: este sitio es solo el frontend estático (SPA). El backend
+# vive en Fly.io — ver ../backend/fly.toml.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Proxy same-origin hacia el backend. Necesario porque el cookie de sesión
+# usa SameSite=Lax: si el navegador llamara directo a *.fly.dev (dominio
+# distinto), el cookie no viajaría. Sustituye la URL por la real que te dé
+# `fly deploy` (https://<tu-app>.fly.dev).
+[[redirects]]
+  from = "/api/*"
+  to = "https://ecommerce-backend-voltora.fly.dev/api/:splat"
+  status = 200
+  force = true
+
+# Fallback de SPA para las rutas de React Router (debe ir después del
+# proxy de /api, Netlify evalúa los redirects en orden).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

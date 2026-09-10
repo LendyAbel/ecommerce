@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+generated
+prisma/generated
+.env
+.env.*
+.git
+.vscode
+.agents
+.claude
+npm-debug.log
