@@ -1,5 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
+import { translateApiMessage } from './errorMessages';
+
 /**
  * Cliente HTTP central. Todas las llamadas pasan por `/api` (el proxy de Vite
  * lo redirige al backend en dev) con las cookies de sesión (`withCredentials`).
@@ -13,11 +15,17 @@ export const apiClient = axios.create({
     withCredentials: true,
 });
 
+/** Issue individual de una respuesta de validación Zod (ver `errorHandler.ts`). */
+type BackendValidationIssue = {
+    message?: string;
+    path?: unknown[];
+};
+
 /** Forma de los errores que devuelve el backend (ver `errorHandler.ts`). */
 type BackendError = {
     error?: string; // mensaje principal (AppError, Zod, Prisma…)
     message?: string; // mensaje extra en algunos casos
-    issues?: unknown; // detalle de validación Zod
+    issues?: BackendValidationIssue[]; // detalle de validación Zod
     fields?: string; // campos en conflicto (constraint único)
 };
 
@@ -39,13 +47,18 @@ apiClient.interceptors.response.use(
     (error: AxiosError<BackendError>) => {
         const status = error.response?.status;
         const data = error.response?.data;
-        const message =
+        const rawMessage =
+            data?.issues?.[0]?.message ??
             data?.error ??
             data?.message ??
             error.message ??
             'Ha ocurrido un error inesperado';
         return Promise.reject(
-            new ApiError(message, status, data?.issues ?? data?.fields),
+            new ApiError(
+                translateApiMessage(rawMessage),
+                status,
+                data?.issues ?? data?.fields,
+            ),
         );
     },
 );

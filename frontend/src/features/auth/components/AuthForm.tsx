@@ -63,6 +63,10 @@ function AuthForm<TValues extends Record<string, string>>({
                         ? error.message
                         : 'Error inesperado. Inténtalo de nuevo.',
                 );
+
+                if (error instanceof ApiError) {
+                    console.log('ERROR!!! ', error.message);
+                }
             }
         },
     });
