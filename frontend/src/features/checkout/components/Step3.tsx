@@ -3,8 +3,12 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useNavigate } from 'react-router';
 
 import { useCreateCheckout } from '@/features/checkout/hooks/useCheckout';
-import { getOrCreateIdempotencyKey } from '@/features/checkout/utils';
+import {
+    clearIdempotencyKey,
+    getOrCreateIdempotencyKey,
+} from '@/features/checkout/utils';
 import OrderItemsCard from '@/features/orders/components/OrderItemsCard';
+import OrderStatusBadge from '@/features/orders/components/OrderStatusBadge';
 import type { Order } from '@/features/orders/schemas/orderSchemas';
 import { useProductsStock } from '@/features/products/hooks/useProduct';
 import { ApiError } from '@/lib/api/client';
@@ -18,7 +22,6 @@ type Step3Props = {
 
 const Step3 = ({ order }: Step3Props) => {
     const navigate = useNavigate();
-    const idempotencyKey = getOrCreateIdempotencyKey(order.id);
     const createCheckout = useCreateCheckout();
 
     const { stockByProductId } = useProductsStock(
@@ -36,12 +39,19 @@ const Step3 = ({ order }: Step3Props) => {
             return;
         }
         try {
+            const idempotencyKey = getOrCreateIdempotencyKey(order.id);
             const { url } = await createCheckout.mutateAsync({
                 orderId: order.id,
                 idempotencyKey,
             });
+            // Se limpia antes de salir hacia Stripe: si el usuario vuelve (sesión
+            // vencida, pago cancelado…), el siguiente intento debe generar una
+            // key nueva. Reusar la misma haría que Stripe devuelva la sesión
+            // cacheada (ya vencida) en vez de crear una nueva.
+            clearIdempotencyKey(order.id);
             window.location.href = url;
         } catch (error) {
+            clearIdempotencyKey(order.id);
             notify.error(
                 error instanceof ApiError
                     ? error.message
@@ -49,6 +59,33 @@ const Step3 = ({ order }: Step3Props) => {
             );
         }
     };
+
+    if (order.status !== 'pending') {
+        return (
+            <div className='flex flex-col gap-6'>
+                <div className='border-border bg-surface flex flex-col items-center gap-3 rounded-2xl border p-8 text-center'>
+                    <CheckCircleOutlineIcon
+                        className='text-primary'
+                        sx={{ fontSize: 48 }}
+                    />
+                    <h2 className='text-text font-display text-xl font-bold'>
+                        Pedido #{order.orderNumber}
+                    </h2>
+                    <OrderStatusBadge status={order.status} />
+                    <p className='text-text-60 text-sm'>
+                        {order.status === 'paid'
+                            ? 'Este pedido ya fue pagado.'
+                            : 'Este pedido ya no está pendiente de pago.'}
+                    </p>
+                </div>
+                <div className='flex justify-end'>
+                    <Button onClick={() => navigate(`/orders/${order.id}`)}>
+                        Ver pedido
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className='flex flex-col gap-6'>
@@ -89,8 +126,9 @@ const Step3 = ({ order }: Step3Props) => {
                 >
                     Ver pedido
                 </Button>
-                {/* El pago real llegará con la integración de Stripe. */}
-                <Button onClick={handlePay}>Pagar</Button>
+                <Button onClick={handlePay} loading={createCheckout.isPending}>
+                    Pagar
+                </Button>
             </div>
         </div>
     );
