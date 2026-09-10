@@ -24,7 +24,10 @@ const app = express();
 // recibe conexiones directas de un cliente. Sin esto, express-rate-limit no
 // puede leer X-Forwarded-For y termina agrupando a todos los usuarios bajo la
 // misma IP (la del proxy), compartiendo el límite de intentos entre todos.
-app.set('trust proxy', true);
+// Número fijo (no `true`): con `true` se confía en todo el header, incluido
+// el primer valor que en teoría pone el propio cliente, permitiendo
+// falsificarlo para saltarse el rate limit.
+app.set('trust proxy', 3);
 
 const FRONTEND_URL = config.FRONTEND_URL;
 
